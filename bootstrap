@@ -1,0 +1,15 @@
+#!/bin/sh
+# bootstrap the build tools
+# run in the root of the project
+
+aclocal=aclocal
+libtoolize=libtoolize
+[ $(uname -s) = 'Darwin' ] && libtoolize=glibtoolize
+
+set -e
+mkdir -p build-aux
+aclocal -I $aclocal --install
+$libtoolize
+autoconf
+autoheader
+automake --add-missing

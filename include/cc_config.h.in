@@ -1,0 +1,29 @@
+/**
+ * \file include/cc_config.h
+ * Workaronds and whatnot
+ */
+
+#ifndef CC_CONFIG_H
+#define CC_CONFIG_H
+
+/* Set the CC_INLINE macro */
+#ifdef __cplusplus
+# define CC_INLINE inline
+#else
+# define CC_INLINE @cc_inline@
+#endif
+
+/* Setup our NOINLINE macro */
+#ifdef __GNUC__
+# define CC_NOINLINE __attribute__ ((noinline))
+#else
+# define CC_NOINLINE
+#endif
+
+#define MAX(a, b)  ((a) > (b) ? (a) : (b))
+#define MIN(a, b)  ((a) < (b) ? (a) : (b))
+
+#define HALT() do { } while(1)
+#define ASSERT(x) if (!x) HALT()
+
+#endif /* CC_CONFIG_H */

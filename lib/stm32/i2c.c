@@ -6,9 +6,9 @@
  * be found at http://opensource.org/licenses/MIT
  */
 
-#include "common.h"
-#include "init.h"
-#include "stm32/i2c.h"
+#include <config.h>
+#include <errno.h>
+#include "i2c.h"
 
 
 static void i2c_configure(i2c_t *i2c);
@@ -113,7 +113,7 @@ handle_i2c_event(i2c_t *i2c) {
         timeout = 15000;
         while (d->CR1 & (I2C_CR1_START | I2C_CR1_STOP)) {
             if (--timeout == 0) {
-                i2c->error = EERR_TIMEOUT;
+                i2c->error = ETIMEDOUT;
             }
         }
         /* Wake up userspace */
@@ -131,15 +131,15 @@ handle_i2c_error(i2c_t *i2c) {
     uint16_t sr1 = d->SR1;
     (void)d->SR2;
     if (sr1 & I2C_SR1_OVR) {
-        i2c->error = EERR_FAULT;
+        i2c->error = EFAULT;
     } else if (sr1 & I2C_SR1_ARLO) {
-        i2c->error = EERR_AGAIN;
+        i2c->error = EAGAIN;
         d->CR2 &= ~(I2C_CR2_ITEVTEN | I2C_CR2_ITERREN | I2C_CR2_ITBUFEN);
     } else if (sr1 & (I2C_SR1_AF | I2C_SR1_BERR)) {
         if (sr1 & I2C_SR1_AF) {
-            i2c->error = EERR_NACK;
+            i2c->error = EBUSY;
         } else {
-            i2c->error = EERR_FAULT;
+            i2c->error = EFAULT;
         }
         d->CR2 &= ~(I2C_CR2_ITEVTEN | I2C_CR2_ITERREN | I2C_CR2_ITBUFEN);
         if (d->CR1 & I2C_CR1_START) {
@@ -235,9 +235,9 @@ i2c_configure(i2c_t *i2c) {
     d->CR1 = I2C_CR1_SWRST;
     d->CR1 = 0;
     /* FIXME: assuming APB1 = sysclk / 2 */
-    d->CR2 = (uint16_t)(system_frequency/2 / 1e6);
-    d->CCR = (uint16_t)((system_frequency/2) / 2 / 10e3);
-    d->TRISE = (uint16_t)(1e-6 / (system_frequency/2) + 1);
+    d->CR2 = (uint16_t)(CPU_FREQ/2 / 1e6);
+    d->CCR = (uint16_t)((CPU_FREQ/2) / 2 / 10e3);
+    d->TRISE = (uint16_t)(1e-6 / (CPU_FREQ/2) + 1);
     d->CR1 = I2C_CR1_PE;
 }
 

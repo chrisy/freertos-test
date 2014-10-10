@@ -6,10 +6,9 @@
  * be found at http://opensource.org/licenses/MIT
  */
 
-#include "common.h"
+#include <config.h>
 
-#include "init.h"
-#include "stm32/spi.h"
+#include "spi.h"
 
 #if USE_SPI1
 spi_t SPI1_Dev;

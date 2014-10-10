@@ -7,12 +7,12 @@
  */
 
 
-#include "common.h"
-#include "init.h"
-#include "stm32/serial.h"
+#include <config.h>
+#include "serial.h"
 #include <string.h>
 #include <stdarg.h>
 #include <stdio.h>
+#include <errno.h>
 
 #if USE_SERIAL_USART1
 serial_t Serial1;
@@ -103,10 +103,10 @@ serial_set_speed(serial_t *serial) {
     USART_TypeDef *u = serial->usart;
     if (u == USART1) {
         /* FIXME: assuming PCLK2=HCLK */
-        u->BRR = system_frequency / serial->speed;
+        u->BRR = CPU_FREQ / serial->speed;
     } else {
         /* FIXME: assuming PCLK1=HCLK/2 */
-        u->BRR = system_frequency / 2 / serial->speed;
+        u->BRR = CPU_FREQ / 2 / serial->speed;
     }
 }
 
@@ -180,7 +180,7 @@ serial_get(serial_t *serial, TickType_t timeout) {
     if (xQueueReceive(serial->rx_q, &val, timeout)) {
         return val;
     } else {
-        return EERR_TIMEOUT;
+        return ETIMEDOUT;
     }
 }
 

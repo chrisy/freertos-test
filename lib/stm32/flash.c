@@ -6,7 +6,7 @@
  * be found at http://opensource.org/licenses/MIT
  */
 
-#include "common.h"
+#include <config.h>
 #include "stm32/flash.h"
 
 

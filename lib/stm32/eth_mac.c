@@ -6,13 +6,13 @@
  * be found at http://opensource.org/licenses/MIT
  */
 
-#include "common.h"
+#include <config.h>
 #include "queue.h"
 #include "semphr.h"
 #include "task.h"
 
 #include "net/tcpqueue.h"
-#include "stm32/eth_mac.h"
+#include "eth_mac.h"
 #include "mii.h"
 #include <string.h>
 

@@ -6,12 +6,11 @@
  * be found at http://opensource.org/licenses/MIT
  */
 
-#include "common.h"
+#include <config.h>
 
 #include "crc7.h"
-#include "init.h"
-#include "stm32/mmc.h"
-#include "stm32/spi.h"
+#include "mmc.h"
+#include "spi.h"
 
 #ifdef MMCSPI
 

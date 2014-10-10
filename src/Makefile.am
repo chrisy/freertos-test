@@ -25,7 +25,7 @@ image.hex: image$(EXEEXT)
 	$(OBJCOPY) -j .nvic_vector -j .info -j .text -j .data -j .data_init $< -O ihex $@
 
 image.lst: image$(EXEEXT)
-	$(OBJDUMP) -S $< > $@
+	$(OBJDUMP) -wxdS $< > $@
 
 all-local: $(extra_outputs)
 

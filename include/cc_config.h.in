@@ -24,6 +24,6 @@
 #define MIN(a, b)  ((a) < (b) ? (a) : (b))
 
 #define HALT() do { } while(1)
-#define ASSERT(x) if (!x) HALT()
+#define ASSERT(x) if (!(x)) HALT()
 
 #endif /* CC_CONFIG_H */

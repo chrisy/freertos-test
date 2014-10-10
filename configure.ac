@@ -63,9 +63,6 @@ if test x"$enable_debug" = xyes; then
     ggdb=gdb
   fi
   CFLAGS="$CFLAGS -O0 -g$ggdb"
-  if test x"$enable_gprof" = xyes; then
-    CFLAGS="$CFLAGS -pg"
-  fi
 else
   CFLAGS="$CFLAGS -O2 -g"
 fi
@@ -93,8 +90,11 @@ if test x"${bdir}" = x'.' ; then
 	bdir=$(pwd)
 fi
 CPPFLAGS="$CPPFLAGS -I${bdir}/include"
-CPPFLAGS="$CPPFLAGS -I${bdir}/FreeRTOS/Source/include"
-CPPFLAGS="$CPPFLAGS -I${bdir}/FreeRTOS/Source/portable/GCC/ARM_CM3"
+CPPFLAGS="$CPPFLAGS -I${bdir}/lib/stm32"
+CPPFLAGS="$CPPFLAGS -I${bdir}/lib/platform"
+CPPFLAGS="$CPPFLAGS -I${bdir}/lib/misc"
+CPPFLAGS="$CPPFLAGS -I${bdir}/lib/FreeRTOS/Source/include"
+CPPFLAGS="$CPPFLAGS -I${bdir}/lib/FreeRTOS/Source/portable/GCC/ARM_CM3"
 
 # Display the summary
 CC=`echo $CC | sed -e 's/  / /g'`
@@ -116,7 +116,7 @@ AC_CONFIG_HEADER([include/ac_config.h])
 AC_CONFIG_FILES([Makefile
 	include/Makefile
 	include/cc_config.h
-	FreeRTOS/Makefile
+	lib/Makefile
 	src/Makefile])
 AC_OUTPUT
 

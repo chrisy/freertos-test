@@ -28,9 +28,9 @@
 #define configUSE_MUTEXES               1
 #define configUSE_PREEMPTION            1
 
-#define configASSERT(x)                 if (!(x)) { while(1) {} }
+#define configASSERT(x)                 if (!(x)) { while (1) {} }
 #define configCPU_CLOCK_HZ              (72000000)
-#define configTICK_RATE_HZ              ( ( TickType_t ) 100 )
+#define configTICK_RATE_HZ              ((TickType_t)100)
 #define configMAX_PRIORITIES            5
 #define configMINIMAL_STACK_SIZE        128
 #define configMAX_TASK_NAME_LEN         8
@@ -53,19 +53,20 @@
 
 /* Use lowest possible interrupt priority for the scheduler */
 #define configKERNEL_INTERRUPT_PRIORITY 0xff
+
 /* Interrupts with higher priority than this (lower number) will preempt the
  * scheduler, but cannot use any RTOS functions. */
 #define configMAX_SYSCALL_INTERRUPT_PRIORITY 0x10
 
 
 /* This is the value being used as per the ST library which permits 16
-priority values, 0 to 15.  This must correspond to the
-configKERNEL_INTERRUPT_PRIORITY setting.  Here 15 corresponds to the lowest
-NVIC value of 255. */
+ * priority values, 0 to 15.  This must correspond to the
+ * configKERNEL_INTERRUPT_PRIORITY setting.  Here 15 corresponds to the lowest
+ * NVIC value of 255. */
 #define configLIBRARY_KERNEL_INTERRUPT_PRIORITY 15
 
-#define vPortSVCHandler SVC_Handler
-#define xPortPendSVHandler PendSV_Handler
-#define xPortSysTickHandler SysTick_Handler
+//#define vPortSVCHandler SVC_Handler
+//#define xPortPendSVHandler PendSV_Handler
+//#define xPortSysTickHandler SysTick_Handler
 
 #endif /* FREERTOS_CONFIG_H */

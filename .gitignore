@@ -30,3 +30,4 @@ src/image.elf
 src/image.lst
 src/image.bin
 src/image.hex
+*.tar.gz

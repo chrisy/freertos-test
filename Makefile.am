@@ -1,4 +1,5 @@
 # root Makefile.am
+# vim:set softtabstop=8 shiftwidth=8 tabstop=8 noexpandtab: 
 
 ACLOCAL_AMFLAGS = -I aclocal
 

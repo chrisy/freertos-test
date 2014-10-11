@@ -1,3 +1,7 @@
+/*
+ * vim:set softtabstop=4 shiftwidth=4 tabstop=4 expandtab:
+ */
+
 #include <config.h>
 #include <FreeRTOS.h>
 #include <task.h>
@@ -14,7 +18,7 @@ vApplicationIdleHook(void)
 void
 vApplicationTickHook(void)
 {
-	milliseconds += 1000 / configTICK_RATE_HZ;
+    milliseconds += 1000 / configTICK_RATE_HZ;
 }
 
 

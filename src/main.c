@@ -1,3 +1,7 @@
+/*
+ * vim:set softtabstop=4 shiftwidth=4 tabstop=4 expandtab:
+ */
+
 #include <config.h>
 #include <FreeRTOS.h>
 #include <task.h>
@@ -10,8 +14,8 @@ const char baz[] = "_This is the last test_";
 
 int main(void)
 {
-	// setup clocks
-	// add main thread
-	// start it up
-	//vTaskStartScheduler();
+    // setup clocks
+    // add main thread
+    // start it up
+    //vTaskStartScheduler();
 }

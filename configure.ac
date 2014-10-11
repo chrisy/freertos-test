@@ -1,9 +1,10 @@
 dnl Process this file with autoconf to produce a configure script.
+# vim:set softtabstop=4 shiftwidth=4 tabstop=4 expandtab: 
 
 flavor=
-if test ! -z "${ac_cv_host}" 
-	flavor="${ac_cv_host}-"
-	CC="${flavor}-gcc"
+if test ! -z "${ac_cv_host}"
+    flavor="${ac_cv_host}-"
+    CC="${flavor}-gcc"
 fi
 
 AC_PREREQ(2.67)
@@ -87,7 +88,7 @@ AC_SUBST([cc_inline])
 # Setup our include search paths
 bdir="${srcdir}"
 if test x"${bdir}" = x'.' ; then
-	bdir=$(pwd)
+    bdir=$(pwd)
 fi
 CPPFLAGS="$CPPFLAGS -I${bdir}/include"
 CPPFLAGS="$CPPFLAGS -I${bdir}/lib/stm32"
@@ -114,9 +115,9 @@ echo "LIBS:     $LIBS" >&2
 # Output
 AC_CONFIG_HEADER([include/ac_config.h])
 AC_CONFIG_FILES([Makefile
-	include/Makefile
-	include/cc_config.h
-	lib/Makefile
-	src/Makefile])
+    include/Makefile
+    include/cc_config.h
+    lib/Makefile
+    src/Makefile])
 AC_OUTPUT
 

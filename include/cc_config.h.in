@@ -1,4 +1,5 @@
 /**
+ * vim: set softtabstop=4 shiftwidth=4 tabstop=4 expandtab:
  * \file include/cc_config.h
  * Workaronds and whatnot
  */

@@ -1,5 +1,6 @@
 #include <config.h>
 #include <FreeRTOS.h>
+#include <nvic.h>
 #include "main.h"
 
 void _crt0_init(void);
@@ -9,17 +10,11 @@ void _crt0_hardfault_handler(void);
 extern unsigned int _STACKTOP;
 
 // Define the vector table
-struct {
-	unsigned int	*stack_top;
-	void		(*init)(void);
-	void		(*nmi)(void);
-	void		(*hardfault)(void);
-} _nvic_vector
-__attribute__ ((section(".nvic_vector"))) = {
-	(unsigned int *)&_STACKTOP,     // stack pointer
-	_crt0_init,                     // code entry point
-	_crt0_nmi_handler,              // NMI handler (not really)
-	_crt0_hardfault_handler         // hard fault handler (let's hope not)
+struct nvic _nvic_vector __attribute__ ((section(".nvic_vector"))) = {
+	.stack_top		= (unsigned int *)&_STACKTOP,
+	.Reset_Handler		= _crt0_init,
+	.NMI_Handler		= _crt0_nmi_handler,
+	.HardFault_Handler	= _crt0_hardfault_handler
 };
 
 /* Some static text info for the binary image */
@@ -33,14 +28,19 @@ extern unsigned int _DATA_END;
 extern unsigned int _DATAI_BEGIN;
 extern unsigned int _DATAI_END;
 
-void _crt0_nmi_handler(void)
+void _crt0_default_handler(void)
 {
 	return;
 }
 
+void _crt0_nmi_handler(void)
+{
+	HALT();
+}
+
 void _crt0_hardfault_handler(void)
 {
-	return;
+	HALT();
 }
 
 // Bootstrap routine
@@ -73,9 +73,9 @@ void _crt0_init(void)
 	}
 
 	// Launch!
-	//SystemInit();
+	SystemInit();
 	main();
 
 	// Shouldn't get here!
-	while (1) ;
+	HALT();
 }

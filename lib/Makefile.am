@@ -26,6 +26,7 @@ stm32_sources = \
 
 platform_sources = \
 	platform/core_cm3.c \
+	platform/system_stm32f10x.c \
 	platform/sbrk.c
 
 misc_sources = \

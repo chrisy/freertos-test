@@ -74,7 +74,6 @@
 #include <stm32f10x.h>
 #include <system_stm32f10x.h>
 #include <core_cm3.h>
-
 #include <FreeRTOS.h>
 
-#endif /* CC_CONFIG_H */
+#endif /* CONFIG_H */

@@ -16,11 +16,16 @@ sources = \
 	platform/freertos.c \
 	main.c
 
-libdirs = -L$(top_srcdir)/lib/.libs
+ourlibdir = $(top_srcdir)/lib/.libs
+libdirs = -L$(ourlibdir)
 
-image_LDADD = $(libdirs) -lc -lm -lplatform -lrtos -lmisc
+image_LDADD = $(libdirs) -lc -lm -lplatform -lrtos -lmisc -lstm32
 image_SOURCES = $(sources)
-EXTRA_image_DEPENDENCIES = $(linker_script)
+EXTRA_image_DEPENDENCIES = $(linker_script) \
+	$(ourlibdir)/libplatform.a \
+	$(ourlibdir)/librtos.a \
+	$(ourlibdir)/libmisc.a \
+	$(ourlibdir)/libstm32.a
 
 image.bin: image$(EXEEXT)
 	$(OBJCOPY) -j .nvic_vector -j .info -j .text -j .data -j .data_init $< -O binary $@

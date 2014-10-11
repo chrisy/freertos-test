@@ -1,4 +1,4 @@
-/**
+/** NVIC vector definition
  * vim: set softtabstop=4 shiftwidth=4 tabstop=4 expandtab:
  * \file lib/platform/sbrk.c
  *

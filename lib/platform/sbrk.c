@@ -1,4 +1,4 @@
-/**
+/** sbrk allocator with bounds checking
  * vim: set softtabstop=4 shiftwidth=4 tabstop=4 expandtab:
  * \file lib/platform/sbrk.c
  *
@@ -10,8 +10,6 @@
 #include <config.h>
 #include <errno.h>
 #include <stdint.h>
-
-/* sbrk allocator with bounds checking */
 
 extern uint32_t _sheap;
 extern uint32_t _eheap;

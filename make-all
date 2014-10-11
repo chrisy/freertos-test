@@ -1,0 +1,20 @@
+#!/bin/sh
+dir=$(dirname $0)
+cd "${dir}"
+
+do_bootstrap=
+
+if [ -f configure ]; then
+	if find . -type f '(' -name 'Makefile.*' -or -name 'configure.*' -or -name '*.in' ')' -newer configure | grep -q "."; then
+		do_bootstrap=y
+	fi
+else
+	do_bootstrap=y
+fi
+if [ "$do_bootstrap" ]; then
+	./bootstrap
+	./do-configure-arm
+	make clean
+fi
+
+make

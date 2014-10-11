@@ -2,14 +2,21 @@
 # bootstrap the build tools
 # run in the root of the project
 
+echo "Bootstraping..."
 aclocal=aclocal
 libtoolize=libtoolize
 [ $(uname -s) = 'Darwin' ] && libtoolize=glibtoolize
 
 set -e
 mkdir -p build-aux
+echo "-- aclocal"
 aclocal -I $aclocal --install
+echo "-- libtoolize"
 $libtoolize
+echo "-- autoconf"
 autoconf
+echo "-- autoheader"
 autoheader
+echo "-- automake"
 automake --add-missing
+touch configure

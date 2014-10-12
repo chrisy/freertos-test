@@ -8,19 +8,18 @@
  */
 
 #include <config.h>
-#include <errno.h>
 #include <stdint.h>
 
-extern uint32_t _sheap;
-extern uint32_t _eheap;
-char *heap_top = (char *)&_sheap;
+extern uint32_t _mm_heap_start;
+extern uint32_t _mm_heap_end;
+unsigned char *heap_top = (unsigned char *)&_mm_heap_start;
 
-void *
+char *
 _sbrk(intptr_t increment)
 {
     void *ret;
 
-    if (heap_top + increment > (char *)&_eheap)
+    if (heap_top + increment > (unsigned char *)&_mm_heap_end)
         return (char *)-1;
     ret = heap_top;
     heap_top += increment;

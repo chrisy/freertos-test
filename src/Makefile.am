@@ -13,13 +13,14 @@ extra_outputs = image.bin image.hex image.lst
 
 sources = \
 	platform/crt0.c \
+	platform/sbrk.c \
 	platform/freertos.c \
 	main.c
 
 ourlibdir = $(top_srcdir)/lib/.libs
 libdirs = -L$(ourlibdir)
 
-image_LDADD = $(libdirs) -lc -lm -lplatform -lrtos -lmisc -lstm32
+image_LDADD = $(libdirs) -lrtos -lplatform -lmisc -lstm32
 image_SOURCES = $(sources)
 EXTRA_image_DEPENDENCIES = $(linker_script) \
 	$(ourlibdir)/libplatform.a \

@@ -10,8 +10,10 @@
 #ifndef NVIC_H
 #define NVIC_H
 
+#include <stdint.h>
+
 struct nvic {
-    unsigned int    *stack_top;
+    uint32_t        *stack_top;
     void            (*Reset_Handler)(void);
     void            (*NMI_Handler)(void);
     void            (*HardFault_Handler)(void);
@@ -131,7 +133,7 @@ struct nvic {
     void            (*unknown47)(void);
     void            (*unknown48)(void);
     void            (*unknown49)(void);
-    void            (*BootRAM)(void);
+//    void            (*BootRAM)(void);
 };
 
 #endif /* NVIC_H */

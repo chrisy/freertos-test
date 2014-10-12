@@ -1,4 +1,4 @@
-/** Linker script for STM32
+/** Linker script for STM32F103ZE
  * vim: set softtabstop=4 shiftwidth=4 tabstop=4 expandtab:
  * \file src/platform/STM32F1032E.ld
  *
@@ -9,62 +9,71 @@
 
 MEMORY
 {
-    ram (rwx)   : ORIGIN = 0x20000000, LENGTH = 64K
-    stack(rwx)  : ORIGIN = 0x20010000, LENGTH = 0K
-
-    flash (rx)  : ORIGIN = 0x00000000, LENGTH = 512K
+    flash (rx)  : ORIGIN = 0x08000000, LENGTH = 512K
+    ram   (rwx) : ORIGIN = 0x20000000, LENGTH = 64K
+    stack (rw)  : ORIGIN = 0x20010000, LENGTH = 0K
 }
+
+ENTRY(_crt0_init)
 
 SECTIONS
 {
+    . = 0;
+
     .nvic_vector :
     {
-        *(vectors)    /* Vector table */
+        *(vectors)  /* Vector table */
     } >flash
 
     .info :
     {
-        *(info)       /* Text info */
+        *(info)     /* Text info */
     } >flash
 
     .text :
     {
-        *(.text)      /* Program code */
+        *(.text)    /* Program code */
         *(.text.*)
-        *(.rodata)    /* Read only data */
+        *(.rodata)  /* Read only data */
         *(.rodata.*)
-        _DATAI_BEGIN = .;
+        _mm_datai_start = .;
     } >flash
 
     .data :
     {
-        _DATA_BEGIN = .;
-        *(.data)      /* Data memory */
+        . = ALIGN(4);
+        _mm_data_start = .;
+        *(.data)    /* Data memory */
         *(.data.*)
-        _DATA_END = .;
+        _mm_data_end = .;
     } >ram AT >flash
 
     .data_init :
     {
-        _DATAI_END = .;
+        . = ALIGN(4);
+        _mm_datai_end = .;
     } >flash
 
     .bss :
     {
-        _BSS_BEGIN = .;
-        *(.bss)       /* Zero-filled run time allocate data memory */
+        . = ALIGN(4);
+        _mm_bss_start = .;
+        *(.bss)     /* BSS is zero-filled at runtime */
+        *(.bss.*)
         *(COMMON)
-        _BSS_END = .;
+        _mm_bss_end = .;
     } >ram
 
     .heap :
     {
-        _HEAP = .;
+        . = ALIGN(4);
+        _mm_heap_start = .;
     } >ram
 
     .stack :
     {
-        _STACKTOP = .;
+        _mm_heap_end = .;
+        _mm_stack_top = .;
     } >stack
 }
 

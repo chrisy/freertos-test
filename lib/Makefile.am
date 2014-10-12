@@ -12,7 +12,7 @@ lib_LTLIBRARIES = \
 
 rtos_sources = \
 	FreeRTOS/Source/portable/GCC/ARM_CM3/port.c \
-	FreeRTOS/Source/portable/MemMang/heap_4.c \
+	FreeRTOS/Source/portable/MemMang/heap_3.c \
 	FreeRTOS/Source/croutine.c \
 	FreeRTOS/Source/event_groups.c \
 	FreeRTOS/Source/list.c \
@@ -31,8 +31,7 @@ stm32_sources = \
 
 platform_sources = \
 	platform/core_cm3.c \
-	platform/system_stm32f10x.c \
-	platform/sbrk.c
+	platform/system_stm32f10x.c
 
 misc_sources = \
 	misc/crc7.c

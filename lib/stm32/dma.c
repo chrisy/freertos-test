@@ -20,8 +20,8 @@ const dma_ch_t dma_streams[DMA_STREAMS] = {
     {DMA2_Channel1, DMA2_Channel1_IRQn,  7, &DMA2->IFCR,  0},
     {DMA2_Channel2, DMA2_Channel2_IRQn,  8, &DMA2->IFCR,  4},
     {DMA2_Channel3, DMA2_Channel3_IRQn,  9, &DMA2->IFCR,  8},
-    //{DMA2_Channel4, DMA2_Channel4_IRQn, 10, &DMA2->IFCR, 12},
-    //{DMA2_Channel5, DMA2_Channel5_IRQn, 11, &DMA2->IFCR, 16},
+    {DMA2_Channel4, DMA2_Channel4_5_IRQn, 10, &DMA2->IFCR, 12},
+    {DMA2_Channel5, DMA2_Channel4_5_IRQn, 11, &DMA2->IFCR, 16},
 };
 
 static dma_isr_t isr_funcs[DMA_STREAMS];
@@ -114,6 +114,14 @@ DMA2_Channel2_IRQHandler(void) {
 void
 DMA2_Channel3_IRQHandler(void) {
     dma_service_irq(DMA1, &dma_streams[9]);
+}
+
+
+void
+DMA2_Channel4_5_IRQHandler(void) {
+    // TODO: Determine which channels are ready
+    dma_service_irq(DMA1, &dma_streams[10]);
+    dma_service_irq(DMA1, &dma_streams[11]);
 }
 
 

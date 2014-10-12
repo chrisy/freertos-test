@@ -13,7 +13,7 @@
 #include <config.h>
 #include "queue.h"
 #include "semphr.h"
-#include "stm32/dma.h"
+#include "dma.h"
 
 #define SERIAL_TX_SIZE  16
 #define SERIAL_RX_SIZE  16
@@ -34,6 +34,12 @@ typedef struct {
 #if USE_SERIAL_USART1
 extern serial_t Serial1;
 #endif
+#if USE_SERIAL_USART2
+extern serial_t Serial2;
+#endif
+#if USE_SERIAL_USART3
+extern serial_t Serial3;
+#endif
 #if USE_SERIAL_UART4
 extern serial_t Serial4;
 #endif
@@ -53,5 +59,25 @@ void serial_write(serial_t *serial, const char *value, uint16_t size);
 void serial_printf(serial_t *serial, const char *fmt, ...);
 void serial_drain(serial_t *serial);
 int16_t serial_get(serial_t *serial, TickType_t timeout);
+
+#if USE_SERIAL_USART1
+void USART1_IRQHandler(void) __attribute__ ((interrupt));
+#endif
+
+#if USE_SERIAL_USART2
+void USART2_IRQHandler(void) __attribute__ ((interrupt));
+#endif
+
+#if USE_SERIAL_USART3
+void USART3_IRQHandler(void) __attribute__ ((interrupt));
+#endif
+
+#if USE_SERIAL_UART4
+void UART4_IRQHandler(void) __attribute__ ((interrupt));
+#endif
+
+#if USE_SERIAL_UART5
+void UART5_IRQHandler(void) __attribute__ ((interrupt));
+#endif
 
 #endif

@@ -17,6 +17,12 @@
 #if USE_SERIAL_USART1
 serial_t Serial1;
 #endif
+#if USE_SERIAL_USART2
+serial_t Serial2;
+#endif
+#if USE_SERIAL_USART3
+serial_t Serial3;
+#endif
 #if USE_SERIAL_UART4
 serial_t Serial4;
 #endif
@@ -55,6 +61,22 @@ serial_start(serial_t *serial, int speed
         irqn = USART1_IRQn;
         serial->usart = USART1;
         serial->tx_dma = &dma_streams[3];
+    } else
+#endif
+#ifdef USE_SERIAL_USART2
+    if (serial == &Serial2) {
+        RCC->APB1ENR |= RCC_APB1ENR_USART2EN;
+        irqn = USART2_IRQn;
+        serial->usart = USART2;
+        //serial->tx_dma = &dma_streams[3];
+    } else
+#endif
+#ifdef USE_SERIAL_USART3
+    if (serial == &Serial3) {
+        RCC->APB1ENR |= RCC_APB1ENR_USART3EN;
+        irqn = USART3_IRQn;
+        serial->usart = USART3;
+        //serial->tx_dma = &dma_streams[3];
     } else
 #endif
 #if USE_SERIAL_UART4
@@ -226,6 +248,19 @@ USART1_IRQHandler(void) {
 }
 #endif
 
+#if USE_SERIAL_USART2
+void
+USART2_IRQHandler(void) {
+    usart_irq(&Serial2);
+}
+#endif
+
+#if USE_SERIAL_USART3
+void
+USART3_IRQHandler(void) {
+    usart_irq(&Serial3);
+}
+#endif
 
 #if USE_SERIAL_UART4
 void
@@ -233,7 +268,6 @@ UART4_IRQHandler(void) {
     usart_irq(&Serial4);
 }
 #endif
-
 
 #if USE_SERIAL_UART5
 void

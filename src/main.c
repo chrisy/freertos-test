@@ -11,12 +11,32 @@
 #include <FreeRTOS.h>
 #include <task.h>
 
+#include <dma.h>
+#include <serial.h>
+
 #include "main.h"
+
+static void platform_init(void);
+
+QueueSetHandle_t qs_serial = NULL;
+
 
 int main(void)
 {
-    // setup clocks
+	// setup the hardware
+	platform_init();
+
     // add main thread
+
     // start it up
     vTaskStartScheduler();
+}
+
+static void platform_init(void)
+{
+	// Initialize USARTs
+	qs_serial = xQueueCreateSet(21);
+	serial_start(&Serial1, 9600, qs_serial);
+	serial_start(&Serial2, 9600, qs_serial);
+	serial_start(&Serial3, 9600, qs_serial);
 }

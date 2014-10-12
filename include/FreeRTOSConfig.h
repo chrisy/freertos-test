@@ -28,7 +28,7 @@
 #define configUSE_COUNTING_SEMAPHORES   1
 #define configUSE_MUTEXES               1
 #define configUSE_PREEMPTION            1
-#define configUSE_NEWLIB_REENTRANT		1
+#define configUSE_NEWLIB_REENTRANT      1
 
 #define configASSERT(x)                 ASSERT(x)
 #define configCPU_CLOCK_HZ              (SystemCoreClock)
@@ -64,7 +64,7 @@
 #define INCLUDE_eTaskGetState                   0
 #define INCLUDE_xEventGroupSetBitFromISR        1
 #define INCLUDE_xTimerPendFunctionCall          1
-#define INCLUDE_vTaskCleanUpResources   		1
+#define INCLUDE_vTaskCleanUpResources           1
 
 /* Use lowest possible interrupt priority for the scheduler */
 #define configKERNEL_INTERRUPT_PRIORITY 0xff

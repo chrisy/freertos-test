@@ -13,6 +13,9 @@
 #include <nvic.h>
 #include "main.h"
 
+#include <dma.h>
+#include <serial.h>
+
 // Our handlers
 void _crt0_init(void) __attribute__ ((noreturn));
 void _crt0_nmi_handler(void) __attribute__ ((interrupt));
@@ -32,13 +35,42 @@ extern uint32_t _mm_stack_top;
 
 // Define the vector table
 struct nvic _nvic_vector __attribute__ ((section(".nvic_vector"))) = {
-    .stack_top          = &_mm_stack_top,
-    .Reset_Handler      = _crt0_init,
-    .NMI_Handler        = _crt0_nmi_handler,
-    .HardFault_Handler  = _crt0_hardfault_handler,
-    .SVC_Handler        = vPortSVCHandler,
-    .PendSV_Handler     = xPortPendSVHandler,
-    .SysTick_Handler    = xPortSysTickHandler
+    .stack_top                  = &_mm_stack_top,
+
+    // Primary handlers
+    .Reset_Handler              = _crt0_init,
+    .NMI_Handler                = _crt0_nmi_handler,
+    .HardFault_Handler          = _crt0_hardfault_handler,
+
+    // FreeRTOS handlers
+    .SVC_Handler                = vPortSVCHandler,
+    .PendSV_Handler             = xPortPendSVHandler,
+    .SysTick_Handler            = xPortSysTickHandler,
+
+    // STM32 DMA handlers
+    .DMA1_Channel1_IRQHandler   = DMA1_Channel1_IRQHandler,
+    .DMA1_Channel2_IRQHandler   = DMA1_Channel2_IRQHandler,
+    .DMA1_Channel3_IRQHandler   = DMA1_Channel3_IRQHandler,
+    .DMA1_Channel4_IRQHandler   = DMA1_Channel4_IRQHandler,
+    .DMA1_Channel5_IRQHandler   = DMA1_Channel5_IRQHandler,
+    .DMA1_Channel6_IRQHandler   = DMA1_Channel6_IRQHandler,
+    .DMA1_Channel7_IRQHandler   = DMA1_Channel7_IRQHandler,
+
+    .DMA2_Channel1_IRQHandler   = DMA1_Channel1_IRQHandler,
+    .DMA2_Channel2_IRQHandler   = DMA1_Channel1_IRQHandler,
+    .DMA2_Channel3_IRQHandler   = DMA1_Channel1_IRQHandler,
+    .DMA2_Channel4_5_IRQHandler = DMA1_Channel1_IRQHandler,
+
+    // STM32 Serial peripheral handlers
+#if USE_SERIAL_USART1
+    .USART1_IRQHandler          = USART1_IRQHandler,
+#endif
+#if USE_SERIAL_USART2
+    .USART2_IRQHandler          = USART2_IRQHandler,
+#endif
+#if USE_SERIAL_USART3
+    .USART3_IRQHandler          = USART3_IRQHandler,
+#endif
 };
 
 /* Some static text info for the binary image */

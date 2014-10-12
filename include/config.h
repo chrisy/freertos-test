@@ -31,17 +31,17 @@
 #include "cc_config.h"
 
 // The heap size check in sbrk will offset its ceiling by this much
-#define SYSTEM_STACK_SIZE		512
+#define SYSTEM_STACK_SIZE       512
 
 #define STM32F10X_HD
 
 #define USE_I2C1                1
 #define USE_I2C2                0
 #define USE_SERIAL_USART1       1
-#define USE_SERIAL_USART2       0
-#define USE_SERIAL_USART2       0
-#define USE_SERIAL_UART4        1
-#define USE_SERIAL_UART5        1
+#define USE_SERIAL_USART2       1
+#define USE_SERIAL_USART3       1
+#define USE_SERIAL_UART4        0
+#define USE_SERIAL_UART5        0
 #define USE_SPI1                0
 #define USE_SPI3                0
 

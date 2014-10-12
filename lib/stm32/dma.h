@@ -35,4 +35,20 @@ void dma_release(const dma_ch_t *ch);
 }
 
 
+void DMA1_Channel1_IRQHandler(void) __attribute__ ((interrupt));
+void DMA1_Channel2_IRQHandler(void) __attribute__ ((interrupt));
+void DMA1_Channel3_IRQHandler(void) __attribute__ ((interrupt));
+void DMA1_Channel4_IRQHandler(void) __attribute__ ((interrupt));
+void DMA1_Channel5_IRQHandler(void) __attribute__ ((interrupt));
+void DMA1_Channel6_IRQHandler(void) __attribute__ ((interrupt));
+void DMA1_Channel7_IRQHandler(void) __attribute__ ((interrupt));
+
+void DMA2_Channel1_IRQHandler(void) __attribute__ ((interrupt));
+void DMA2_Channel2_IRQHandler(void) __attribute__ ((interrupt));
+void DMA2_Channel3_IRQHandler(void) __attribute__ ((interrupt));
+void DMA2_Channel4_5_IRQHandler(void) __attribute__ ((interrupt));
+void DMA2_Channel4_IRQHandler(void) __attribute__ ((interrupt));
+void DMA2_Channel5_IRQHandler(void) __attribute__ ((interrupt));
+
+
 #endif

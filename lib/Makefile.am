@@ -12,6 +12,7 @@ lib_LTLIBRARIES = \
 
 rtos_sources = \
 	FreeRTOS/Source/portable/GCC/ARM_CM3/port.c \
+	FreeRTOS/Source/portable/MemMang/heap_4.c \
 	FreeRTOS/Source/croutine.c \
 	FreeRTOS/Source/event_groups.c \
 	FreeRTOS/Source/list.c \

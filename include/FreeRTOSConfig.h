@@ -42,6 +42,7 @@
 #define configTIMER_QUEUE_LENGTH        2
 #define configTIMER_TASK_STACK_DEPTH    128
 #define configMAX_CO_ROUTINE_PRIORITIES 1
+#define configTOTAL_HEAP_SIZE           32768
 
 #define INCLUDE_vTaskCleanUpResources   0
 #define INCLUDE_vTaskDelete             0

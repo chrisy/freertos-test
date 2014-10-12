@@ -22,5 +22,5 @@ int main(void)
     // setup clocks
     // add main thread
     // start it up
-    //vTaskStartScheduler();
+    vTaskStartScheduler();
 }

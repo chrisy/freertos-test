@@ -20,7 +20,7 @@ sources = \
 ourlibdir = $(top_srcdir)/lib/.libs
 libdirs = -L$(ourlibdir)
 
-image_LDADD = $(libdirs) -lrtos -lplatform -lmisc -lstm32
+image_LDADD = $(libdirs) -lrtos -lplatform -lmisc -lstm32 -lm
 image_SOURCES = $(sources)
 EXTRA_image_DEPENDENCIES = $(linker_script) \
 	$(ourlibdir)/libplatform.a \

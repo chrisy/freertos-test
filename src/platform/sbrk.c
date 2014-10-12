@@ -14,12 +14,12 @@ extern uint32_t _mm_heap_start;
 extern uint32_t _mm_heap_end;
 unsigned char *heap_top = (unsigned char *)&_mm_heap_start;
 
-char *
-_sbrk(intptr_t increment)
+/* We assume we're being called in a critical section */
+char *_sbrk(intptr_t increment)
 {
     void *ret;
 
-    if (heap_top + increment > (unsigned char *)&_mm_heap_end)
+    if (heap_top + increment + SYSTEM_STACK_SIZE > (unsigned char *)&_mm_heap_end)
         return (char *)-1;
     ret = heap_top;
     heap_top += increment;

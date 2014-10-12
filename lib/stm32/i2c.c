@@ -235,9 +235,9 @@ i2c_configure(i2c_t *i2c) {
     d->CR1 = I2C_CR1_SWRST;
     d->CR1 = 0;
     /* FIXME: assuming APB1 = sysclk / 2 */
-    d->CR2 = (uint16_t)(CPU_FREQ/2 / 1e6);
-    d->CCR = (uint16_t)((CPU_FREQ/2) / 2 / 10e3);
-    d->TRISE = (uint16_t)(1e-6 / (CPU_FREQ/2) + 1);
+    d->CR2 = (uint16_t)(SystemCoreClock/2 / 1e6);
+    d->CCR = (uint16_t)((SystemCoreClock/2) / 2 / 10e3);
+    d->TRISE = (uint16_t)(1e-6 / (SystemCoreClock/2) + 1);
     d->CR1 = I2C_CR1_PE;
 }
 

@@ -30,7 +30,7 @@
 #define configUSE_PREEMPTION            1
 
 #define configASSERT(x)                 if (!(x)) { while (1) {} }
-#define configCPU_CLOCK_HZ              (72000000)
+#define configCPU_CLOCK_HZ              (SystemCoreClock)
 #define configTICK_RATE_HZ              ((TickType_t)100)
 #define configMAX_PRIORITIES            5
 #define configMINIMAL_STACK_SIZE        128
@@ -67,8 +67,14 @@
  * NVIC value of 255. */
 #define configLIBRARY_KERNEL_INTERRUPT_PRIORITY 15
 
-//#define vPortSVCHandler SVC_Handler
-//#define xPortPendSVHandler PendSV_Handler
-//#define xPortSysTickHandler SysTick_Handler
+// Useful macros
+#define DISABLE_IRQ         portENTER_CRITICAL
+#define ENABLE_IRQ          portEXIT_CRITICAL
+
+#define MS2ST(ms)           (((ms) * configTICK_RATE_HZ) / 1000)
+#define S2ST(ms)            ((ms) * configTICK_RATE_HZ)
+#define DELAY_MS(ms)        vTaskDelay(MS2ST(ms))
+#define DELAY_S(ms)         vTaskDelay(S2ST(ms))
+
 
 #endif /* FREERTOS_CONFIG_H */

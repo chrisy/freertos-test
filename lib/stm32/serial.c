@@ -103,10 +103,10 @@ serial_set_speed(serial_t *serial) {
     USART_TypeDef *u = serial->usart;
     if (u == USART1) {
         /* FIXME: assuming PCLK2=HCLK */
-        u->BRR = CPU_FREQ / serial->speed;
+        u->BRR = SystemCoreClock / serial->speed;
     } else {
         /* FIXME: assuming PCLK1=HCLK/2 */
-        u->BRR = CPU_FREQ / 2 / serial->speed;
+        u->BRR = SystemCoreClock / 2 / serial->speed;
     }
 }
 

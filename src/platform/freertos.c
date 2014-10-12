@@ -16,7 +16,7 @@ static uint64_t milliseconds;
 void
 vApplicationIdleHook(void)
 {
-//    __WFI();
+    __WFI();
 }
 
 
@@ -30,17 +30,17 @@ vApplicationTickHook(void)
 void
 vApplicationStackOverflowHook(TaskHandle_t xTask, char *pcTaskName)
 {
-//    HALT();
+    HALT();
 }
 
 
-/*
- * uint64_t
- * milliseconds_get(void) {
- *  uint64_t ret;
- *  taskENTER_CRITICAL();
- *  ret = milliseconds;
- *  taskEXIT_CRITICAL();
- *  return ret;
- * }
- */
+uint64_t
+milliseconds_get(void)
+{
+    uint64_t ret;
+
+    taskENTER_CRITICAL();
+    ret = milliseconds;
+    taskEXIT_CRITICAL();
+    return ret;
+}

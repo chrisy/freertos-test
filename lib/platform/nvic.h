@@ -136,4 +136,8 @@ struct nvic {
 //    void            (*BootRAM)(void);
 };
 
+#ifdef USE_NVIC_VECTOR
+extern struct nvic _nvic_vector;
+#endif /* USE_NVIC_VECTOR */
+
 #endif /* NVIC_H */

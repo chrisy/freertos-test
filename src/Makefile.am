@@ -36,6 +36,10 @@ image.hex: image$(EXEEXT)
 
 image.lst: image$(EXEEXT)
 	$(OBJDUMP) -wxdS $< > $@
+	@printf "%-14s %12s %6s %6s\n" "Section" "Length (hex)" "(dec)" "KB"
+	@$(OBJDUMP) -h image.elf | \
+		awk '/[.](nvic|text|bss|info)/{printf("%-14s %12x %6d %6.1f\n", $$2, \
+			strtonum("0x"$$3), strtonum("0x"$$3), strtonum("0x"$$3) / 1024)}'
 
 all-local: $(extra_outputs)
 

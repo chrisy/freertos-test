@@ -30,7 +30,6 @@
 
 #include "cc_config.h"
 
-#define CPU_FREQ 72000000
 #define STM32F10X_HD
 
 #define USE_I2C1                1
@@ -64,17 +63,6 @@
 //#define TCPIP_STACK_SIZE        512
 #define VTIMER_STACK_SIZE       512
 
-
-
-#define DISABLE_IRQ         portENTER_CRITICAL
-#define ENABLE_IRQ          portEXIT_CRITICAL
-
-//#define GPIO_ON(pfx)        _PASTE2(pfx, _PAD)->BSRR = _PASTE2(pfx, _PIN);
-//#define GPIO_OFF(pfx)       _PASTE2(pfx, _PAD)->BRR  = _PASTE2(pfx, _PIN);
-//#define MS2ST(ms)           (((ms) * configTICK_RATE_HZ) / 1000)
-//#define S2ST(ms)            ((ms) * configTICK_RATE_HZ)
-#define DELAY_MS(ms)        vTaskDelay(MS2ST(ms))
-#define DELAY_S(ms)         vTaskDelay(S2ST(ms))
 
 #include <stm32f10x.h>
 #include <system_stm32f10x.h>

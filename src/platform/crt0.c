@@ -13,9 +13,15 @@
 #include <nvic.h>
 #include "main.h"
 
-void _crt0_init(void);
-void _crt0_nmi_handler(void);
-void _crt0_hardfault_handler(void);
+// Our handlers
+void _crt0_init(void) __attribute__ ((noreturn));
+void _crt0_nmi_handler(void) __attribute__ ((interrupt));
+void _crt0_hardfault_handler(void) __attribute__ ((interrupt));
+
+// Handlers in FreeRTOS (from portable/GCC/ARM_CM3/port.c)
+void vPortSVCHandler(void) __attribute__ ((naked));
+void xPortPendSVHandler(void) __attribute__ ((naked));
+void xPortSysTickHandler(void);
 
 // These are defined by the linker script
 extern uint32_t _mm_data_start, _mm_data_end;
@@ -29,7 +35,10 @@ struct nvic _nvic_vector __attribute__ ((section(".nvic_vector"))) = {
     .stack_top          = &_mm_stack_top,
     .Reset_Handler      = _crt0_init,
     .NMI_Handler        = _crt0_nmi_handler,
-    .HardFault_Handler  = _crt0_hardfault_handler
+    .HardFault_Handler  = _crt0_hardfault_handler,
+    .SVC_Handler        = vPortSVCHandler,
+    .PendSV_Handler     = xPortPendSVHandler,
+    .SysTick_Handler    = xPortSysTickHandler
 };
 
 /* Some static text info for the binary image */

@@ -35,7 +35,8 @@ int main(void)
 static void platform_init(void)
 {
 	// Initialize USARTs
-	qs_serial = xQueueCreateSet(21);
+	qs_serial = xQueueCreateSet(16);
+	ASSERT(qs_serial != NULL);
 	serial_start(&Serial1, 9600, qs_serial);
 	serial_start(&Serial2, 9600, qs_serial);
 	serial_start(&Serial3, 9600, qs_serial);

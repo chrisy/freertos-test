@@ -91,7 +91,7 @@ struct nvic _nvic_vector __attribute__ ((section(".nvic_vector"))) = {
 };
 
 /* Some static text info for the binary image */
-char _crt0_info[] __attribute__ ((section(".info"))) = "FreeRTOS-test...";
+char _crt0_info[] __attribute__ ((section(".info"))) = "FreeRTOS-test v0.1 (c) 2014 Chris Luke";
 
 
 void _crt0_default_handler(void)

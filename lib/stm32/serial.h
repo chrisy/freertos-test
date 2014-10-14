@@ -50,9 +50,9 @@ extern serial_t Serial5;
 
 void serial_start(serial_t *serial, int speed
 #if configUSE_QUEUE_SETS
-        , QueueSetHandle_t queue_set
+                  , QueueSetHandle_t queue_set
 #endif
-        );
+                  );
 void serial_set_speed(serial_t *serial);
 void serial_puts(serial_t *serial, const char *value);
 void serial_write(serial_t *serial, const char *value, uint16_t size);

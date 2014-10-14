@@ -20,38 +20,39 @@ static uint8_t mmc_block_mode;
 
 
 static void
-mmc_ll_wait_idle(void) {
+mmc_ll_wait_idle(void)
+{
     int i;
     uint8_t result;
     TickType_t start;
+
     for (i = 0; i < 16; i++) {
         spi_exchange(MMCSPI, NULL, &result, 1);
-        if (result == 0xFF) {
+        if (result == 0xFF)
             return;
-        }
     }
     start = xTaskGetTickCount();
     while (1) {
         spi_exchange(MMCSPI, NULL, &result, 1);
-        if (result == 0xFF) {
+        if (result == 0xFF)
             return;
-        }
-        if (xTaskGetTickCount() - start > MMC_IDLE_DEADLINE) {
+        if (xTaskGetTickCount() - start > MMC_IDLE_DEADLINE)
             return;
-        }
         DELAY_MS(10);
     }
 }
 
 
 static void
-mmc_ll_send_header(uint8_t cmd, uint32_t arg) {
+mmc_ll_send_header(uint8_t cmd, uint32_t arg)
+{
     uint8_t buf[6];
     crc7_t crc;
+
     buf[0] = 0x40 | cmd;
     buf[1] = arg >> 24;
     buf[2] = arg >> 16;
-    buf[3] = arg >>  8;
+    buf[3] = arg >> 8;
     buf[4] = arg;
     crc = crc7_init();
     crc = crc7_update(crc, buf, 5);
@@ -61,26 +62,28 @@ mmc_ll_send_header(uint8_t cmd, uint32_t arg) {
 
 
 static uint8_t
-mmc_ll_receive_r1(void) {
+mmc_ll_receive_r1(void)
+{
     int i;
     uint8_t r;
+
     for (i = 0; i < 9; i++) {
         spi_exchange(MMCSPI, NULL, &r, 1);
-        if (r != 0xFF) {
+        if (r != 0xFF)
             return r;
-        }
     }
     return 0xFF;
 }
 
 
 static uint8_t
-mmc_cmd_r1(uint8_t cmd, uint32_t arg) {
+mmc_cmd_r1(uint8_t cmd, uint32_t arg)
+{
     uint8_t ret;
+
     spi_select(MMCSPI);
-    if (cmd != MMC_CMDGOIDLE) {
+    if (cmd != MMC_CMDGOIDLE)
         mmc_ll_wait_idle();
-    }
     mmc_ll_send_header(cmd, arg);
     ret = mmc_ll_receive_r1();
     spi_deselect(MMCSPI);
@@ -89,8 +92,10 @@ mmc_cmd_r1(uint8_t cmd, uint32_t arg) {
 
 
 static uint8_t
-mmc_cmd_r3(uint8_t cmd, uint32_t arg, uint8_t *buf) {
+mmc_cmd_r3(uint8_t cmd, uint32_t arg, uint8_t *buf)
+{
     uint8_t ret;
+
     spi_select(MMCSPI);
     mmc_ll_wait_idle();
     mmc_ll_send_header(cmd, arg);
@@ -102,14 +107,16 @@ mmc_cmd_r3(uint8_t cmd, uint32_t arg, uint8_t *buf) {
 
 
 void
-mmc_start(void) {
+mmc_start(void)
+{
     mmc_state = MMC_UNLOADED;
     mmc_block_mode = 0;
 }
 
 
 int16_t
-mmc_connect(void) {
+mmc_connect(void)
+{
     TickType_t start;
     uint8_t n, buf[4];
 
@@ -122,9 +129,8 @@ mmc_connect(void) {
     /* Select SPI mode */
     start = xTaskGetTickCount();
     while (1) {
-        if (mmc_cmd_r1(MMC_CMDGOIDLE, 0) == 0x01) {
+        if (mmc_cmd_r1(MMC_CMDGOIDLE, 0) == 0x01)
             break;
-        }
         if (xTaskGetTickCount() - start > MMC_RESET_DEADLINE) {
             mmc_state = MMC_UNLOADED;
             return EERR_TIMEOUT;
@@ -138,9 +144,8 @@ mmc_connect(void) {
         start = xTaskGetTickCount();
         while (1) {
             if ((mmc_cmd_r1(MMC_CMDAPP, 0) == 0x01)
-                    && (mmc_cmd_r3(MMC_ACMDOPCONDITION, 0x400001aa, buf) == 0x00)) {
+                && (mmc_cmd_r3(MMC_ACMDOPCONDITION, 0x400001aa, buf) == 0x00))
                 break;
-            }
             if (xTaskGetTickCount() - start > MMC_INIT_DEADLINE) {
                 mmc_state = MMC_UNLOADED;
                 return EERR_TIMEOUT;
@@ -149,9 +154,8 @@ mmc_connect(void) {
         }
         /* Check for block mode */
         mmc_cmd_r3(MMC_CMDREADOCR, 0, buf);
-        if (buf[0] & 0x40) {
+        if (buf[0] & 0x40)
             mmc_block_mode = 1;
-        }
     } else {
         /* MMC or SDv1 */
         start = xTaskGetTickCount();
@@ -187,12 +191,12 @@ mmc_connect(void) {
 
 
 int16_t
-mmc_disconnect(void) {
-    if (mmc_state == MMC_UNLOADED) {
+mmc_disconnect(void)
+{
+    if (mmc_state == MMC_UNLOADED)
         return EERR_OK;
-    } else if (mmc_state != MMC_READY) {
+    else if (mmc_state != MMC_READY)
         return EERR_INVALID;
-    }
     mmc_sync();
     mmc_state = MMC_UNLOADED;
     /* Clear the bus */
@@ -202,7 +206,8 @@ mmc_disconnect(void) {
 
 
 void
-mmc_sync(void) {
+mmc_sync(void)
+{
     spi_select(MMCSPI);
     mmc_ll_wait_idle();
     spi_deselect(MMCSPI);
@@ -210,19 +215,18 @@ mmc_sync(void) {
 
 
 int16_t
-mmc_start_read(uint32_t lba) {
-    if (mmc_state != MMC_READY) {
+mmc_start_read(uint32_t lba)
+{
+    if (mmc_state != MMC_READY)
         return EERR_INVALID;
-    }
     mmc_state = MMC_READING;
 
     spi_select(MMCSPI);
     mmc_ll_wait_idle();
-    if (mmc_block_mode != 0) {
+    if (mmc_block_mode != 0)
         mmc_ll_send_header(MMC_CMDREADMULTIPLE, lba);
-    } else {
+    else
         mmc_ll_send_header(MMC_CMDREADMULTIPLE, lba * 512);
-    }
     uint8_t rc = mmc_ll_receive_r1();
     if (rc != 0x00) {
         spi_deselect(MMCSPI);
@@ -234,12 +238,13 @@ mmc_start_read(uint32_t lba) {
 
 
 int16_t
-mmc_read_sector(uint8_t *out) {
+mmc_read_sector(uint8_t *out)
+{
     uint8_t r;
     TickType_t start;
-    if (mmc_state != MMC_READING) {
+
+    if (mmc_state != MMC_READING)
         return EERR_INVALID;
-    }
     start = xTaskGetTickCount();
     while (1) {
         spi_exchange(MMCSPI, NULL, &r, 1);
@@ -249,25 +254,24 @@ mmc_read_sector(uint8_t *out) {
             /* TODO: check CRC */
             return EERR_OK;
         }
-        if (xTaskGetTickCount() - start > MMC_DATA_DEADLINE) {
+        if (xTaskGetTickCount() - start > MMC_DATA_DEADLINE)
             break;
-        }
     }
 
     spi_deselect(MMCSPI);
-    if (mmc_state == MMC_READING) {
+    if (mmc_state == MMC_READING)
         mmc_state = MMC_READY;
-    }
     return EERR_TIMEOUT;
 }
 
 
 int16_t
-mmc_stop_read(void) {
-    static const uint8_t stop_cmd[] = {0x40 | MMC_CMDSTOP, 0, 0, 0, 0, 1, 0xFF};
-    if (mmc_state != MMC_READING) {
+mmc_stop_read(void)
+{
+    static const uint8_t stop_cmd[] = { 0x40 | MMC_CMDSTOP, 0, 0, 0, 0, 1, 0xFF };
+
+    if (mmc_state != MMC_READING)
         return EERR_INVALID;
-    }
     spi_exchange(MMCSPI, stop_cmd, NULL, sizeof(stop_cmd));
     mmc_ll_receive_r1();
     spi_deselect(MMCSPI);

@@ -7,11 +7,12 @@
  */
 
 #include <config.h>
-#include "stm32/iwdg.h"
+#include "iwdg.h"
 
 
 void
-iwdg_start(uint8_t prescaler, uint16_t reload) {
+iwdg_start(uint8_t prescaler, uint16_t reload)
+{
     /* Stop IWDG when halted */
     DBGMCU->CR |= DBGMCU_CR_DBG_IWDG_STOP;
 

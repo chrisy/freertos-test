@@ -41,21 +41,23 @@ static void usart_tcie(void *param, uint32_t flags);
 void
 serial_start(serial_t *serial, int speed
 #if configUSE_QUEUE_SETS
-        , QueueSetHandle_t queue_set
+             , QueueSetHandle_t queue_set
 #endif
-        ) {
+             )
+{
     IRQn_Type irqn = 0;
+
     ASSERT((serial->rx_q = xQueueCreate(SERIAL_RX_SIZE, 1)));
     ASSERT((serial->mutex = xSemaphoreCreateMutex()));
 #if configUSE_QUEUE_SETS
-    if (queue_set) {
+    if (queue_set)
         /* Must be added to set while it's still empty */
         xQueueAddToSet(serial->rx_q, queue_set);
-    }
+
 #endif
     serial->speed = speed;
     serial->tx_dma = NULL;
-#ifdef USE_SERIAL_USART1
+#if USE_SERIAL_USART1
     if (serial == &Serial1) {
         RCC->APB2ENR |= RCC_APB2ENR_USART1EN;
         irqn = USART1_IRQn;
@@ -63,20 +65,20 @@ serial_start(serial_t *serial, int speed
         serial->tx_dma = &dma_streams[3];
     } else
 #endif
-#ifdef USE_SERIAL_USART2
+#if USE_SERIAL_USART2
     if (serial == &Serial2) {
         RCC->APB1ENR |= RCC_APB1ENR_USART2EN;
         irqn = USART2_IRQn;
         serial->usart = USART2;
-        //serial->tx_dma = &dma_streams[3];
+        serial->tx_dma = &dma_streams[6];
     } else
 #endif
-#ifdef USE_SERIAL_USART3
+#if USE_SERIAL_USART3
     if (serial == &Serial3) {
         RCC->APB1ENR |= RCC_APB1ENR_USART3EN;
         irqn = USART3_IRQn;
         serial->usart = USART3;
-        //serial->tx_dma = &dma_streams[3];
+        serial->tx_dma = &dma_streams[1];
     } else
 #endif
 #if USE_SERIAL_UART4
@@ -112,38 +114,40 @@ serial_start(serial_t *serial, int speed
         serial->tcie_sem = NULL;
     }
     serial->usart->CR1 = 0
-        | USART_CR1_UE
-        | USART_CR1_TE
-        | USART_CR1_RE
-        | USART_CR1_RXNEIE
-        ;
+                         | USART_CR1_UE
+                         | USART_CR1_TE
+                         | USART_CR1_RE
+                         | USART_CR1_RXNEIE
+    ;
 }
 
 
 void
-serial_set_speed(serial_t *serial) {
+serial_set_speed(serial_t *serial)
+{
     USART_TypeDef *u = serial->usart;
-    if (u == USART1) {
+
+    if (u == USART1)
         /* FIXME: assuming PCLK2=HCLK */
         u->BRR = SystemCoreClock / serial->speed;
-    } else {
+    else
         /* FIXME: assuming PCLK1=HCLK/2 */
         u->BRR = SystemCoreClock / 2 / serial->speed;
-    }
 }
 
 
 static void
-_serial_write(serial_t *serial, const char *value, uint16_t size) {
+_serial_write(serial_t *serial, const char *value, uint16_t size)
+{
     serial->usart->SR = ~USART_SR_TC;
     if (serial->tx_dma) {
         dma_disable(serial->tx_dma);
         serial->tx_dma->ch->CCR = 0
-            | DMA_CCR1_DIR
-            | DMA_CCR1_MINC
-            | DMA_CCR1_TEIE
-            | DMA_CCR1_TCIE
-            ;
+                                  | DMA_CCR1_DIR
+                                  | DMA_CCR1_MINC
+                                  | DMA_CCR1_TEIE
+                                  | DMA_CCR1_TCIE
+        ;
         serial->tx_dma->ch->CMAR = (uint32_t)value;
         serial->tx_dma->ch->CNDTR = size;
         dma_enable(serial->tx_dma);
@@ -159,7 +163,8 @@ _serial_write(serial_t *serial, const char *value, uint16_t size) {
 
 
 void
-serial_puts(serial_t *serial, const char *value) {
+serial_puts(serial_t *serial, const char *value)
+{
     xSemaphoreTake(serial->mutex, portMAX_DELAY);
     _serial_write(serial, value, strlen(value));
     xSemaphoreGive(serial->mutex);
@@ -167,7 +172,8 @@ serial_puts(serial_t *serial, const char *value) {
 
 
 void
-serial_write(serial_t *serial, const char *value, uint16_t size) {
+serial_write(serial_t *serial, const char *value, uint16_t size)
+{
     xSemaphoreTake(serial->mutex, portMAX_DELAY);
     _serial_write(serial, value, size);
     xSemaphoreGive(serial->mutex);
@@ -175,10 +181,12 @@ serial_write(serial_t *serial, const char *value, uint16_t size) {
 
 
 void
-serial_printf(serial_t *serial, const char *fmt, ...) {
+serial_printf(serial_t *serial, const char *fmt, ...)
+{
     unsigned len;
     static char fmt_buf[64];
     va_list ap;
+
     va_start(ap, fmt);
     xSemaphoreTake(serial->mutex, portMAX_DELAY);
     len = vsnprintf(fmt_buf, sizeof(fmt_buf), fmt, ap);
@@ -189,42 +197,45 @@ serial_printf(serial_t *serial, const char *fmt, ...) {
 
 
 void
-serial_drain(serial_t *serial) {
+serial_drain(serial_t *serial)
+{
     xSemaphoreTake(serial->mutex, portMAX_DELAY);
-    while (!(serial->usart->SR & USART_SR_TC)) {}
+    while (!(serial->usart->SR & USART_SR_TC)) {
+    }
     xSemaphoreGive(serial->mutex);
 }
 
 
 int16_t
-serial_get(serial_t *serial, TickType_t timeout) {
+serial_get(serial_t *serial, TickType_t timeout)
+{
     uint8_t val;
-    if (xQueueReceive(serial->rx_q, &val, timeout)) {
+
+    if (xQueueReceive(serial->rx_q, &val, timeout))
         return val;
-    } else {
+    else
         return ETIMEDOUT;
-    }
 }
 
 
-static void
-usart_irq(serial_t *serial) {
+static inline void
+usart_irq(serial_t *serial)
+{
     USART_TypeDef *u = serial->usart;
     uint16_t sr, dr;
     uint8_t val;
     BaseType_t wakeup = 0;
+
     sr = u->SR;
     dr = u->DR;
 
-    if ((sr & USART_SR_RXNE) && serial->rx_q) {
+    if ((sr & USART_SR_RXNE) && serial->rx_q)
         xQueueSendFromISR(serial->rx_q, &dr, &wakeup);
-    }
     if (sr & USART_SR_TXE) {
-        if (serial->tx_q && xQueueReceiveFromISR(serial->tx_q, &val, &wakeup)) {
+        if (serial->tx_q && xQueueReceiveFromISR(serial->tx_q, &val, &wakeup))
             u->DR = val;
-        } else {
+        else
             u->CR1 &= ~USART_CR1_TXEIE;
-        }
     }
 
     portEND_SWITCHING_ISR(wakeup);
@@ -232,9 +243,11 @@ usart_irq(serial_t *serial) {
 
 
 static void
-usart_tcie(void *param, uint32_t flags) {
-    serial_t *serial = (serial_t*)param;
+usart_tcie(void *param, uint32_t flags)
+{
+    serial_t *serial = (serial_t *)param;
     BaseType_t wakeup = 0;
+
     dma_disable(serial->tx_dma);
     xSemaphoreGiveFromISR(serial->tcie_sem, &wakeup);
     portEND_SWITCHING_ISR(wakeup);
@@ -243,35 +256,40 @@ usart_tcie(void *param, uint32_t flags) {
 
 #if USE_SERIAL_USART1
 void
-USART1_IRQHandler(void) {
+USART1_IRQHandler(void)
+{
     usart_irq(&Serial1);
 }
 #endif
 
 #if USE_SERIAL_USART2
 void
-USART2_IRQHandler(void) {
+USART2_IRQHandler(void)
+{
     usart_irq(&Serial2);
 }
 #endif
 
 #if USE_SERIAL_USART3
 void
-USART3_IRQHandler(void) {
+USART3_IRQHandler(void)
+{
     usart_irq(&Serial3);
 }
 #endif
 
 #if USE_SERIAL_UART4
 void
-UART4_IRQHandler(void) {
+UART4_IRQHandler(void)
+{
     usart_irq(&Serial4);
 }
 #endif
 
 #if USE_SERIAL_UART5
 void
-UART5_IRQHandler(void) {
+UART5_IRQHandler(void)
+{
     usart_irq(&Serial5);
 }
 #endif

@@ -12,24 +12,27 @@
 #include <config.h>
 #include "semphr.h"
 
-#include "stm32/dma.h"
+#include "dma.h"
 
 
 typedef struct {
-    SPI_TypeDef     *spi;
-    const dma_ch_t  *tx_dma;
-    const dma_ch_t  *rx_dma;
-    uint32_t        tx_dma_mode;
-    uint32_t        rx_dma_mode;
+    SPI_TypeDef         *spi;
+    const dma_ch_t      *tx_dma;
+    const dma_ch_t      *rx_dma;
+    uint32_t            tx_dma_mode;
+    uint32_t            rx_dma_mode;
 
-    GPIO_TypeDef    *cs_pad;
-    uint8_t         cs_pin;
+    GPIO_TypeDef        *cs_pad;
+    uint8_t             cs_pin;
 
-    SemaphoreHandle_t sem;
+    SemaphoreHandle_t   sem;
 } spi_t;
 
 #if USE_SPI1
 extern spi_t SPI1_Dev;
+#endif
+#if USE_SPI2
+extern spi_t SPI2_Dev;
 #endif
 #if USE_SPI3
 extern spi_t SPI3_Dev;

@@ -14,14 +14,14 @@
 
 
 typedef struct {
-    I2C_TypeDef *dev;
-    SemaphoreHandle_t mutex;
-    SemaphoreHandle_t sem;
-    uint8_t *buf;
-    uint8_t addr_dir;
-    uint8_t count;
-    uint8_t index;
-    uint8_t error;
+    I2C_TypeDef         *dev;
+    SemaphoreHandle_t   mutex;
+    SemaphoreHandle_t   sem;
+    uint8_t             *buf;
+    uint8_t             addr_dir;
+    uint8_t             count;
+    uint8_t             index;
+    uint8_t             error;
 } i2c_t;
 
 #define I2C_T_INITIALIZER \
@@ -38,5 +38,15 @@ extern i2c_t I2C2_Dev;
 void i2c_start(i2c_t *i2c);
 void i2c_stop(i2c_t *i2c);
 int16_t i2c_transact(i2c_t *i2c, uint8_t addr_dir, uint8_t *buf, size_t count);
+
+#if USE_I2C1
+void I2C1_EV_IRQHandler(void);
+void I2C1_ER_IRQHandler(void);
+#endif
+
+#if USE_I2C2
+void I2C2_EV_IRQHandler(void);
+void I2C2_ER_IRQHandler(void);
+#endif
 
 #endif

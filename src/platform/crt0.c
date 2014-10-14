@@ -15,6 +15,8 @@
 
 #include <dma.h>
 #include <serial.h>
+#include <i2c.h>
+#include <spi.h>
 
 // Our handlers
 void _crt0_init(void) __attribute__ ((noreturn));
@@ -56,10 +58,15 @@ struct nvic _nvic_vector __attribute__ ((section(".nvic_vector"))) = {
     .DMA1_Channel6_IRQHandler   = DMA1_Channel6_IRQHandler,
     .DMA1_Channel7_IRQHandler   = DMA1_Channel7_IRQHandler,
 
-    .DMA2_Channel1_IRQHandler   = DMA1_Channel1_IRQHandler,
-    .DMA2_Channel2_IRQHandler   = DMA1_Channel1_IRQHandler,
-    .DMA2_Channel3_IRQHandler   = DMA1_Channel1_IRQHandler,
-    .DMA2_Channel4_5_IRQHandler = DMA1_Channel1_IRQHandler,
+    .DMA2_Channel1_IRQHandler   = DMA2_Channel1_IRQHandler,
+    .DMA2_Channel2_IRQHandler   = DMA2_Channel2_IRQHandler,
+    .DMA2_Channel3_IRQHandler   = DMA2_Channel3_IRQHandler,
+#ifdef STM32F10X_CL
+    .DMA2_Channel4_IRQHandler   = DMA2_Channel4_IRQHandler,
+    .DMA2_Channel5_IRQHandler   = DMA2_Channel5_IRQHandler,
+#else
+    .DMA2_Channel4_5_IRQHandler = DMA2_Channel4_5_IRQHandler,
+#endif
 
     // STM32 Serial peripheral handlers
 #if USE_SERIAL_USART1
@@ -70,6 +77,16 @@ struct nvic _nvic_vector __attribute__ ((section(".nvic_vector"))) = {
 #endif
 #if USE_SERIAL_USART3
     .USART3_IRQHandler          = USART3_IRQHandler,
+#endif
+
+    // STM32 I2C handlers
+#if USE_I2C1
+    .I2C1_EV_IRQHandler         = I2C1_EV_IRQHandler,
+    .I2C1_ER_IRQHandler         = I2C1_ER_IRQHandler,
+#endif
+#if USE_I2C2
+    .I2C2_EV_IRQHandler         = I2C2_EV_IRQHandler,
+    .I2C2_ER_IRQHandler         = I2C2_ER_IRQHandler,
 #endif
 };
 

@@ -17,7 +17,8 @@ void iwdg_start(uint8_t prescaler, uint16_t reload);
 
 
 static inline void
-iwdg_clear(void) {
+iwdg_clear(void)
+{
     IWDG->KR = IWDG_KEY_CLEAR;
 }
 

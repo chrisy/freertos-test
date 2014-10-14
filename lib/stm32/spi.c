@@ -13,6 +13,9 @@
 #if USE_SPI1
 spi_t SPI1_Dev;
 #endif
+#if USE_SPI2
+spi_t SPI2_Dev;
+#endif
 #if USE_SPI3
 spi_t SPI3_Dev;
 #endif
@@ -21,7 +24,8 @@ static void rx_isr(void *param, uint32_t flags);
 
 
 void
-spi_start(spi_t *spi, uint32_t cr1) {
+spi_start(spi_t *spi, uint32_t cr1)
+{
     ASSERT(spi->cs_pad != NULL);
     ASSERT((spi->sem = xSemaphoreCreateBinary()));
 #if USE_SPI1
@@ -29,6 +33,13 @@ spi_start(spi_t *spi, uint32_t cr1) {
         spi->spi = SPI1;
         spi->tx_dma = &dma_streams[2];
         spi->rx_dma = &dma_streams[1];
+    } else
+#endif
+#if USE_SPI2
+    if (spi == &SPI2_Dev) {
+        spi->spi = SPI2;
+        spi->tx_dma = &dma_streams[4];
+        spi->rx_dma = &dma_streams[3];
     } else
 #endif
 #if USE_SPI3
@@ -54,15 +65,15 @@ spi_start(spi_t *spi, uint32_t cr1) {
     }
     spi->spi->CR1 = 0;
     spi->spi->CR1 = cr1
-        | SPI_CR1_MSTR
-        | SPI_CR1_SSM
-        | SPI_CR1_SSI
-        ;
+                    | SPI_CR1_MSTR
+                    | SPI_CR1_SSM
+                    | SPI_CR1_SSI
+    ;
     spi->spi->CR2 = 0
-        | SPI_CR2_RXDMAEN
-        | SPI_CR2_TXDMAEN
-        | SPI_CR2_SSOE
-        ;
+                    | SPI_CR2_RXDMAEN
+                    | SPI_CR2_TXDMAEN
+                    | SPI_CR2_SSOE
+    ;
     spi->spi->CR1 |= SPI_CR1_SPE;
 }
 
@@ -70,7 +81,8 @@ static uint32_t tx_dummy;
 static uint32_t rx_dummy;
 
 void
-spi_exchange(spi_t *spi, const uint8_t *tx_buf, uint8_t *rx_buf, uint16_t size) {
+spi_exchange(spi_t *spi, const uint8_t *tx_buf, uint8_t *rx_buf, uint16_t size)
+{
     DISABLE_IRQ();
     dma_disable(spi->tx_dma);
     dma_disable(spi->rx_dma);
@@ -101,9 +113,11 @@ spi_exchange(spi_t *spi, const uint8_t *tx_buf, uint8_t *rx_buf, uint16_t size) 
 
 
 static void
-rx_isr(void *param, uint32_t flags) {
+rx_isr(void *param, uint32_t flags)
+{
     BaseType_t wakeup = 0;
-    spi_t *spi = (spi_t*)param;
+    spi_t *spi = (spi_t *)param;
+
     dma_disable(spi->tx_dma);
     dma_disable(spi->rx_dma);
     xSemaphoreGiveFromISR(spi->sem, &wakeup);

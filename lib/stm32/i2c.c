@@ -14,32 +14,32 @@
 static void i2c_configure(i2c_t *i2c);
 
 #if USE_I2C1
-i2c_t I2C1_Dev = {I2C1, I2C_T_INITIALIZER};
+i2c_t I2C1_Dev = { I2C1, I2C_T_INITIALIZER };
 #endif
 #if USE_I2C2
-i2c_t I2C2_Dev = {I2C2, I2C_T_INITIALIZER};
+i2c_t I2C2_Dev = { I2C2, I2C_T_INITIALIZER };
 #endif
 
-#define FENCE() asm volatile("dmb" ::: "memory")
+#define FENCE() asm volatile ("dmb" ::: "memory")
 
 
 #if USE_I2C1 || USE_I2C2
 static void
-handle_i2c_event(i2c_t *i2c) {
+handle_i2c_event(i2c_t *i2c)
+{
     I2C_TypeDef *d = i2c->dev;
     BaseType_t wakeup = 0;
     uint16_t sr1 = d->SR1;
     uint16_t timeout;
+
     if (sr1 & I2C_SR1_SB) {
         /* Start bit is sent, now send address */
         d->CR1 |= I2C_CR1_ACK;
         i2c->index = 0;
-        if ((i2c->addr_dir & 1) && i2c->count == 2) {
+        if ((i2c->addr_dir & 1) && i2c->count == 2)
             /* Give advance notice of NACK after a 2-byte read */
             d->CR1 |= I2C_CR1_POS;
-        }
         d->DR = i2c->addr_dir;
-
     } else if (sr1 & I2C_SR1_ADDR) {
         /* Address is sent, now send data */
         FENCE();
@@ -65,7 +65,6 @@ handle_i2c_event(i2c_t *i2c) {
                 d->CR2 |= I2C_CR2_ITBUFEN;
             }
         }
-
     } else if (sr1 & I2C_SR1_BTF) {
         /* Byte transfer finished */
         if (i2c->addr_dir & 1) {
@@ -88,22 +87,19 @@ handle_i2c_event(i2c_t *i2c) {
             d->CR1 |= I2C_CR1_STOP;
             i2c->index++; /* done */
         }
-
     } else if (sr1 & I2C_SR1_RXNE) {
         i2c->buf[i2c->index++] = d->DR;
-        if (i2c->index + 3 == i2c->count) {
+        if (i2c->index + 3 == i2c->count)
             /* Disable TXE to allow the buffer to flush */ d->CR2 &= ~I2C_CR2_ITBUFEN;
-        } else if (i2c->index == i2c->count) {
+        else if (i2c->index == i2c->count)
             i2c->index++; /* done */
-        }
 
     } else if (sr1 & I2C_SR1_TXE) {
         /* Byte transmitted */
         d->DR = i2c->buf[i2c->index++];
-        if (i2c->index == i2c->count) {
+        if (i2c->index == i2c->count)
             /* Disable TXE to allow the buffer to flush */
             d->CR2 &= ~I2C_CR2_ITBUFEN;
-        }
     }
 
     if (i2c->index == i2c->count + 1) {
@@ -111,11 +107,9 @@ handle_i2c_event(i2c_t *i2c) {
         d->CR1 &= ~I2C_CR1_POS;
         d->CR2 &= ~(I2C_CR2_ITEVTEN | I2C_CR2_ITERREN | I2C_CR2_ITBUFEN);
         timeout = 15000;
-        while (d->CR1 & (I2C_CR1_START | I2C_CR1_STOP)) {
-            if (--timeout == 0) {
+        while (d->CR1 & (I2C_CR1_START | I2C_CR1_STOP))
+            if (--timeout == 0)
                 i2c->error = ETIMEDOUT;
-            }
-        }
         /* Wake up userspace */
         xSemaphoreGiveFromISR(i2c->sem, &wakeup);
     }
@@ -125,10 +119,12 @@ handle_i2c_event(i2c_t *i2c) {
 
 
 static void
-handle_i2c_error(i2c_t *i2c) {
+handle_i2c_error(i2c_t *i2c)
+{
     I2C_TypeDef *d = i2c->dev;
     BaseType_t wakeup = 0;
     uint16_t sr1 = d->SR1;
+
     (void)d->SR2;
     if (sr1 & I2C_SR1_OVR) {
         i2c->error = EFAULT;
@@ -136,17 +132,18 @@ handle_i2c_error(i2c_t *i2c) {
         i2c->error = EAGAIN;
         d->CR2 &= ~(I2C_CR2_ITEVTEN | I2C_CR2_ITERREN | I2C_CR2_ITBUFEN);
     } else if (sr1 & (I2C_SR1_AF | I2C_SR1_BERR)) {
-        if (sr1 & I2C_SR1_AF) {
+        if (sr1 & I2C_SR1_AF)
             i2c->error = EBUSY;
-        } else {
+        else
             i2c->error = EFAULT;
-        }
         d->CR2 &= ~(I2C_CR2_ITEVTEN | I2C_CR2_ITERREN | I2C_CR2_ITBUFEN);
         if (d->CR1 & I2C_CR1_START) {
             /* START+STOP hangs the peripheral, so reset afterwards */
-            while (d->CR1 & I2C_CR1_START) {}
+            while (d->CR1 & I2C_CR1_START) {
+            }
             d->CR1 |= I2C_CR1_STOP;
-            while (d->CR1 & I2C_CR1_STOP) {}
+            while (d->CR1 & I2C_CR1_STOP) {
+            }
             i2c_configure(i2c);
         } else {
             d->CR1 |= I2C_CR1_STOP;
@@ -165,13 +162,15 @@ handle_i2c_error(i2c_t *i2c) {
 
 #if USE_I2C1
 void
-I2C1_EV_IRQHandler(void) {
+I2C1_EV_IRQHandler(void)
+{
     handle_i2c_event(&I2C1_Dev);
 }
 
 
 void
-I2C1_ER_IRQHandler(void) {
+I2C1_ER_IRQHandler(void)
+{
     handle_i2c_error(&I2C1_Dev);
 }
 #endif
@@ -179,34 +178,37 @@ I2C1_ER_IRQHandler(void) {
 
 #if USE_I2C2
 void
-I2C2_EV_IRQHandler(void) {
+I2C2_EV_IRQHandler(void)
+{
     handle_i2c_event(&I2C2_Dev);
 }
 
 
 void
-I2C2_ER_IRQHandler(void) {
+I2C2_ER_IRQHandler(void)
+{
     handle_i2c_error(&I2C2_Dev);
 }
 #endif
 
 
 void
-i2c_start(i2c_t *i2c) {
-    if (!i2c->mutex) {
+i2c_start(i2c_t *i2c)
+{
+    if (!i2c->mutex)
         ASSERT((i2c->mutex = xSemaphoreCreateMutex()));
-    }
-    if (!i2c->sem) {
+    if (!i2c->sem)
         ASSERT((i2c->sem = xSemaphoreCreateBinary()));
-    }
     xSemaphoreTake(i2c->mutex, portMAX_DELAY);
     i2c_configure(i2c);
 }
 
 
 static void
-i2c_configure(i2c_t *i2c) {
+i2c_configure(i2c_t *i2c)
+{
     I2C_TypeDef *d = i2c->dev;
+
 #if USE_I2C1
     if (i2c == &I2C1_Dev) {
         RCC->APB1ENR |= RCC_APB1ENR_I2C1EN;
@@ -235,15 +237,16 @@ i2c_configure(i2c_t *i2c) {
     d->CR1 = I2C_CR1_SWRST;
     d->CR1 = 0;
     /* FIXME: assuming APB1 = sysclk / 2 */
-    d->CR2 = (uint16_t)(SystemCoreClock/2 / 1e6);
-    d->CCR = (uint16_t)((SystemCoreClock/2) / 2 / 10e3);
-    d->TRISE = (uint16_t)(1e-6 / (SystemCoreClock/2) + 1);
+    d->CR2 = (uint16_t)(SystemCoreClock / 2 / 1e6);
+    d->CCR = (uint16_t)((SystemCoreClock / 2) / 2 / 10e3);
+    d->TRISE = (uint16_t)(1e-6 / (SystemCoreClock / 2) + 1);
     d->CR1 = I2C_CR1_PE;
 }
 
 
 void
-i2c_stop(i2c_t *i2c) {
+i2c_stop(i2c_t *i2c)
+{
     i2c->dev->CR1 = 0;
     xSemaphoreGive(i2c->mutex);
 }
@@ -251,7 +254,8 @@ i2c_stop(i2c_t *i2c) {
 
 int16_t
 i2c_transact(i2c_t *i2c, uint8_t addr_dir,
-        uint8_t *buf, size_t count) {
+             uint8_t *buf, size_t count)
+{
     i2c->addr_dir = addr_dir;
     i2c->buf = buf;
     i2c->count = count;

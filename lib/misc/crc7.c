@@ -59,4 +59,3 @@ crc7_t crc7_update(crc7_t crc, const unsigned char *data, size_t data_len)
     }
     return crc & (0x7f << 1);
 }
-

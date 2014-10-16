@@ -28,20 +28,20 @@ int link(const char *old, const char *new)
 {
     // strip out device name from path
     char *device = NULL, *path = NULL;
-    if(posixio_split_path_malloc(old, &device, &path) == -1) {
+
+    if (posixio_split_path_malloc(old, &device, &path) == -1)
         return -1;
-    }
 
     // validate device name
     struct iodev *dev = posixio_getdev(device);
-    if(dev == NULL) {
+    if (dev == NULL) {
         free(device);
         free(path);
         errno = ENODEV;
         return -1;
     }
 
-    if(dev->link != NULL) {
+    if (dev->link != NULL) {
         int ret = dev->link(path, new);
         free(device);
         free(path);
@@ -56,13 +56,13 @@ int open(const char *name, int flags, ...)
 {
     // strip out device name from path
     char *device = NULL, *path = NULL;
-    if(posixio_split_path_malloc(name, &device, &path) == -1) {
+
+    if (posixio_split_path_malloc(name, &device, &path) == -1)
         return -1;
-    }
 
     // validate device name
     struct iodev *dev = posixio_getdev(device);
-    if(dev == NULL) {
+    if (dev == NULL) {
         free(device);
         free(path);
         errno = ENODEV;
@@ -71,7 +71,7 @@ int open(const char *name, int flags, ...)
 
     // get an fd
     int fd = posixio_newfd();
-    if(fd == -1) {
+    if (fd == -1) {
         free(device);
         free(path);
         return -1;
@@ -79,7 +79,7 @@ int open(const char *name, int flags, ...)
 
     // allocate a file structure - store it with fd.
     struct iofile *file = malloc(sizeof(struct iofile));
-    if(file == NULL) {
+    if (file == NULL) {
         free(device);
         free(path);
         errno = ENOMEM;
@@ -93,12 +93,12 @@ int open(const char *name, int flags, ...)
     file->fh = NULL;
 
     // if the device has an open handler, use it
-    if(dev->open != NULL) {
+    if (dev->open != NULL) {
         va_list ap;
         va_start(ap, flags);
         file->fh = dev->open(path, flags, ap);
         va_end(ap);
-        if(file->fh == NULL) {
+        if (file->fh == NULL) {
             free(device);
             free(path);
             free(file);
@@ -118,20 +118,20 @@ int stat(const char *file, struct stat *st)
 {
     // strip out device name from path
     char *device = NULL, *path = NULL;
-    if(posixio_split_path_malloc(file, &device, &path) == -1) {
+
+    if (posixio_split_path_malloc(file, &device, &path) == -1)
         return -1;
-    }
 
     // validate device name
     struct iodev *dev = posixio_getdev(device);
-    if(dev == NULL) {
+    if (dev == NULL) {
         free(device);
         free(path);
         errno = ENODEV;
         return -1;
     }
 
-    if(dev->stat != NULL) {
+    if (dev->stat != NULL) {
         int ret = dev->stat(path, st);
         free(device);
         free(path);
@@ -146,20 +146,20 @@ int unlink(const char *name)
 {
     // strip out device name from path
     char *device = NULL, *path = NULL;
-    if(posixio_split_path_malloc(name, &device, &path) == -1) {
+
+    if (posixio_split_path_malloc(name, &device, &path) == -1)
         return -1;
-    }
 
     // validate device name
     struct iodev *dev = posixio_getdev(device);
-    if(dev == NULL) {
+    if (dev == NULL) {
         free(device);
         free(path);
         errno = ENODEV;
         return -1;
     }
 
-    if(dev->unlink != NULL) {
+    if (dev->unlink != NULL) {
         int ret = dev->unlink(path);
         free(device);
         free(path);

@@ -27,13 +27,14 @@ extern int errno;
 int close(int fd)
 {
     struct iofile *file = posixio_file_fromfd(fd);
-    if(file == NULL) {
+
+    if (file == NULL) {
         errno = ENOENT;
         return -1;
     }
 
     // Look for a handler
-    if(file->dev->close != NULL)
+    if (file->dev->close != NULL)
         file->dev->close(file->fh);
 
     return posixio_setfd(fd, NULL);
@@ -42,7 +43,8 @@ int close(int fd)
 int isatty(int fd)
 {
     struct iofile *file = posixio_file_fromfd(fd);
-    if(file == NULL) {
+
+    if (file == NULL) {
         errno = ENOENT;
         return -1;
     }
@@ -52,13 +54,14 @@ int isatty(int fd)
 off_t lseek(int fd, off_t ptr, int dir)
 {
     struct iofile *file = posixio_file_fromfd(fd);
-    if(file == NULL) {
+
+    if (file == NULL) {
         errno = ENOENT;
         return -1;
     }
 
     // Look for a handler
-    if(file->dev->lseek != NULL)
+    if (file->dev->lseek != NULL)
         return file->dev->lseek(file->fh, ptr, dir);
 
     errno = EINVAL;
@@ -68,13 +71,14 @@ off_t lseek(int fd, off_t ptr, int dir)
 ssize_t read(int fd, void *ptr, size_t len)
 {
     struct iofile *file = posixio_file_fromfd(fd);
-    if(file == NULL) {
+
+    if (file == NULL) {
         errno = ENOENT;
         return -1;
     }
 
     // Look for a handler
-    if(file->dev->read != NULL)
+    if (file->dev->read != NULL)
         return file->dev->read(file->fh, ptr, len);
 
     errno = EINVAL;
@@ -84,13 +88,14 @@ ssize_t read(int fd, void *ptr, size_t len)
 ssize_t write(int fd, const void *ptr, size_t len)
 {
     struct iofile *file = posixio_file_fromfd(fd);
-    if(file == NULL) {
+
+    if (file == NULL) {
         errno = ENOENT;
         return -1;
     }
 
     // Look for a handler
-    if(file->dev->write != NULL)
+    if (file->dev->write != NULL)
         return file->dev->write(file->fh, ptr, len);
 
     errno = EINVAL;

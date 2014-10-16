@@ -28,7 +28,7 @@ int posixio_start(void)
 {
     int i;
 
-    for(i=0; i<POSIXIO_MAX_OPEN_FILES; i++)
+    for (i = 0; i < POSIXIO_MAX_OPEN_FILES; i++)
         files[i] = NULL;
 
     if (!posixio_register_serial()) return 0;
@@ -37,7 +37,7 @@ int posixio_start(void)
 
 int posixio_register_dev(struct iodev *dev)
 {
-    if(dev_count == POSIXIO_MAX_DEVICES) {
+    if (dev_count == POSIXIO_MAX_DEVICES) {
         errno = ENOENT;
         return -1;
     }
@@ -52,10 +52,9 @@ int posixio_newfd(void)
 {
     int i;
 
-    for(i=0; i<POSIXIO_MAX_OPEN_FILES; i++) {
-        if(files[i] == NULL)
+    for (i = 0; i < POSIXIO_MAX_OPEN_FILES; i++)
+        if (files[i] == NULL)
             return i;
-    }
     errno = EMFILE;
     return -1;
 }
@@ -72,16 +71,15 @@ int posixio_setfd(int fd, struct iofile *file)
         return -1;
     }
 
-    if(file == NULL) {
+    if (file == NULL) {
         // Assume it was closed already
         files[fd] = NULL;
         return 0;
     }
 
-    if(files[fd] != NULL) {
+    if (files[fd] != NULL)
         // We need to close the file we're replacing
         close(fd);
-    }
 
     files[fd] = file;
 
@@ -89,61 +87,61 @@ int posixio_setfd(int fd, struct iofile *file)
 }
 
 int posixio_split_path(const char *path,
-    char *device, size_t device_len,
-    char *file, size_t file_len)
+                       char *device, size_t device_len,
+                       char *file, size_t file_len)
 {
-    if(path[0] != '/') {
+    if (path[0] != '/') {
         errno = EINVAL;
         return -1;
     }
 
     char *p;
-    p = strchr(path+1, '/');
-    if(p == NULL) {
+    p = strchr(path + 1, '/');
+    if (p == NULL) {
         errno = EINVAL;
         return -1;
     }
 
     size_t len;
-    len = p - (path+1);
-    if(len > (device_len-1))
+    len = p - (path + 1);
+    if (len > (device_len - 1))
         len = device_len - 1;
-    strncpy((char*)path+1, device, len);
-    device[len-1] = '\0';
+    strncpy((char *)path + 1, device, len);
+    device[len - 1] = '\0';
 
-    strncpy(p+1, file, file_len);
-    file[file_len-1] = '\0';
+    strncpy(p + 1, file, file_len);
+    file[file_len - 1] = '\0';
 
     return 0;
 }
 
 int posixio_split_path_malloc(const char *path,
-    char **device, char **file)
+                              char **device, char **file)
 {
-    if(path[0] != '/') {
+    if (path[0] != '/') {
         errno = EINVAL;
         return -1;
     }
 
     char *p;
-    p = strchr(path+1, '/');
-    if(p == NULL) {
+    p = strchr(path + 1, '/');
+    if (p == NULL) {
         errno = EINVAL;
         return -1;
     }
 
     size_t len;
-    len = p - (path+1);
-    *device = malloc(len+1);
-    if(*device == NULL) {
+    len = p - (path + 1);
+    *device = malloc(len + 1);
+    if (*device == NULL) {
         errno = ENOMEM;
         return -1;
     }
-    strncpy((char*)path+1, *device, len);
+    strncpy((char *)path + 1, *device, len);
     *device[len] = '\0';
 
-    *file = strdup(p+1);
-    if(*file == NULL) {
+    *file = strdup(p + 1);
+    if (*file == NULL) {
         free(*device);
         *device = NULL;
         errno = ENOMEM;
@@ -156,9 +154,9 @@ int posixio_split_path_malloc(const char *path,
 struct iodev *posixio_getdev(char *name)
 {
     int i;
-    for (i=0; i<dev_count; i++) {
-        if(!strcmp(name, devs[i]->name))
+
+    for (i = 0; i < dev_count; i++)
+        if (!strcmp(name, devs[i]->name))
             return devs[i];
-    }
     return NULL;
 }

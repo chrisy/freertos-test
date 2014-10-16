@@ -10,7 +10,7 @@
 #include <config.h>
 #include <FreeRTOS.h>
 #include <task.h>
-
+#include <posixio.h>
 #include <dma.h>
 #include <serial.h>
 #include <i2c.h>
@@ -36,6 +36,9 @@ int main(void)
 
 static void platform_init(void)
 {
+    // Bootstrap the POSIX IO platform
+    posixio_start();
+
     // Initialize USARTs
     qs_serial = xQueueCreateSet(16);
     ASSERT(qs_serial != NULL);

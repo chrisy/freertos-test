@@ -93,7 +93,6 @@ handle_i2c_event(i2c_t *i2c)
             /* Disable TXE to allow the buffer to flush */ d->CR2 &= ~I2C_CR2_ITBUFEN;
         else if (i2c->index == i2c->count)
             i2c->index++; /* done */
-
     } else if (sr1 & I2C_SR1_TXE) {
         /* Byte transmitted */
         d->DR = i2c->buf[i2c->index++];

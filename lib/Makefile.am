@@ -8,6 +8,7 @@ lib_LTLIBRARIES = \
 	librtos.la \
 	libstm32.la \
 	libplatform.la \
+	libposixio.la \
 	libmisc.la
 
 rtos_sources = \
@@ -33,6 +34,12 @@ platform_sources = \
 	platform/core_cm3.c \
 	platform/system_stm32f10x.c
 
+posixio_sources = \
+	posixio/posixio.c \
+	posixio/fdio.c \
+	posixio/fileio.c \
+	posixio/dev/serial.c
+
 misc_sources = \
 	misc/crc7.c
 
@@ -40,5 +47,6 @@ misc_sources = \
 librtos_la_SOURCES = $(rtos_sources)
 libstm32_la_SOURCES = $(stm32_sources)
 libplatform_la_SOURCES = $(platform_sources)
+libposixio_la_SOURCES = $(posixio_sources)
 libmisc_la_SOURCES = $(misc_sources)
 

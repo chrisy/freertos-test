@@ -17,10 +17,19 @@
 # define DEBUG 0
 #endif
 
+// Use the POSIX name for this
+#ifdef _READ_WRITE_RETURN_TYPE
+#undef _READ_WRITE_RETURN_TYPE
+#endif
+#define _READ_WRITE_RETURN_TYPE ssize_t
+
 #ifdef HAVE_CONFIG_H
 #include "ac_config.h"
 #endif
 
+#ifdef HAVE_SYS_TYPES_H
+#  include <sys/types.h>
+#endif
 #ifdef HAVE_STDLIB_H
 # include <stdlib.h>
 #endif

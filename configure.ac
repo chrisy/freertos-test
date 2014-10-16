@@ -1,5 +1,5 @@
 dnl Process this file with autoconf to produce a configure script.
-# vim:set softtabstop=4 shiftwidth=4 tabstop=4 expandtab: 
+# vim:set softtabstop=4 shiftwidth=4 tabstop=4 expandtab:
 
 flavor=
 if test ! -z "${ac_cv_host}"
@@ -93,6 +93,7 @@ fi
 CPPFLAGS="$CPPFLAGS -I${bdir}/include"
 CPPFLAGS="$CPPFLAGS -I${bdir}/lib/stm32"
 CPPFLAGS="$CPPFLAGS -I${bdir}/lib/platform"
+CPPFLAGS="$CPPFLAGS -I${bdir}/lib/posixio"
 CPPFLAGS="$CPPFLAGS -I${bdir}/lib/misc"
 CPPFLAGS="$CPPFLAGS -I${bdir}/lib/FreeRTOS/Source/include"
 CPPFLAGS="$CPPFLAGS -I${bdir}/lib/FreeRTOS/Source/portable/GCC/ARM_CM3"

@@ -1,5 +1,5 @@
 # root Makefile.am
-# vim:set softtabstop=8 shiftwidth=8 tabstop=8 noexpandtab: 
+# vim:set softtabstop=8 shiftwidth=8 tabstop=8 noexpandtab:
 
 ACLOCAL_AMFLAGS = -I aclocal
 
@@ -11,7 +11,7 @@ EXTRA_DIST = bootstrap do-configure-arm
 
 # Uncrustify the source
 uncrustify: uncrustify.cfg
-	@for dir in $(sources) lib/misc lib/stm32; do \
+	@for dir in $(sources) lib/misc lib/stm32 lib/posixio; do \
 		find "$(top_srcdir)/$$dir" -type f -name '*.[ch]' -print0 | \
 			xargs -0 uncrustify -c $(top_srcdir)/uncrustify.cfg --replace --no-backup; \
 	done

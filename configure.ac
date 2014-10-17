@@ -34,12 +34,21 @@ AC_ENABLE_STATIC
 AC_PROG_LIBTOOL
 AC_SUBST([LIBTOOL_DEPS])
 
+if test x"$ac_cv_prog_cc_c99" = xno; then
+        AC_MSG_ERROR([We need C99 and cannot figure out how to enable it])
+fi
+
 AC_CHECK_TOOL([OBJCOPY], [${flavor}objcopy], [])
 AC_CHECK_TOOL([OBJDUMP], [${flavor}objdump], [])
 
 # Compiler flags
 AX_CFLAGS_GCC_OPTION([-pipe])
 AX_CFLAGS_GCC_OPTION([-mcpu=cortex-m3 -mthumb])
+
+# Library functions
+AC_FUNC_MALLOC
+AC_FUNC_ALLOCA
+AC_CHECK_FUNCS([bzero strdup strndup])
 
 # Compiler flags part deux
 AX_CFLAGS_GCC_OPTION([-Wall])
@@ -52,6 +61,18 @@ AX_CFLAGS_GCC_OPTION([-Wno-unused-parameter])
 # And finally, be picky
 AX_CFLAGS_GCC_OPTION([-Werror])
 AX_CFLAGS_GCC_OPTION([-pedantic])
+
+# Doxygen
+DX_HTML_FEATURE(ON)
+DX_CHM_FEATURE(OFF)
+DX_CHI_FEATURE(OFF)
+DX_MAN_FEATURE(OFF)
+DX_RTF_FEATURE(OFF)
+DX_XML_FEATURE(OFF)
+DX_PDF_FEATURE(ON)
+DX_PS_FEATURE(ON)
+
+DX_INIT_DOXYGEN([$PACKAGE_NAME],[amlocal/doxygen.cfg],[doc])
 
 # Debug mode
 AC_ARG_ENABLE([debug],
@@ -74,7 +95,8 @@ CFLAGS="$CFLAGS $PTHREAD_CFLAGS"
 LIBS="$LIBS $LIBCURL $PTHREAD_LIBS"
 
 # Headers
-AC_CHECK_HEADERS([ stdlib.h math.h stdint.h ])
+AC_CHECK_HEADERS([sys/types.h stdlib.h math.h string.h \
+    fcntl.h sys/stat.h stdint.h])
 
 # Definitions (typedef, struct etc)
 AC_C_INLINE

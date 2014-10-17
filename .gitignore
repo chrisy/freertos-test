@@ -31,3 +31,5 @@ src/image.lst
 src/image.bin
 src/image.hex
 *.tar.gz
+doc/*.tag
+doc/html

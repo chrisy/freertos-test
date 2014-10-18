@@ -24,7 +24,7 @@ extern int errno;
  * Here we open a file by looking up the dev for
  * a given path.
  */
-int link(const char *old, const char *new)
+int _link(const char *old, const char *new)
 {
     // strip out device name from path
     char *device = NULL, *path = NULL;
@@ -52,7 +52,7 @@ int link(const char *old, const char *new)
     return -1;
 }
 
-int open(const char *name, int flags, ...)
+int _open(const char *name, int flags, ...)
 {
     // strip out device name from path
     char *device = NULL, *path = NULL;
@@ -69,11 +69,14 @@ int open(const char *name, int flags, ...)
         return -1;
     }
 
+    posixio_fdlock();
+
     // get an fd
     int fd = posixio_newfd();
     if (fd == -1) {
         free(device);
         free(path);
+        posixio_fdunlock();
         return -1;
     }
 
@@ -83,6 +86,7 @@ int open(const char *name, int flags, ...)
         free(device);
         free(path);
         errno = ENOMEM;
+        posixio_fdunlock();
         return -1;
     }
 
@@ -102,19 +106,28 @@ int open(const char *name, int flags, ...)
             free(device);
             free(path);
             free(file);
+            posixio_fdunlock();
             return -1;
         }
     }
 
     // store the file data
-    posixio_setfd(fd, file);
+    if (posixio_setfd(fd, file) == -1) {
+        free(device);
+        free(path);
+        free(file);
+        posixio_fdunlock();
+        return -1;
+    }
+
 
     free(device);
+    posixio_fdunlock();
 
     return fd;
 }
 
-int stat(const char *file, struct stat *st)
+int _stat(const char *file, struct stat *st)
 {
     // strip out device name from path
     char *device = NULL, *path = NULL;
@@ -142,7 +155,7 @@ int stat(const char *file, struct stat *st)
     return -1;
 }
 
-int unlink(const char *name)
+int _unlink(const char *name)
 {
     // strip out device name from path
     char *device = NULL, *path = NULL;

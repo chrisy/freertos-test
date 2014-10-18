@@ -46,9 +46,7 @@ AX_CFLAGS_GCC_OPTION([-pipe])
 AX_CFLAGS_GCC_OPTION([-mcpu=cortex-m3 -mthumb])
 
 # Library functions
-AC_FUNC_MALLOC
-AC_FUNC_ALLOCA
-AC_CHECK_FUNCS([bzero strdup strndup])
+AC_CHECK_FUNCS([memcpy strdup strndup])
 
 # Compiler flags part deux
 AX_CFLAGS_GCC_OPTION([-Wall])

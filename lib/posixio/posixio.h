@@ -63,6 +63,8 @@ int posixio_newfd(void);
 struct iofile *posixio_file_fromfd(int fd);
 int posixio_setfd(int fd, struct iofile *file);
 struct iodev *posixio_getdev(char *name);
+void posixio_fdlock(void);
+void posixio_fdunlock(void);
 #endif
 
 #endif /* POSIXIO_H */

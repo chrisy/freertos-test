@@ -11,6 +11,10 @@
 #include <FreeRTOS.h>
 #include <task.h>
 #include <posixio.h>
+#include <fcntl.h>
+#include <unistd.h>
+#include <stdio.h>
+
 #include <dma.h>
 #include <serial.h>
 #include <i2c.h>
@@ -22,7 +26,6 @@ static void platform_init(void);
 
 QueueSetHandle_t qs_serial = NULL;
 
-
 int main(void)
 {
     // setup the hardware
@@ -32,6 +35,30 @@ int main(void)
 
     // start it up
     vTaskStartScheduler();
+}
+
+static int stdio_init(void)
+{
+    int fd;
+
+    fd = open("/serial/1", O_RDWR);
+    if (fd == -1)
+        return 0;
+
+    // stdin
+    dup2(fd, 0);
+    // stdout (buffered)
+    dup2(fd, 1);
+    setvbuf(stderr, NULL, _IOFBF, 0);
+
+    // stderr (not buffered)
+    dup2(fd, 2);
+    setvbuf(stderr, NULL, _IONBF, 0);
+
+    // this is no longer needed
+    close(fd);
+
+    return 0;
 }
 
 static void platform_init(void)
@@ -54,6 +81,8 @@ static void platform_init(void)
 #if USE_SERIAL_UART4
     serial_start(&Serial4, 9600, qs_serial);
 #endif
+
+    stdio_init();
 
     // Initialize i2c
 #if USE_I2C1

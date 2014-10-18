@@ -24,7 +24,7 @@ doc: doxygen-doc
 mostlyclean-local: doxygen-clean
 
 # Uncrustify the source
-uncrustify: uncrustify.cfg
+uncrustify: amlocal/uncrustify.cfg
 	@for dir in $(sources) lib/misc lib/stm32 lib/posixio; do \
 		find "$(top_srcdir)/$$dir" -type f -name '*.[ch]' -print0 | \
 			xargs -0 uncrustify -c $(top_srcdir)/amlocal/uncrustify.cfg --replace --no-backup; \

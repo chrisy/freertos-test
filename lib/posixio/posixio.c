@@ -24,6 +24,9 @@ static int dev_count = 0;
 
 static struct iofile *files[POSIXIO_MAX_OPEN_FILES];
 
+extern int _open(const char *name, int flags, ...);
+extern int _close(int fd);
+
 int posixio_start(void)
 {
     int i;
@@ -32,6 +35,11 @@ int posixio_start(void)
         files[i] = NULL;
 
     if (!posixio_register_serial()) return 0;
+
+    // A hack to fool the linker
+    _open("", 0);
+    _close(-1);
+
     return 1;
 }
 
@@ -50,9 +58,11 @@ int posixio_register_dev(struct iodev *dev)
 
 int posixio_newfd(void)
 {
+    // assumes we have fdlock()
     int i;
 
-    for (i = 0; i < POSIXIO_MAX_OPEN_FILES; i++)
+    // this starts at 3 to leave from for stdin, out, err
+    for (i = 3; i < POSIXIO_MAX_OPEN_FILES; i++)
         if (files[i] == NULL)
             return i;
     errno = EMFILE;
@@ -61,13 +71,19 @@ int posixio_newfd(void)
 
 struct iofile *posixio_file_fromfd(int fd)
 {
-    return NULL;
+    if (fd < 0 || fd >= POSIXIO_MAX_OPEN_FILES) {
+        errno = EINVAL;
+        return NULL;
+    }
+
+    return files[fd];
 }
 
 int posixio_setfd(int fd, struct iofile *file)
 {
+    // assumes we have fdlock
     if (fd < 0 || fd >= POSIXIO_MAX_OPEN_FILES) {
-        errno = EINVAL;
+        errno = EBADF;
         return -1;
     }
 
@@ -159,4 +175,12 @@ struct iodev *posixio_getdev(char *name)
         if (!strcmp(name, devs[i]->name))
             return devs[i];
     return NULL;
+}
+
+void posixio_fdlock(void)
+{
+}
+
+void posixio_fdunlock(void)
+{
 }

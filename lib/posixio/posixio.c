@@ -11,6 +11,9 @@
 #include <config.h>
 #include <posixio.h>
 
+#include <FreeRTOS.h>
+#include <semphr.h>
+
 #include <fcntl.h>
 #include <unistd.h>
 #include <sys/stat.h>
@@ -20,8 +23,9 @@
 #include <dev/serial.h>
 
 static struct iodev *devs[POSIXIO_MAX_DEVICES];
-static int dev_count = 0;
+static volatile int dev_count = 0;
 
+static SemaphoreHandle_t fd_sem;
 static struct iofile *files[POSIXIO_MAX_OPEN_FILES];
 
 extern int _open(const char *name, int flags, ...);
@@ -30,6 +34,8 @@ extern int _close(int fd);
 int posixio_start(void)
 {
     int i;
+
+    ASSERT((fd_sem = xSemaphoreCreateMutex()));
 
     for (i = 0; i < POSIXIO_MAX_OPEN_FILES; i++)
         files[i] = NULL;
@@ -106,7 +112,7 @@ int posixio_split_path(const char *path,
                        char *device, size_t device_len,
                        char *file, size_t file_len)
 {
-    if (path[0] != '/') {
+    if (path == NULL || path[0] != '/') {
         errno = EINVAL;
         return -1;
     }
@@ -134,7 +140,7 @@ int posixio_split_path(const char *path,
 int posixio_split_path_malloc(const char *path,
                               char **device, char **file)
 {
-    if (path[0] != '/') {
+    if (path == NULL || path[0] != '/') {
         errno = EINVAL;
         return -1;
     }
@@ -179,8 +185,10 @@ struct iodev *posixio_getdev(char *name)
 
 void posixio_fdlock(void)
 {
+    xSemaphoreTake(fd_sem, 1000);
 }
 
 void posixio_fdunlock(void)
 {
+    xSemaphoreGive(fd_sem);
 }

@@ -109,6 +109,22 @@ ssize_t _write(int fd, const void *ptr, size_t len)
     return -1;
 }
 
+int _fstat(int fd, struct stat *st)
+{
+    struct iofile *file = posixio_file_fromfd(fd);
+
+    if (file == NULL) {
+        errno = EBADF;
+        return -1;
+    }
+
+    if (file->dev->stat != NULL)
+        return  file->dev->fstat(file->fh, st);
+
+    errno = EINVAL;
+    return -1;
+}
+
 int dup(int fd)
 {
     struct iofile *file = posixio_file_fromfd(fd);

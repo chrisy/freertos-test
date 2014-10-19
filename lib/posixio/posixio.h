@@ -31,6 +31,7 @@ struct iodev {
     off_t   (*lseek)(void *fh, off_t ptr, int dir);
     ssize_t (*read)(void *fh, void *ptr, size_t len);
     ssize_t (*write)(void *fh, const void *ptr, size_t len);
+    int     (*fstat)(void *fh, struct stat *st);
 
     // fileio handlers
     int     (*link)(const char *old, const char *new);

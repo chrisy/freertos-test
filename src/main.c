@@ -34,9 +34,11 @@ int main(void)
     // add main thread
 
     // start it up
+    printf("Starting FreeRTOS scheduler.");
     vTaskStartScheduler();
 }
 
+#if USE_SERIAL_USART1
 static int stdio_init(void)
 {
     int fd;
@@ -60,6 +62,7 @@ static int stdio_init(void)
 
     return 0;
 }
+#endif
 
 static void platform_init(void)
 {
@@ -71,35 +74,47 @@ static void platform_init(void)
     ASSERT(qs_serial != NULL);
 #if USE_SERIAL_USART1
     serial_start(&Serial1, 9600, qs_serial);
+    serial_puts(&Serial1, "STM32 Platform starting up.");
+    stdio_init();
+    printf("STDIO started on USART 1.");
+    fflush(stdout);
 #endif
+
 #if USE_SERIAL_USART2
+    printf("Starting USART 2.");
     serial_start(&Serial2, 9600, qs_serial);
 #endif
 #if USE_SERIAL_USART3
+    printf("Starting USART 3.");
     serial_start(&Serial3, 9600, qs_serial);
 #endif
 #if USE_SERIAL_UART4
+    printf("Starting USART 4.");
     serial_start(&Serial4, 9600, qs_serial);
 #endif
 
-    stdio_init();
 
     // Initialize i2c
 #if USE_I2C1
+    printf("Starting I2C 1.");
     i2c_start(&I2C1_Dev);
 #endif
 #if USE_I2C2
+    printf("Starting I2C 2.");
     i2c_start(&I2C2_Dev);
 #endif
 
     // Initialize SPI
 #if USE_SPI1
+    printf("Starting SPI 1.");
     spi_start(&SPI1_Dev, 0); // todo - workout the SPI mode bits
 #endif
 #if USE_SPI2
+    printf("Starting SPI 2.");
     spi_start(&SPI2_Dev, 0);
 #endif
 #if USE_SPI3
+    printf("Starting SPI 3.");
     spi_start(&SPI3_Dev, 0);
 #endif
 }

@@ -13,6 +13,7 @@
 #include <posixio/posixio.h>
 #include <posixio/dev/serial.h>
 #include <stm32/serial.h>
+#include <sys/stat.h>
 
 #include <errno.h>
 #include <string.h>
@@ -39,11 +40,11 @@ static void *ser_open(const char *name, int flags, ...)
     if (!strcmp(name, "3"))
         return &Serial3;
 #endif
-#if USE_SERIAL_USART4
+#if USE_SERIAL_UART4
     if (!strcmp(name, "4"))
         return &Serial4;
 #endif
-#if USE_SERIAL_USART5
+#if USE_SERIAL_UART5
     if (!strcmp(name, "5"))
         return &Serial5;
 #endif
@@ -77,6 +78,94 @@ static ssize_t ser_write(void *fh, const void *ptr, size_t len)
     return len;
 }
 
+int ser_fstat(void *fh, struct stat *st)
+{
+    if (st == NULL) {
+        errno = EFAULT;
+        return -1;
+    }
+
+    memset(st, '\0', sizeof(*st));
+
+#if USE_SERIAL_USART1
+    if (fh == &Serial1)
+        st->st_dev = DEV_USART1;
+
+#endif
+#if USE_SERIAL_USART2
+    if (fh == &Serial2)
+        st->st_dev = DEV_USART2;
+
+#endif
+#if USE_SERIAL_USART3
+    if (fh == &Serial3)
+        st->st_dev = DEV_USART3;
+
+#endif
+#if USE_SERIAL_UART4
+    if (fh == &Serial4)
+        st->st_dev = DEV_UART4;
+
+#endif
+#if USE_SERIAL_UART5
+    if (fh == &Serial5)
+        st->st_dev = DEV_UART5;
+
+#endif
+    if (st->st_dev == 0) {
+        errno = EBADF;
+        return -1;
+    }
+
+    st->st_mode = S_IFCHR;
+
+    return 0;
+}
+
+int ser_stat(const char *file, struct stat *st)
+{
+    if (file == NULL || st == NULL) {
+        errno = EFAULT;
+        return -1;
+    }
+
+    memset(st, '\0', sizeof(*st));
+
+#if USE_SERIAL_USART1
+    if (!strcmp(file, "1"))
+        st->st_dev = DEV_USART1;
+
+#endif
+#if USE_SERIAL_USART2
+    if (!strcmp(file, "2"))
+        st->st_dev = DEV_USART2;
+
+#endif
+#if USE_SERIAL_USART3
+    if (!strcmp(file, "3"))
+        st->st_dev = DEV_USART3;
+
+#endif
+#if USE_SERIAL_UART4
+    if (!strcmp(file, "4"))
+        st->st_dev = DEV_UART4;
+
+#endif
+#if USE_SERIAL_UART5
+    if (!strcmp(file, "5"))
+        st->st_dev = DEV_UART5;
+
+#endif
+    if (st->st_dev == 0) {
+        errno = ENOENT;
+        return -1;
+    }
+
+    st->st_mode = S_IFCHR;
+
+    return 0;
+}
+
 static struct iodev iodev_serial = {
     .name   = "serial",
 
@@ -84,6 +173,8 @@ static struct iodev iodev_serial = {
     .open   = ser_open,
     .read   = ser_read,
     .write  = ser_write,
+    .fstat  = ser_fstat,
+    .stat   = ser_stat,
 
     .flags  = POSIXDEV_ISATTY
 };

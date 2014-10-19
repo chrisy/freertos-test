@@ -44,6 +44,7 @@ AC_CHECK_TOOL([OBJDUMP], [${flavor}objdump], [])
 # Compiler flags
 AX_CFLAGS_GCC_OPTION([-pipe])
 AX_CFLAGS_GCC_OPTION([-mcpu=cortex-m3 -mthumb])
+AX_CFLAGS_GCC_OPTION([-mfix-cortex-m3-ldrd])
 
 # Library functions
 AC_CHECK_FUNCS([memcpy strdup strndup])

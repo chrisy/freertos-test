@@ -52,6 +52,14 @@ struct iofile {
     int             flags;  // as per open()
 };
 
+enum POSIXIO_DEVICES {
+    DEV_NONE,
+    DEV_USART1,
+    DEV_USART2,
+    DEV_USART3,
+    DEV_UART4,
+    DEV_UART5,
+};
 
 int posixio_start(void);
 

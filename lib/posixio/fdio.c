@@ -119,9 +119,9 @@ int _fstat(int fd, struct stat *st)
     }
 
     if (file->dev->stat != NULL)
-        return  file->dev->fstat(file->fh, st);
+        return file->dev->fstat(file->fh, st);
 
-    errno = EINVAL;
+    errno = ENOENT;
     return -1;
 }
 

@@ -151,7 +151,7 @@ int _stat(const char *file, struct stat *st)
         return ret;
     }
 
-    errno = EINVAL;
+    errno = ENOENT;
     return -1;
 }
 

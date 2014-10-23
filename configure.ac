@@ -1,5 +1,10 @@
 dnl Process this file with autoconf to produce a configure script.
 # vim:set softtabstop=4 shiftwidth=4 tabstop=4 expandtab:
+#
+# This file is distributed under the terms of the MIT License.
+# See the LICENSE file at the top of this tree, or if it is missing a copy can
+# be found at http://opensource.org/licenses/MIT
+#
 
 flavor=
 if test ! -z "${ac_cv_host}"

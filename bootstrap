@@ -1,6 +1,11 @@
 #!/bin/sh
-# bootstrap the build tools
-# run in the root of the project
+#
+# This file is distributed under the terms of the MIT License.
+# See the LICENSE file at the top of this tree, or if it is missing a copy can
+# be found at http://opensource.org/licenses/MIT
+#
+# Bootstrap the build tools
+# Run in the root directory of the project
 
 echo "Bootstraping..."
 aclocal=aclocal

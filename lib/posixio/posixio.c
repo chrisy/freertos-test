@@ -159,8 +159,8 @@ int posixio_split_path_malloc(const char *path,
         errno = ENOMEM;
         return -1;
     }
-    strncpy((char *)path + 1, *device, len);
-    *device[len] = '\0';
+    strncpy(*device, (char *)path + 1, len);
+    (*device)[len] = '\0';
 
     *file = strdup(p + 1);
     if (*file == NULL) {

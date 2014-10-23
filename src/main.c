@@ -22,20 +22,35 @@
 
 #include "main.h"
 
+static void main_task(void *param);
 static void platform_init(void);
 
 QueueSetHandle_t qs_serial = NULL;
 
 int main(void)
 {
-    // setup the hardware
-    platform_init();
+    dbg("Platform starting up.\r\n");
 
     // add main thread
+    xTaskCreate(main_task, "maintask", 4096, NULL, 4, NULL);
 
     // start it up
-    printf("Starting FreeRTOS scheduler.");
+    dbg("Launching RTOS scheduler.\r\n");
     vTaskStartScheduler();
+}
+
+void main_task(void *param)
+{
+    dbg("Scheduler launched.\r\n");
+
+    // setup the peripherals
+    platform_init();
+
+    // announce life!
+    dbg("This platform is running!\r\n");
+
+    for (;; )
+        dbg(".");
 }
 
 #if USE_SERIAL_USART1
@@ -70,51 +85,71 @@ static void platform_init(void)
     posixio_start();
 
     // Initialize USARTs
+#if configUSE_QUEUE_SETS
     qs_serial = xQueueCreateSet(16);
     ASSERT(qs_serial != NULL);
+#endif
 #if USE_SERIAL_USART1
-    serial_start(&Serial1, 9600, qs_serial);
-    serial_puts(&Serial1, "STM32 Platform starting up.");
+    serial_start(&Serial1, 9600
+#if configUSE_QUEUE_SETS
+                 , qs_serial
+#endif
+                 );
+    serial_puts(&Serial1, "STM32 Platform starting up.\r\n");
     stdio_init();
-    printf("STDIO started on USART 1.");
+    printf("STDIO started on USART 1.\r\n");
     fflush(stdout);
 #endif
 
 #if USE_SERIAL_USART2
-    printf("Starting USART 2.");
-    serial_start(&Serial2, 9600, qs_serial);
+    printf("Starting USART 2.\r\n");
+    serial_start(&Serial2, 9600
+#if configUSE_QUEUE_SETS
+                 , qs_serial
 #endif
+                 );
+#endif
+
 #if USE_SERIAL_USART3
-    printf("Starting USART 3.");
-    serial_start(&Serial3, 9600, qs_serial);
+    printf("Starting USART 3.\r\n");
+    serial_start(&Serial3, 9600
+#if configUSE_QUEUE_SETS
+                 , qs_serial
 #endif
+                 );
+#endif
+
 #if USE_SERIAL_UART4
-    printf("Starting USART 4.");
-    serial_start(&Serial4, 9600, qs_serial);
+    printf("Starting USART 4.\r\n");
+    serial_start(&Serial4, 9600
+#if configUSE_QUEUE_SETS
+                 , qs_serial
+#endif
+                 );
 #endif
 
 
     // Initialize i2c
 #if USE_I2C1
-    printf("Starting I2C 1.");
+    printf("Starting I2C 1.\r\n");
     i2c_start(&I2C1_Dev);
 #endif
 #if USE_I2C2
-    printf("Starting I2C 2.");
+    printf("Starting I2C 2.\r\n");
     i2c_start(&I2C2_Dev);
 #endif
 
     // Initialize SPI
 #if USE_SPI1
-    printf("Starting SPI 1.");
+    printf("Starting SPI 1.\r\n");
     spi_start(&SPI1_Dev, 0); // todo - workout the SPI mode bits
 #endif
 #if USE_SPI2
-    printf("Starting SPI 2.");
+    printf("Starting SPI 2.\r\n");
     spi_start(&SPI2_Dev, 0);
 #endif
 #if USE_SPI3
-    printf("Starting SPI 3.");
+    printf("Starting SPI 3.\r\n");
     spi_start(&SPI3_Dev, 0);
 #endif
 }

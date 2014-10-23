@@ -31,8 +31,8 @@ serial_t Serial5;
 #endif
 
 #define _serial_putc(serial, val_ptr, timeout) \
-    xQueueSend(serial->tx_q, val_ptr, timeout); \
-    serial->usart->CR1 |= USART_CR1_TXEIE;
+    do { xQueueSend(serial->tx_q, val_ptr, timeout); \
+         serial->usart->CR1 |= USART_CR1_TXEIE; } while (0)
 
 
 static void usart_tcie(void *param, uint32_t flags);
@@ -57,9 +57,14 @@ serial_start(serial_t *serial, int speed
 #endif
     serial->speed = speed;
     serial->tx_dma = NULL;
+    uint32_t gpioa_crh = GPIOA->CRH;
 #if USE_SERIAL_USART1
     if (serial == &Serial1) {
         RCC->APB2ENR |= RCC_APB2ENR_USART1EN;
+        gpioa_crh &= ~(GPIO_CRH_MODE9 | GPIO_CRH_CNF9);
+        gpioa_crh |= GPIO_CRH_MODE9_0 | GPIO_CRH_MODE9_1 | GPIO_CRH_CNF9_1;
+        gpioa_crh &= ~(GPIO_CRH_MODE10 | GPIO_CRH_CNF10);
+        gpioa_crh |= GPIO_CRH_CNF10_0;
         irqn = USART1_IRQn;
         serial->usart = USART1;
         serial->tx_dma = &dma_streams[3];
@@ -99,6 +104,9 @@ serial_start(serial_t *serial, int speed
     {
         HALT();
     }
+    RCC->APB2ENR |= RCC_APB2ENR_AFIOEN | RCC_APB2ENR_IOPAEN;
+    RCC->AHBENR |= RCC_AHBENR_DMA1EN | RCC_AHBENR_DMA2EN;
+    GPIOA->CRH = gpioa_crh;
     NVIC_SetPriority(irqn, IRQ_PRIO_USART);
     NVIC_EnableIRQ(irqn);
     serial_set_speed(serial);
@@ -159,7 +167,6 @@ _serial_write(serial_t *serial, const char *value, uint16_t size)
         }
     }
 }
-
 
 
 void

@@ -44,13 +44,13 @@ void dbg(const char *msg)
 
 void dbgf(const char *fmt, ...)
 {
-	static char buf[128];
+    static char buf[128];
     va_list ap;
 
-	va_start(ap, fmt);
-	vsnprintf(buf, 128, fmt, ap);
-	va_end(ap);
-	dbg(buf);
+    va_start(ap, fmt);
+    vsnprintf(buf, 128, fmt, ap);
+    va_end(ap);
+    dbg(buf);
 }
 
 #else /* !DEBUG */

@@ -27,7 +27,15 @@
 #define MAX(a, b)  ((a) > (b) ? (a) : (b))
 #define MIN(a, b)  ((a) < (b) ? (a) : (b))
 
-#define HALT() do { } while(1)
-#define ASSERT(x) if (!(x)) HALT()
+#define HALT() { \
+		dbgf("HALT at %s line %d.\r\n\r\n", \
+			__FILE__, __LINE__); \
+		for(;;); \
+	}
+#define ASSERT(x) { if (!(x)) { \
+		dbgf("ASSERT failed at %s line %d, halting.\r\n\r\n", \
+			__FILE__, __LINE__); \
+		for(;;); \
+	} }
 
 #endif /* CC_CONFIG_H */

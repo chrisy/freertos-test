@@ -19,14 +19,14 @@
 #include <spi.h>
 
 // Our handlers
-void _crt0_init(void) __attribute__ ((noreturn));
-void _crt0_nmi_handler(void) __attribute__ ((interrupt));
-void _crt0_hardfault_handler(void) __attribute__ ((interrupt));
+void _crt0_init(void) __attribute__ ((naked, noreturn));
+void _crt0_nmi_handler(void) __attribute__ ((naked, noreturn));
+void _crt0_hardfault_handler(void) __attribute__ ((naked, noreturn));
 
 // Handlers in FreeRTOS (from portable/GCC/ARM_CM3/port.c)
-void vPortSVCHandler(void) __attribute__ ((naked));
-void xPortPendSVHandler(void) __attribute__ ((naked));
-void xPortSysTickHandler(void);
+extern void vPortSVCHandler(void);
+extern void xPortPendSVHandler(void);
+extern void xPortSysTickHandler(void);
 
 // These are defined by the linker script
 extern uint32_t _mm_data_start, _mm_data_end;
@@ -101,12 +101,50 @@ void _crt0_default_handler(void)
 
 void _crt0_nmi_handler(void)
 {
-    HALT();
+    dbg("\r\nNMI!\r\n\r\n");
+    for (;; ) ;
+}
+
+void _crt0_hardfault_print(uint32_t *faultStack)
+{
+    volatile uint32_t r0;
+    volatile uint32_t r1;
+    volatile uint32_t r2;
+    volatile uint32_t r3;
+    volatile uint32_t r12;
+    volatile uint32_t lr;   /* Link register. */
+    volatile uint32_t pc;   /* Program counter. */
+    volatile uint32_t psr;  /* Program status register. */
+
+    r0 = faultStack[0];
+    r1 = faultStack[1];
+    r2 = faultStack[2];
+    r3 = faultStack[3];
+
+    r12 = faultStack[4];
+    lr = faultStack[5];
+    pc = faultStack[6];
+    psr = faultStack[7];
+
+    dbg("\r\nHardfault!\r\n");
+    dbgf("r0=%08x r1=%08x r2=%08x r3=%08x r12=%08x\r\n", r0, r1, r2, r3, r12);
+    dbgf("lr=%08x pc=%08x psr=%08x\r\n\r\n", lr, pc, psr);
+    for (;; ) ;
 }
 
 void _crt0_hardfault_handler(void)
 {
-    HALT();
+    __asm volatile
+    (
+        " tst lr, #4                                                \n"
+        " ite eq                                                    \n"
+        " mrseq r0, msp                                             \n"
+        " mrsne r0, psp                                             \n"
+        " ldr r1, [r0, #24]                                         \n"
+        " ldr r2, handler2_address_const                            \n"
+        " bx r2                                                     \n"
+        " handler2_address_const: .word _crt0_hardfault_print       \n"
+    );
 }
 
 // Bootstrap routine
@@ -122,26 +160,24 @@ void _crt0_init(void)
     }
 
     /* Copy the initialized data section to RAM */
-    uint32_t *data_start = &_mm_data_start;
+    uint32_t *data = &_mm_data_start;
     uint32_t *data_end = &_mm_data_end;
-    uint32_t *datai_start = &_mm_datai_start;
-    uint32_t *datai_end = &_mm_datai_end;
+    uint32_t *datai = &_mm_datai_start;
 
-    uint32_t data_size = data_end - data_start;
-    uint32_t datai_size = datai_end - datai_start;
-
-    if (data_size != datai_size)
-        // This should not happen!
-        while (1) ;
-
-    while (data_start < data_end) {
-        *data_start = *datai_start;
-        data_start++;
-        datai_start++;
+    while (data < data_end) {
+        *data = *datai;
+        data++;
+        datai++;
     }
 
-    // Launch!
+    // Setup clocks and the like
     SystemInit();
+
+    // Debugging output
+    dbg_init();
+    dbgf("\r\n%s\r\n", _crt0_info);
+
+    // Launch!
     main();
 
     // Shouldn't get here!

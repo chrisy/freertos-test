@@ -17,7 +17,7 @@
 # define DEBUG 0
 #endif
 
-// Use the POSIX name for this
+// Use the POSIX name for this in FreeRTOS
 #ifdef _READ_WRITE_RETURN_TYPE
 #undef _READ_WRITE_RETURN_TYPE
 #endif
@@ -40,9 +40,12 @@
 #include "cc_config.h"
 
 // The heap size check in sbrk will offset its ceiling by this much
-#define SYSTEM_STACK_SIZE       512
+#define SYSTEM_STACK_SIZE       0
 
-#define STM32F10X_HD
+// This is the STM32 family we're using
+#define STM32F10X_HD            1
+// We have external RAM
+#define DATA_IN_ExtSRAM         1
 
 #define USE_I2C1                1
 #define USE_I2C2                1
@@ -51,9 +54,9 @@
 #define USE_SERIAL_USART3       0
 #define USE_SERIAL_UART4        0
 #define USE_SERIAL_UART5        0
-#define USE_SPI1                1
-#define USE_SPI2                1
-#define USE_SPI3                1
+#define USE_SPI1                0
+#define USE_SPI2                0
+#define USE_SPI3                0
 
 /* Highest priority (highest number) */
 #define THREAD_PRIO_VTIMER      4
@@ -81,5 +84,6 @@
 #include <system_stm32f10x.h>
 #include <core_cm3.h>
 #include <FreeRTOS.h>
+#include <debug.h>
 
 #endif /* CONFIG_H */

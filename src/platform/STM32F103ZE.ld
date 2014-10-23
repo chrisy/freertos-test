@@ -36,7 +36,6 @@ SECTIONS
         *(.text.*)
         *(.rodata)  /* Read only data */
         *(.rodata.*)
-        _mm_datai_start = .;
     } >flash
 
     .data :
@@ -45,14 +44,10 @@ SECTIONS
         _mm_data_start = .;
         *(.data)    /* Data memory */
         *(.data.*)
+        . = ALIGN(4);
         _mm_data_end = .;
     } >ram AT >flash
-
-    .data_init :
-    {
-        . = ALIGN(4);
-        _mm_datai_end = .;
-    } >flash
+    _mm_datai_start = LOADADDR(.data);
 
     .bss :
     {

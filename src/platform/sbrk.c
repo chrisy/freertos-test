@@ -9,19 +9,27 @@
 
 #include <config.h>
 #include <stdint.h>
+#include <errno.h>
 
 extern uint32_t _mm_heap_start;
 extern uint32_t _mm_heap_end;
-unsigned char *heap_top = (unsigned char *)&_mm_heap_start;
+char *heap_top = (char *)&_mm_heap_start;
 
 /* We assume we're being called in a critical section */
 char *_sbrk(intptr_t increment)
 {
-    void *ret;
+    char *ret;
 
-    if (heap_top + increment + SYSTEM_STACK_SIZE > (unsigned char *)&_mm_heap_end)
+    if (heap_top + increment + SYSTEM_STACK_SIZE > (char *)&_mm_heap_end) {
+        errno = ENOMEM;
         return (char *)-1;
+    }
     ret = heap_top;
     heap_top += increment;
+
+#ifdef DEBUG
+    dbgf("sbrk %u bytes, ptr=%x heap_top=%x \r\n", increment, (unsigned long)ret, (unsigned long)heap_top);
+#endif
+
     return ret;
 }

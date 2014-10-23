@@ -5,7 +5,7 @@ This code base is an implementation of [FreeRTOS](http://www.freertos.org/)
 with the aim of being a boilerplate for other embedded projects.
 It requires a minimal `libc` such as [newlib](https://sourceware.org/newlib/).
 
-It is based on the STM3210F103 high-density MCU, an ARM Cortex-M3 series
+It is based on the STM32F103 high-density MCU, an ARM Cortex-M3 series
 of processors.
 
 The code provides bootstrap routines and re-entrant peripheral support. In

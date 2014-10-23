@@ -91,7 +91,8 @@ struct nvic _nvic_vector __attribute__ ((section(".nvic_vector"))) = {
 };
 
 /* Some static text info for the binary image */
-char _crt0_info[] __attribute__ ((section(".info"))) = "FreeRTOS-test v0.1 (c) 2014 Chris Luke";
+static char _crt0_info[] __attribute__ ((section(".info"))) =
+    "FreeRTOS-test v0.1 (c) 2014 Chris Luke";
 
 
 void _crt0_default_handler(void)
@@ -105,7 +106,7 @@ void _crt0_nmi_handler(void)
     for (;; ) ;
 }
 
-void _crt0_hardfault_print(uint32_t *faultStack)
+void __attribute__ ((noreturn)) _crt0_hardfault_print(uint32_t *faultStack)
 {
     volatile uint32_t r0;
     volatile uint32_t r1;
@@ -145,6 +146,8 @@ void _crt0_hardfault_handler(void)
         " bx r2                                                     \n"
         " handler2_address_const: .word _crt0_hardfault_print       \n"
     );
+
+    for (;; ) ; // this is just for the compiler to feel we satisfied noreturn
 }
 
 // Bootstrap routine

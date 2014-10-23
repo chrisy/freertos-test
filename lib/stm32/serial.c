@@ -55,9 +55,18 @@ serial_start(serial_t *serial, int speed
         xQueueAddToSet(serial->rx_q, queue_set);
 
 #endif
+
     serial->speed = speed;
     serial->tx_dma = NULL;
+
+    portENTER_CRITICAL();
+
+    uint32_t gpioa_crl = GPIOA->CRL;
     uint32_t gpioa_crh = GPIOA->CRH;
+    uint32_t gpiob_crh = GPIOB->CRH;
+    uint32_t gpioc_crh = GPIOC->CRH;
+    uint32_t gpiod_crl = GPIOD->CRL;
+
 #if USE_SERIAL_USART1
     if (serial == &Serial1) {
         RCC->APB2ENR |= RCC_APB2ENR_USART1EN;
@@ -73,6 +82,10 @@ serial_start(serial_t *serial, int speed
 #if USE_SERIAL_USART2
     if (serial == &Serial2) {
         RCC->APB1ENR |= RCC_APB1ENR_USART2EN;
+        gpioa_crl &= ~(GPIO_CRH_MODE2 | GPIO_CRH_CNF2);
+        gpioa_crl |= GPIO_CRH_MODE2_0 | GPIO_CRH_MODE2_1 | GPIO_CRH_CNF2_1;
+        gpioa_crl &= ~(GPIO_CRH_MODE3 | GPIO_CRH_CNF3);
+        gpioa_crl |= GPIO_CRH_CNF3_0;
         irqn = USART2_IRQn;
         serial->usart = USART2;
         serial->tx_dma = &dma_streams[6];
@@ -81,6 +94,10 @@ serial_start(serial_t *serial, int speed
 #if USE_SERIAL_USART3
     if (serial == &Serial3) {
         RCC->APB1ENR |= RCC_APB1ENR_USART3EN;
+        gpiob_crh &= ~(GPIO_CRH_MODE10 | GPIO_CRH_CNF10);
+        gpiob_crh |= GPIO_CRH_MODE10_0 | GPIO_CRH_MODE10_1 | GPIO_CRH_CNF10_1;
+        gpiob_crh &= ~(GPIO_CRH_MODE11 | GPIO_CRH_CNF11);
+        gpiob_crh |= GPIO_CRH_CNF11_0;
         irqn = USART3_IRQn;
         serial->usart = USART3;
         serial->tx_dma = &dma_streams[1];
@@ -89,6 +106,10 @@ serial_start(serial_t *serial, int speed
 #if USE_SERIAL_UART4
     if (serial == &Serial4) {
         RCC->APB1ENR |= RCC_APB1ENR_UART4EN;
+        gpioc_crh &= ~(GPIO_CRH_MODE10 | GPIO_CRH_CNF10);
+        gpioc_crh |= GPIO_CRH_MODE10_0 | GPIO_CRH_MODE10_1 | GPIO_CRH_CNF10_1;
+        gpioc_crh &= ~(GPIO_CRH_MODE11 | GPIO_CRH_CNF11);
+        gpioc_crh |= GPIO_CRH_CNF11_0;
         irqn = UART4_IRQn;
         serial->usart = UART4;
         serial->tx_dma = &dma_streams[11];
@@ -97,20 +118,32 @@ serial_start(serial_t *serial, int speed
 #if USE_SERIAL_UART5
     if (serial == &Serial5) {
         RCC->APB1ENR |= RCC_APB1ENR_UART5EN;
+        gpioc_crh &= ~(GPIO_CRH_MODE12 | GPIO_CRH_CNF12);
+        gpioc_crh |= GPIO_CRH_MODE12_0 | GPIO_CRH_MODE12_1 | GPIO_CRH_CNF12_1;
+        gpiod_crl &= ~(GPIO_CRH_MODE2 | GPIO_CRH_CNF2);
+        gpiod_crl |= GPIO_CRH_CNF2_0;
         irqn = UART5_IRQn;
         serial->usart = UART5;
     } else
 #endif
     {
-        HALT();
+        HALT_WITH_MSG("invalid serial port");
     }
+
     RCC->APB2ENR |= RCC_APB2ENR_AFIOEN | RCC_APB2ENR_IOPAEN;
     RCC->AHBENR |= RCC_AHBENR_DMA1EN | RCC_AHBENR_DMA2EN;
+    GPIOA->CRL = gpioa_crl;
     GPIOA->CRH = gpioa_crh;
+    GPIOB->CRH = gpiob_crh;
+    GPIOC->CRH = gpioc_crh;
+    GPIOD->CRL = gpiod_crl;
+    portEXIT_CRITICAL();
+
     NVIC_SetPriority(irqn, IRQ_PRIO_USART);
     NVIC_EnableIRQ(irqn);
     serial_set_speed(serial);
     serial->usart->CR3 = 0;
+
     if (serial->tx_dma) {
         dma_allocate(serial->tx_dma, IRQ_PRIO_USART, usart_tcie, serial);
         serial->tx_dma->ch->CPAR = (uint32_t)&serial->usart->DR;

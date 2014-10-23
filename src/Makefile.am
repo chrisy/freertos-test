@@ -15,6 +15,7 @@ sources = \
 	platform/crt0.c \
 	platform/sbrk.c \
 	platform/freertos.c \
+	debug.c \
 	main.c
 
 ourlibdir = $(top_srcdir)/lib/.libs

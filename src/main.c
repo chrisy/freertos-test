@@ -49,8 +49,16 @@ void main_task(void *param)
     // announce life!
     dbg("This platform is running!\r\n");
 
-    for (;; )
-        dbg(".");
+    for (;; ) {
+        dbg("\r-");
+        DELAY_MS(250);
+        dbg("\r\\");
+        DELAY_MS(250);
+        dbg("\r|");
+        DELAY_MS(250);
+        dbg("\r/");
+        DELAY_MS(250);
+    }
 }
 
 #if USE_SERIAL_USART1
@@ -127,7 +135,6 @@ static void platform_init(void)
 #endif
                  );
 #endif
-
 
     // Initialize i2c
 #if USE_I2C1

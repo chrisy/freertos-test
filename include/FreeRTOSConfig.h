@@ -43,7 +43,7 @@
 #define configTIMER_QUEUE_LENGTH        2
 #define configTIMER_TASK_STACK_DEPTH    128
 #define configMAX_CO_ROUTINE_PRIORITIES 1
-#define configTASK_RETURN_ADDRESS		NULL
+#define configTASK_RETURN_ADDRESS       NULL
 
 // Needed if we're using heap_4.c
 //#define configTOTAL_HEAP_SIZE           32768

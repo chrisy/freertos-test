@@ -59,15 +59,17 @@ static ssize_t ser_read(void *fh, void *ptr, size_t len)
     int16_t r;
     ssize_t written = 0;
 
-    while (len && (r = serial_get((serial_t *)fh, 1)) != ETIMEDOUT) {
-        *p = (char)r;
-        p++;
-        len--;
-        written++;
+    while (!written) {
+        while (len && (r = serial_get((serial_t *)fh, 1)) != ETIMEDOUT) {
+            *p = (char)(r & 0xff);
+            p++;
+            len--;
+            written++;
+        }
     }
     if (!written) {
         errno = EAGAIN;
-        return 0;
+        return -1;
     }
     return written;
 }

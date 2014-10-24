@@ -14,11 +14,14 @@
 #include <fcntl.h>
 #include <unistd.h>
 #include <stdio.h>
+#include <string.h>
 
 #include <dma.h>
 #include <serial.h>
 #include <i2c.h>
 #include <spi.h>
+
+#include <microrl.h>
 
 #include "main.h"
 
@@ -32,14 +35,67 @@ int main(void)
     dbg("Platform starting up.\r\n");
 
     // add main thread
-    xTaskCreate(main_task, "maintask", 4096, NULL, 4, NULL);
+    xTaskCreate(main_task, "main", 4096, NULL, 4, NULL);
 
     // start it up
     dbg("Launching RTOS scheduler.\r\n");
     vTaskStartScheduler();
 }
 
-void main_task(void *param)
+struct cli {
+    FILE        *in;
+    FILE        *out;
+    microrl_t   rl;
+};
+
+static void cli_print(void *opaque, const char *str)
+{
+    struct cli *cli = (struct cli *)opaque;
+
+    if (cli->out != NULL) {
+        fputs(str, cli->out);
+        fflush(cli->out);
+    }
+}
+
+static int cli_exec(void *opaque, int argc, const char *const *argv)
+{
+    struct cli *cli = (struct cli *)opaque;
+
+    fprintf(cli->out, "Execute:");
+    while (argc) {
+        fprintf(cli->out, " %s", *argv);
+        argc--; argv++;
+    }
+    fputs("\r\n", cli->out);
+
+    return 0;
+}
+
+static void cli_sigint(void *opaque)
+{
+    struct cli *cli = (struct cli *)opaque;
+
+    (void)cli;
+}
+
+void __attribute__ ((noreturn)) cli_task(void *param)
+{
+    struct cli *cli = (struct cli *)param;
+
+    fprintf(stdout, "Starting CLI task\r\n");
+    microrl_init(&cli->rl, cli, cli_print);
+    microrl_set_execute_callback(&cli->rl, cli_exec);
+    microrl_set_sigint_callback(&cli->rl, cli_sigint);
+
+    for (;; ) {
+        int ch = fgetc(cli->in);
+        if (ch != EOF)
+            microrl_insert_char(&cli->rl, (char)(ch & 0xff));
+    }
+}
+
+void __attribute__ ((noreturn)) main_task(void *param)
 {
     dbg("Scheduler launched.\r\n");
 
@@ -49,16 +105,15 @@ void main_task(void *param)
     // announce life!
     dbg("This platform is running!\r\n");
 
-    for (;; ) {
-        dbg("\r-");
-        DELAY_MS(250);
-        dbg("\r\\");
-        DELAY_MS(250);
-        dbg("\r|");
-        DELAY_MS(250);
-        dbg("\r/");
-        DELAY_MS(250);
-    }
+    // add cli thread
+    static struct cli serial_cli;
+    memset(&serial_cli, '\0', sizeof(struct cli));
+    serial_cli.in = stdin;
+    serial_cli.out = stdout;
+    xTaskCreate(cli_task, "cli_serial", 4096, &serial_cli, 4, NULL);
+
+    //vTaskDelete(NULL);
+    for (;; ) ;
 }
 
 #if USE_SERIAL_USART1
@@ -72,6 +127,7 @@ static int stdio_init(void)
 
     // stdin
     dup2(fd, 0);
+
     // stdout (buffered)
     dup2(fd, 1);
     setvbuf(stderr, NULL, _IOFBF, 0);
@@ -80,7 +136,7 @@ static int stdio_init(void)
     dup2(fd, 2);
     setvbuf(stderr, NULL, _IONBF, 0);
 
-    // this is no longer needed
+    // this fd is no longer needed
     close(fd);
 
     return 0;

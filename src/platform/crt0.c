@@ -147,7 +147,7 @@ void _crt0_hardfault_handler(void)
         " handler2_address_const: .word _crt0_hardfault_print       \n"
     );
 
-    for (;; ) ; // this is just for the compiler to feel we satisfied noreturn
+    for (;; ) ;  // this is just for the compiler to feel we satisfied noreturn
 }
 
 // Bootstrap routine

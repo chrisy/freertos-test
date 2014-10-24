@@ -10,7 +10,8 @@ lib_LTLIBRARIES = \
 	libplatform.la \
 	libposixio.la \
 	libmisc.la \
-	libmicrorl.la
+	libmicrorl.la \
+	libcli.la
 
 rtos_sources = \
 	FreeRTOS/Source/portable/GCC/ARM_CM3/port.c \
@@ -47,6 +48,9 @@ misc_sources = \
 microrl_sources = \
 	microrl/src/microrl.c
 
+cli_sources = \
+	cli/cli.c
+
 #librtos_la_CFLAGS = -Wno-missing-braces -Wno-missing-field-initializers -Wno-sign-compare
 librtos_la_SOURCES = $(rtos_sources)
 libstm32_la_SOURCES = $(stm32_sources)
@@ -54,4 +58,5 @@ libplatform_la_SOURCES = $(platform_sources)
 libposixio_la_SOURCES = $(posixio_sources)
 libmisc_la_SOURCES = $(misc_sources)
 libmicrorl_la_SOURCES = $(microrl_sources)
+libcli_la_SOURCES = $(cli_sources)
 

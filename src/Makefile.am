@@ -21,13 +21,14 @@ sources = \
 ourlibdir = $(top_srcdir)/lib/.libs
 libdirs = -L$(ourlibdir)
 
-image_LDADD = $(libdirs) -lrtos -lplatform -lposixio -lmisc -lstm32
+image_LDADD = $(libdirs) -lrtos -lplatform -lposixio -lmisc -lmicrorl -lstm32
 image_SOURCES = $(sources)
 EXTRA_image_DEPENDENCIES = $(linker_script) \
 	$(ourlibdir)/libplatform.a \
 	$(ourlibdir)/librtos.a \
 	$(ourlibdir)/libposixio.a \
 	$(ourlibdir)/libmisc.a \
+	$(ourlibdir)/libmicrorl.a \
 	$(ourlibdir)/libstm32.a
 
 image.bin: image$(EXEEXT)

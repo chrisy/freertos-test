@@ -121,6 +121,7 @@ CPPFLAGS="$CPPFLAGS -I${bdir}/lib/stm32"
 CPPFLAGS="$CPPFLAGS -I${bdir}/lib/platform"
 CPPFLAGS="$CPPFLAGS -I${bdir}/lib/posixio"
 CPPFLAGS="$CPPFLAGS -I${bdir}/lib/misc"
+CPPFLAGS="$CPPFLAGS -I${bdir}/lib/microrl/src"
 CPPFLAGS="$CPPFLAGS -I${bdir}/lib/FreeRTOS/Source/include"
 CPPFLAGS="$CPPFLAGS -I${bdir}/lib/FreeRTOS/Source/portable/GCC/ARM_CM3"
 

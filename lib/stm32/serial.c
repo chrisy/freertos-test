@@ -59,6 +59,8 @@ serial_start(serial_t *serial, int speed
     serial->speed = speed;
     serial->tx_dma = NULL;
 
+    // we alter GPIO settings which *might* be worked on
+    // elsewhere, so disable interrupts
     portENTER_CRITICAL();
 
     uint32_t gpioa_crl = GPIOA->CRL;
@@ -137,6 +139,8 @@ serial_start(serial_t *serial, int speed
     GPIOB->CRH = gpiob_crh;
     GPIOC->CRH = gpioc_crh;
     GPIOD->CRL = gpiod_crl;
+
+    // finished with GPIO, we can release this now
     portEXIT_CRITICAL();
 
     NVIC_SetPriority(irqn, IRQ_PRIO_USART);
@@ -154,6 +158,7 @@ serial_start(serial_t *serial, int speed
         ASSERT((serial->tx_q = xQueueCreate(SERIAL_TX_SIZE, 1)));
         serial->tcie_sem = NULL;
     }
+
     serial->usart->CR1 = 0
                          | USART_CR1_UE
                          | USART_CR1_TE
@@ -220,6 +225,7 @@ serial_write(serial_t *serial, const char *value, uint16_t size)
 }
 
 
+#if USE_SERIAL_PRINTF
 void
 serial_printf(serial_t *serial, const char *fmt, ...)
 {
@@ -234,6 +240,7 @@ serial_printf(serial_t *serial, const char *fmt, ...)
     va_end(ap);
     xSemaphoreGive(serial->mutex);
 }
+#endif
 
 
 void
@@ -254,7 +261,7 @@ serial_get(serial_t *serial, TickType_t timeout)
     if (xQueueReceive(serial->rx_q, &val, timeout))
         return val;
     else
-        return ETIMEDOUT;
+        return -ETIMEDOUT;
 }
 
 
@@ -264,13 +271,16 @@ usart_irq(serial_t *serial)
     USART_TypeDef *u = serial->usart;
     uint16_t sr, dr;
     uint8_t val;
-    BaseType_t wakeup = 0;
+    BaseType_t wakeup = pdFALSE;
 
     sr = u->SR;
     dr = u->DR;
 
-    if ((sr & USART_SR_RXNE) && serial->rx_q)
-        xQueueSendFromISR(serial->rx_q, &dr, &wakeup);
+    if ((sr & USART_SR_RXNE) && serial->rx_q) {
+        val = (uint8_t)dr;
+        xQueueSendToBackFromISR(serial->rx_q, &val, &wakeup);
+    }
+
     if (sr & USART_SR_TXE) {
         if (serial->tx_q && xQueueReceiveFromISR(serial->tx_q, &val, &wakeup))
             u->DR = val;
@@ -286,7 +296,7 @@ static void
 usart_tcie(void *param, uint32_t flags)
 {
     serial_t *serial = (serial_t *)param;
-    BaseType_t wakeup = 0;
+    BaseType_t wakeup = pdFALSE;
 
     dma_disable(serial->tx_dma);
     xSemaphoreGiveFromISR(serial->tcie_sem, &wakeup);

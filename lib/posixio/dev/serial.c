@@ -55,22 +55,31 @@ static void *ser_open(const char *name, int flags, ...)
 
 static ssize_t ser_read(void *fh, void *ptr, size_t len)
 {
-    char *p = ptr;
+    unsigned char *p = ptr;
     int16_t r;
     ssize_t written = 0;
 
-    while (!written) {
-        while (len && (r = serial_get((serial_t *)fh, 1)) != ETIMEDOUT) {
-            *p = (char)(r & 0xff);
-            p++;
-            len--;
-            written++;
+    while (len) {
+        r = serial_get((serial_t *)fh, 1);
+        if (r == -ETIMEDOUT) {
+            if (written)
+                break;
+            // TODO: if nonblock, break here
+
+            continue;
         }
+
+        *p = (unsigned char)r;
+        p++;
+        len--;
+        written++;
     }
+
     if (!written) {
         errno = EAGAIN;
         return -1;
     }
+
     return written;
 }
 

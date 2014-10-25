@@ -11,6 +11,7 @@
 #include <stdint.h>
 #include <FreeRTOS.h>
 #include <nvic.h>
+#include <version.h>
 #include "main.h"
 
 #include <dma.h>
@@ -92,7 +93,7 @@ struct nvic _nvic_vector __attribute__ ((section(".nvic_vector"))) = {
 
 /* Some static text info for the binary image */
 static char _crt0_info[] __attribute__ ((section(".info"))) =
-    "FreeRTOS-test v0.1 (c) 2014 Chris Luke";
+    PROJECT_NAME " v" PROJECT_VERSION " " PROJECT_COPYRIGHT;
 
 
 void _crt0_default_handler(void)

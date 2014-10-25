@@ -9,7 +9,7 @@ dnl Process this file with autoconf to produce a configure script.
 AC_PREREQ(2.67)
 AC_COPYRIGHT([(c) 2014 Chris Luke])
 
-AC_INIT([freertos-test], [0.1])
+AC_INIT([FreeRTOS-test], [0.1])
 AC_CONFIG_AUX_DIR([build-aux])
 AC_CONFIG_MACRO_DIR([aclocal])
 AC_CANONICAL_TARGET

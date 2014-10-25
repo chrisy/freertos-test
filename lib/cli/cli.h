@@ -26,10 +26,11 @@ struct cli {
 };
 
 struct cli_command {
-    char    *cmd;
-    char    *brief;
-    char    *help;
-    int     (*fn)(FILE *in, FILE *out, int argc, const char *const *argv);
+    char    *cmd;                                                           // the command
+    char    *brief;                                                         // brief description of the command
+    char    *help;                                                          // more complete help text for the command
+    int     (*fn)(FILE *in, FILE *out, int argc, const char *const *argv);  // function to call for the command
+    char    ** (*completion)(int, const char *const *);                     // function to call for autocompletion of parameters
 };
 
 void cli_init(void);

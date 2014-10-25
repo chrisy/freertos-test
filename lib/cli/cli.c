@@ -33,6 +33,7 @@ static int cli_exec(void *opaque, int argc, const char *const *argv);
 static char **cli_autocomplete(void *opaque, int argc, const char *const *argv);
 #endif
 static int cmd_help(FILE *in, FILE *out, int argc, const char *const *argv);
+static int cmd_echo(FILE *in, FILE *out, int argc, const char *const *argv);
 
 
 void cli_init(void)
@@ -45,6 +46,14 @@ void cli_init(void)
         .fn     = cmd_help,
     };
     cli_addcmd(&help);
+
+    struct cli_command echo = {
+        .cmd    = "echo",
+        .brief  = "Prints its parameters back to the CLI",
+        .help   = "A simple command to print any provided parameters on the CLI.",
+        .fn     = cmd_echo,
+    };
+    cli_addcmd(&echo);
 }
 
 static void cli_print(void *opaque, const char *str)
@@ -122,7 +131,7 @@ void cli_addcmd(struct cli_command *cmd)
     if (cli_commands == NULL)
         cli_commands = malloc(sizeof(struct cli_command));
     else
-        cli_commands = realloc(cli_commands, sizeof(struct cli_command) * cli_command_num + 1);
+        cli_commands = realloc(cli_commands, sizeof(struct cli_command) * (cli_command_num + 1));
     ASSERT(cli_commands != NULL);
     memcpy(&cli_commands[cli_command_num], cmd, sizeof(struct cli_command));
     cli_command_num++;
@@ -133,8 +142,8 @@ void cli_addcmd(struct cli_command *cmd)
 
 static int cli_cmpstringp(const void *p1, const void *p2)
 {
-    struct cli_command *c1 = *(struct cli_command **)p1;
-    struct cli_command *c2 = *(struct cli_command **)p2;
+    struct cli_command *c1 = (struct cli_command *)p1;
+    struct cli_command *c2 = (struct cli_command *)p2;
 
     return stricmp(c1->cmd, c2->cmd);
 }
@@ -194,17 +203,28 @@ char **cli_autocomplete(void *opaque, int argc, const char *const *argv)
     xSemaphoreTake(cmd_sem, SEM_DELAY);
     int c = 0;
     if (argc == 0) {
+        // with no tokens, just return the whole list
         for (; c < cli_command_num; c++)
             cli->completions[c] = cli_commands[c].cmd;
+        xSemaphoreGive(cmd_sem);
     } else if (argc == 1) {
+        // with one token, match against the command list
         int len = strlen(argv[0]);
-        for (int i = 0; i < cli_command_num; i++) {
+        for (int i = 0; i < cli_command_num; i++)
             if (!strncmp(argv[0], cli_commands[i].cmd, len))
                 cli->completions[c++] = cli_commands[i].cmd;
-        }
+        xSemaphoreGive(cmd_sem);
+    } else {
+        // find the first token in the command list
+        int i;
+        for (i = 0; i < cli_command_num; i++)
+            if (!strcmp(argv[0], cli_commands[i].cmd)) break;
+        xSemaphoreGive(cmd_sem);
+        // then see if that command has an auto complete method
+        if (i < cli_command_num && cli_commands[i].completion != NULL)
+            cli_commands[i].completion(argc, argv);
     }
     cli->completions[c] = NULL;
-    xSemaphoreGive(cmd_sem);
 
     return cli->completions;
 }
@@ -212,14 +232,47 @@ char **cli_autocomplete(void *opaque, int argc, const char *const *argv)
 
 int cmd_help(FILE *in, FILE *out, int argc, const char *const *argv)
 {
-    if (!cli_commands_sorted)
-        cli_sortcmds();
+    if (argc == 1) {
+        // display the brief help for every command
+        if (!cli_commands_sorted)
+            cli_sortcmds();
 
-    for (int i = 0; i < cli_command_num; i++) {
-        fprintf(out, "%-20s %s\r\n",
-                cli_commands[i].cmd,
-                cli_commands[i].brief ? cli_commands[i].brief : "");
+        xSemaphoreTake(cmd_sem, SEM_DELAY);
+        for (int i = 0; i < cli_command_num; i++) {
+            fprintf(out, "%-20s %s\r\n",
+                    cli_commands[i].cmd,
+                    cli_commands[i].brief ? cli_commands[i].brief : "");
+        }
+        xSemaphoreGive(cmd_sem);
+    } else if (argc == 2) {
+        // find a specific command and display its verbose help text
+        int i;
+        xSemaphoreTake(cmd_sem, SEM_DELAY);
+        for (i = 0; i < cli_command_num; i++)
+            if (!strcmp(argv[1], cli_commands[i].cmd)) break;
+
+        if (i < cli_command_num) {
+            fprintf(out, "Help for '%s':\r\n\r\n", argv[1]);
+            fprintf(out, "%s\r\n",
+                    cli_commands[i].help ? cli_commands[i].help :
+                    cli_commands[i].brief ? cli_commands[i].brief :
+                    "");
+        } else {
+            fprintf(out, "Command '%s' not found.\r\n", argv[1]);
+        }
+        xSemaphoreGive(cmd_sem);
+    } else {
+        fprintf(out, "Too many parameters given.\r\n");
+        return -1;
     }
+
+    return 0;
+}
+
+int cmd_echo(FILE *in, FILE *out, int argc, const char *const *argv)
+{
+    while (argc--)
+        fprintf(out, "%s%s", *argv++, argc ? " " : "");
 
     return 0;
 }

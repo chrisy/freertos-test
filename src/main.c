@@ -51,9 +51,12 @@ void __attribute__ ((noreturn)) main_task(void *param)
     // announce life!
     dbg("This platform is running!\r\n");
 
-    cli_start("serial", stdin, stdout);
+    // Start the CLI
+    cli_init();
+    cli_start("serial", NULL, NULL);
 
-    for (;; ) ;
+    for (;; )
+        vTaskDelay(500 / portTICK_PERIOD_MS);
 }
 
 #if USE_SERIAL_USART1

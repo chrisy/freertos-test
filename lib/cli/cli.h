@@ -16,15 +16,26 @@
 #include <microrl.h>
 
 struct cli {
-	char *name;
-	TaskHandle_t task;
-    FILE        *in;
-    FILE        *out;
-    microrl_t   rl;
+    char            *name;          // name of the task
+    TaskHandle_t    task;           // task reference
+    FILE            *in;            // input stream
+    FILE            *out;           // output stream
+    char            **completions;  // for autocomplete
+    int             completion_num; // number of entries malloc'ed
+    microrl_t       rl;             // micro readline reference
 };
 
+struct cli_command {
+    char    *cmd;
+    char    *brief;
+    char    *help;
+    int     (*fn)(FILE *in, FILE *out, int argc, const char *const *argv);
+};
 
+void cli_init(void);
 void cli_start(char *name, FILE *in, FILE *out);
 void cli_stop(struct cli *cli);
+void cli_addcmd(struct cli_command *cmd);
+void cli_sortcmds(void);
 
 #endif /* _CLI_H */

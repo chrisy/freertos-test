@@ -10,7 +10,7 @@ dir=$(dirname $0)
 cd "${dir}"
 
 MAKE=make
-which -s gmake && MAKE=gmake
+which gmake >/dev/null 2>&1 && MAKE=gmake
 export MAKE
 
 do_bootstrap=

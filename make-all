@@ -9,8 +9,9 @@
 dir=$(dirname $0)
 cd "${dir}"
 
-make=make
-[ -x /usr/bin/gmake ] && make=gmake
+MAKE=make
+which -s gmake && MAKE=gmake
+export MAKE
 
 do_bootstrap=
 
@@ -24,7 +25,7 @@ fi
 if [ "$do_bootstrap" ]; then
 	./bootstrap
 	./do-configure-arm
-	$make clean
+	$MAKE clean
 fi
 
-exec $make
+exec $MAKE

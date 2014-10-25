@@ -68,9 +68,9 @@ static void __attribute__ ((noreturn)) cli_task(void *param)
 {
     struct cli *cli = (struct cli *)param;
 
-    if (in == NULL)
+    if (cli->in == NULL)
         cli->in = stdin;
-    if (out == NULL)
+    if (cli->out == NULL)
         cli->out = stdout;
     else
         fprintf(cli->out, "CLI task %s started.\r\n", cli->name);

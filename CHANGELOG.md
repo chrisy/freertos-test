@@ -9,6 +9,8 @@ Version 0.1
 * Wire up serial peripheral support.
 * Wire up newlib requirements.
 * Put together basic POSIX I/O support.
+* Add the Micro Readline library, make it reentrant.
+* Create a simple (but reentrant) command line interface.
 
 License
 -------

@@ -274,5 +274,7 @@ int cmd_echo(FILE *in, FILE *out, int argc, const char *const *argv)
     while (argc--)
         fprintf(out, "%s%s", *argv++, argc ? " " : "");
 
+    fprintf(out, "\r\n");
+
     return 0;
 }

@@ -19,11 +19,19 @@ On MacOS, with MacPorts installed, the same can be achieved with:
 If you intend to make the documentation, you will also need the `doxygen` and
 `graphviz` packages.
 
+Building
+--------
+
 Once the dependencies are installed, run the script `make-all` to bootstrap
 and build everything. The firmware image can be found in the `src` directory,
 where `image.elf`, `image.bin` and `image.hex` contain the ELF, plain binary,
 and Intel Binhex images.
 
+Documentation
+-------------
+
+The inline documentation is not complete, but can be built with `make doc`
+(or `gmake doc` if `make` is not GNU make).
 
 License
 -------

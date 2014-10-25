@@ -94,7 +94,7 @@ fi
 
 # Determine the chip
 AC_ARG_WITH([chip],
-  [AS_HELP_STRING([--with-chip], [configure with a specific chip]) ]
+  [AS_HELP_STRING([--with-chip=[chipname]], [configure with a specific chip [default=STM32F103ZE]]) ]
 )
 AC_MSG_NOTICE([with_chip=$with_chip])
 default_chip="STM32F103ZE"

@@ -5,6 +5,7 @@ RTOS Reference Implementation Change Log
 Version 0.1
 -----------
 
+* Support for STM32F103ZE and STM32F103ZG chips.
 * Wire up FreeRTOS.
 * Wire up serial peripheral support.
 * Wire up newlib requirements.

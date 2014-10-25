@@ -4,7 +4,8 @@
 # See the LICENSE file at the top of this tree, or if it is missing a copy can
 # be found at http://opensource.org/licenses/MIT
 
-linker_script = platform/STM32F103ZE.ld
+chip = @chip@
+linker_script = platform/$(chip).ld
 AM_LDFLAGS = -T $(linker_script)
 EXEEXT = .elf
 

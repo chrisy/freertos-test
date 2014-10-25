@@ -6,12 +6,6 @@ dnl Process this file with autoconf to produce a configure script.
 # be found at http://opensource.org/licenses/MIT
 #
 
-flavor=
-if test ! -z "${ac_cv_host}"
-    flavor="${ac_cv_host}-"
-    CC="${flavor}-gcc"
-fi
-
 AC_PREREQ(2.67)
 AC_COPYRIGHT([(c) 2014 Chris Luke])
 
@@ -21,6 +15,11 @@ AC_CONFIG_MACRO_DIR([aclocal])
 AC_CANONICAL_TARGET
 
 AM_INIT_AUTOMAKE([subdir-objects foreign])
+
+flavor=
+AS_IF([test ! -z "${ac_cv_host}"],
+    [flavor="${ac_cv_host}-"; CC="${flavor}gcc"]
+)
 
 # Build programs
 AC_PROG_MAKE_SET
@@ -92,6 +91,25 @@ if test x"$enable_debug" = xyes; then
 else
   CFLAGS="$CFLAGS -O2 -g"
 fi
+
+# Determine the chip
+AC_ARG_WITH([chip],
+  [AS_HELP_STRING([--with-chip], [configure with a specific chip]) ]
+)
+AC_MSG_NOTICE([with_chip=$with_chip])
+default_chip="STM32F103ZE"
+AS_IF([test "x$with_chip" = xno], [chip="$default_chip"],
+      [test "x$with_chip" = xyes], [chip="$default_chip"],
+      [test "x$with_chip" = x], [chip="$default_chip"],
+      [chip="$with_chip"]
+)
+# Check we have a linker script for this chip
+AC_MSG_NOTICE([Checking for chip $chip...])
+AS_IF([test -f "src/platform/$chip.ld"],
+    [AC_MSG_NOTICE([Linking for chip $chip])],
+    [AC_MSG_ERROR([Cannot link for chip $chip])]
+)
+AC_SUBST([chip])
 
 # Add our various discovered flags
 CPPFLAGS="$CPPFLAGS $LIBCURL_CPPFLAGS"

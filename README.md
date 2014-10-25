@@ -12,6 +12,10 @@ The code provides bootstrap routines and re-entrant peripheral support. In
 particular it provides a lughtweight POSIX I/O interface including default
 stdin/out/err file descriptors that are wired to USART1.
 
+It uses GNU Autotools to setup the build environment. It expects to find
+the `arm-none-eabi` tools and `newlib` somewhere in the search path.
+
+
 Wishlist
 --------
 
@@ -22,11 +26,19 @@ Wishlist
 * Messagebus.
 * Filesystem support.
 
+
 Acknowledgements
 ----------------
 
-Much inspiration and a lot of the peripheral code came from Partially Stapled:
-https://github.com/mtharp/laureline-firmware .
+Much inspiration and a lot of the original STM32 peripheral code came from
+[Partially Stapled](https://github.com/mtharp/laureline-firmware).
+
+The RTOS is, of course, [FreeRTOS](http://www.freertos.org/).
+
+Micro Readline came from [Helius](https://github.com/Helius/microrl).
+
+This project also includes platform code from STMicroelectronics and ARM.
+
 
 License
 -------

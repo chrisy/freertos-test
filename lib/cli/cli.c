@@ -37,10 +37,10 @@ static int cli_exec(void *opaque, int argc, const char *const *argv);
 #ifdef _USE_COMPLETE
 static char **cli_autocomplete(void *opaque, int argc, const char *const *argv);
 #endif
-static int cmd_help(FILE *in, FILE *out, int argc, const char *const *argv);
-static int cmd_echo(FILE *in, FILE *out, int argc, const char *const *argv);
+static int cmd_help(struct cli *cli, int argc, const char *const *argv);
+static int cmd_echo(struct cli *cli, int argc, const char *const *argv);
 #ifdef CLI_TASKCMDS
-static int cmd_tasks(FILE *in, FILE *out, int argc, const char *const *argv);
+static int cmd_tasks(struct cli *cli, int argc, const char *const *argv);
 #endif
 
 void cli_init(void)
@@ -180,7 +180,7 @@ int cli_exec(void *opaque, int argc, const char *const *argv)
 {
     struct cli *cli = (struct cli *)opaque;
 
-    int (*fn)(FILE *in, FILE *out, int argc, const char *const *argv) = NULL;
+    int (*fn)(struct cli *cli, int argc, const char *const *argv) = NULL;
     int ret = 0;
 
     xSemaphoreTake(cmd_sem, SEM_DELAY);
@@ -195,7 +195,7 @@ int cli_exec(void *opaque, int argc, const char *const *argv)
     xSemaphoreGive(cmd_sem);
 
     if (fn != NULL) {
-        ret = fn(cli->in, cli->out, argc, argv);
+        ret = fn(cli, argc, argv);
     } else {
         fprintf(cli->out, "Command '%s' not found.\r\n", argv[0]);
         ret = -1;
@@ -250,7 +250,7 @@ char **cli_autocomplete(void *opaque, int argc, const char *const *argv)
 }
 #endif
 
-int cmd_help(FILE *in, FILE *out, int argc, const char *const *argv)
+int cmd_help(struct cli *cli, int argc, const char *const *argv)
 {
     if (argc == 1) {
         // display the brief help for every command
@@ -259,7 +259,7 @@ int cmd_help(FILE *in, FILE *out, int argc, const char *const *argv)
 
         xSemaphoreTake(cmd_sem, SEM_DELAY);
         for (int i = 0; i < cli_command_num; i++) {
-            fprintf(out, "%-20s %s\r\n",
+            fprintf(cli->out, "%-20s %s\r\n",
                     cli_commands[i].cmd,
                     cli_commands[i].brief ? cli_commands[i].brief : "");
         }
@@ -272,31 +272,31 @@ int cmd_help(FILE *in, FILE *out, int argc, const char *const *argv)
             if (!strcmp(argv[1], cli_commands[i].cmd)) break;
 
         if (i < cli_command_num) {
-            fprintf(out, "Help for '%s':\r\n\r\n", argv[1]);
-            fprintf(out, "%s\r\n",
+            fprintf(cli->out, "Help for '%s':\r\n\r\n", argv[1]);
+            fprintf(cli->out, "%s\r\n",
                     cli_commands[i].help ? cli_commands[i].help :
                     cli_commands[i].brief ? cli_commands[i].brief :
                     "");
         } else {
-            fprintf(out, "Command '%s' not found.\r\n", argv[1]);
+            fprintf(cli->out, "Command '%s' not found.\r\n", argv[1]);
         }
         xSemaphoreGive(cmd_sem);
     } else {
-        fprintf(out, "Too many parameters given.\r\n");
+        fprintf(cli->out, "Too many parameters given.\r\n");
         return -1;
     }
 
     return 0;
 }
 
-int cmd_echo(FILE *in, FILE *out, int argc, const char *const *argv)
+int cmd_echo(struct cli *cli, int argc, const char *const *argv)
 {
     argc--; argv++;
 
     while (argc--)
-        fprintf(out, "%s%s", *argv++, argc ? " " : "");
+        fprintf(cli->out, "%s%s", *argv++, argc ? " " : "");
 
-    fprintf(out, "\r\n");
+    fprintf(cli->out, "\r\n");
 
     return 0;
 }
@@ -310,7 +310,7 @@ static int cmd_taskidcmp(const void *p1, const void *p2)
     return t1->xTaskNumber - t2->xTaskNumber;
 }
 
-int cmd_tasks(FILE *in, FILE *out, int argc, const char *const *argv)
+int cmd_tasks(struct cli *cli, int argc, const char *const *argv)
 {
     int count = uxTaskGetNumberOfTasks();
     TaskStatus_t *tasks;
@@ -318,14 +318,14 @@ int cmd_tasks(FILE *in, FILE *out, int argc, const char *const *argv)
 
     tasks = malloc(count * sizeof(TaskStatus_t));
     if (tasks == NULL) {
-        fprintf(out, "malloc failed\r\n");
+        fprintf(cli->out, "malloc failed\r\n");
         return -1;
     }
 
     // Get the task state
     count = uxTaskGetSystemState(tasks, count, NULL);
 
-    fprintf(out, "%-5s %-16s %5s %4s %8s"
+    fprintf(cli->out, "%-5s %-16s %5s %4s %8s"
 #if configGENERATE_RUN_TIME_STATS
             " %8s"
 #endif
@@ -367,7 +367,7 @@ int cmd_tasks(FILE *in, FILE *out, int argc, const char *const *argv)
             break;
         }
 
-        fprintf(out, "%-5u %-16s   %c   %4u %8u"
+        fprintf(cli->out, "%-5u %-16s   %c   %4u %8u"
 #if configGENERATE_RUN_TIME_STATS
                 " %8lu"
 #endif

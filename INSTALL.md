@@ -4,6 +4,9 @@ RTOS reference implementation
 Dependencies
 ------------
 
+This project uses the ARM GCC toolchain with the Embedded ABI. It also makes
+use of the `newlib` embedded standard library.
+
 On Ubuntu or Debian Linux the build requirements can be met with:
 
     sudo apt-get install -y make autoconf automake libtool \
@@ -18,6 +21,22 @@ On MacOS, with MacPorts installed, the same can be achieved with:
 
 If you intend to make the documentation, you will also need the `doxygen` and
 `graphviz` packages.
+
+
+Submodules
+----------
+
+This Git repository uses submodules. If you're building from a clone of
+the repository (as opposed to from a tarball or similar) then you must first:
+
+    git submodule init
+    git submodule update
+
+To later synchronize any changes in the submodules, run these commands:
+
+    git submodule sync
+    git submodule update
+
 
 Building
 --------

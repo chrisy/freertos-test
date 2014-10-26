@@ -33,7 +33,9 @@ int main(void)
     dbg("Platform starting up.\r\n");
 
     // add main thread
-    xTaskCreate(main_task, "main", 4096, NULL, 4, NULL);
+    xTaskCreate(main_task, "main",
+                STACK_SIZE_MAIN, NULL,
+                THREAD_PRIO_MAIN, NULL);
 
     // start it up
     dbg("Launching RTOS scheduler.\r\n");
@@ -56,7 +58,7 @@ void __attribute__ ((noreturn)) main_task(void *param)
     cli_start("serial", NULL, NULL);
 
     for (;; )
-        vTaskDelay(500 / portTICK_PERIOD_MS);
+        DELAY_MS(500);
 }
 
 #if USE_SERIAL_USART1
@@ -159,3 +161,16 @@ static void platform_init(void)
     spi_start(&SPI3_Dev, 0);
 #endif
 }
+
+#if configGENERATE_RUN_TIME_STATS
+void platform_timer_init(void)
+{
+    TIM_TypeDef *tim = TIM14;
+
+    RCC->APB1ENR |= RCC_APB1ENR_TIM14EN;
+
+    tim->PSC = 60000; // prescaler - gives us 600Hz
+    tim->CR1 = TIM_CR1_CEN;
+    tim->EGR |= TIM_EGR_UG;
+}
+#endif

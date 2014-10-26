@@ -22,6 +22,11 @@
 
 #define SEM_DELAY (5000 / portTICK_PERIOD_MS)
 
+#if configUSE_TRACE_FACILITY
+#define CLI_TASKCMDS
+#endif
+
+
 static struct cli_command *cli_commands = NULL;
 static int cli_command_num = 0;
 static SemaphoreHandle_t cmd_sem = NULL;
@@ -34,7 +39,9 @@ static char **cli_autocomplete(void *opaque, int argc, const char *const *argv);
 #endif
 static int cmd_help(FILE *in, FILE *out, int argc, const char *const *argv);
 static int cmd_echo(FILE *in, FILE *out, int argc, const char *const *argv);
-
+#ifdef CLI_TASKCMDS
+static int cmd_tasks(FILE *in, FILE *out, int argc, const char *const *argv);
+#endif
 
 void cli_init(void)
 {
@@ -54,6 +61,17 @@ void cli_init(void)
         .fn     = cmd_echo,
     };
     cli_addcmd(&echo);
+
+#ifdef CLI_TASKCMDS
+    struct cli_command tasks = {
+        .cmd    = "tasks",
+        .brief  = "Prints a list of tasks that the RTOS is managing",
+        .help   = "Outputs a formatted list of the tasks currently " \
+                  "managed by the RTOS.",
+        .fn     = cmd_tasks,
+    };
+    cli_addcmd(&tasks);
+#endif
 }
 
 static void cli_print(void *opaque, const char *str)
@@ -115,7 +133,9 @@ void cli_start(char *name, FILE *in, FILE *out)
     cli->in = in;
     cli->out = out;
 
-    xTaskCreate(cli_task, cli->name, 4096, cli, 4, &cli->task);
+    xTaskCreate(cli_task, cli->name,
+                STACK_SIZE_CLI, cli,
+                THREAD_PRIO_CLI, &cli->task);
 }
 
 void cli_stop(struct cli *cli)
@@ -271,6 +291,8 @@ int cmd_help(FILE *in, FILE *out, int argc, const char *const *argv)
 
 int cmd_echo(FILE *in, FILE *out, int argc, const char *const *argv)
 {
+    argc--; argv++;
+
     while (argc--)
         fprintf(out, "%s%s", *argv++, argc ? " " : "");
 
@@ -278,3 +300,90 @@ int cmd_echo(FILE *in, FILE *out, int argc, const char *const *argv)
 
     return 0;
 }
+
+#ifdef CLI_TASKCMDS
+static int cmd_taskidcmp(const void *p1, const void *p2)
+{
+    TaskStatus_t *t1 = (TaskStatus_t *)p1;
+    TaskStatus_t *t2 = (TaskStatus_t *)p2;
+
+    return t1->xTaskNumber - t2->xTaskNumber;
+}
+
+int cmd_tasks(FILE *in, FILE *out, int argc, const char *const *argv)
+{
+    int count = uxTaskGetNumberOfTasks();
+    TaskStatus_t *tasks;
+    char status;
+
+    tasks = malloc(count * sizeof(TaskStatus_t));
+    if (tasks == NULL) {
+        fprintf(out, "malloc failed\r\n");
+        return -1;
+    }
+
+    // Get the task state
+    count = uxTaskGetSystemState(tasks, count, NULL);
+
+    fprintf(out, "%-5s %-16s %5s %4s %8s"
+#if configGENERATE_RUN_TIME_STATS
+            " %8s"
+#endif
+            "\r\n",
+            "ID",
+            "Task name",
+            "State",
+            "Prio",
+            "Stack"
+#if configGENERATE_RUN_TIME_STATS
+            ,
+            "CPU time"
+#endif
+            );
+
+    qsort(tasks, count, sizeof(TaskStatus_t), cmd_taskidcmp);
+
+    /* Create a human readable table from the binary data. */
+    for (int i = 0; i < count; i++) {
+        switch (tasks[i].eCurrentState) {
+        case eReady:
+            status = 'R';
+            break;
+
+        case eBlocked:
+            status = 'B';
+            break;
+
+        case eSuspended:
+            status = 'S';
+            break;
+
+        case eDeleted:
+            status = 'D';
+            break;
+
+        default:
+            status = '?';
+            break;
+        }
+
+        fprintf(out, "%-5u %-16s   %c   %4u %8u"
+#if configGENERATE_RUN_TIME_STATS
+                " %8lu"
+#endif
+                "\r\n",
+                (unsigned int)tasks[i].xTaskNumber,
+                tasks[i].pcTaskName,
+                status,
+                (unsigned int)tasks[i].uxCurrentPriority,
+                (unsigned int)tasks[i].usStackHighWaterMark
+#if configGENERATE_RUN_TIME_STATS
+                ,
+                (((unsigned long)tasks[i].ulRunTimeCounter) * 10UL) / 12UL
+#endif
+                );
+    }
+
+    return 0;
+}
+#endif

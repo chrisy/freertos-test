@@ -23,7 +23,8 @@
 #define configUSE_RECURSIVE_MUTEXES     1
 #define configUSE_TIME_SLICING          1
 #define configUSE_TIMERS                1
-#define configUSE_TRACE_FACILITY        0
+#define configUSE_TRACE_FACILITY        1
+#define configUSE_STATS_FORMATTING_FUNCTIONS 0
 
 #define configUSE_COUNTING_SEMAPHORES   1
 #define configUSE_MUTEXES               1
@@ -38,12 +39,13 @@
 #define configMAX_TASK_NAME_LEN         16
 #define configIDLE_SHOULD_YIELD         1
 #define configQUEUE_REGISTRY_SIZE       0
-#define configGENERATE_RUN_TIME_STATS   0
+#define configGENERATE_RUN_TIME_STATS   1
 #define configTIMER_TASK_PRIORITY       (configMAX_PRIORITIES - 1)
 #define configTIMER_QUEUE_LENGTH        2
 #define configTIMER_TASK_STACK_DEPTH    128
 #define configMAX_CO_ROUTINE_PRIORITIES 1
 #define configTASK_RETURN_ADDRESS       NULL
+
 
 // Needed if we're using heap_4.c
 //#define configTOTAL_HEAP_SIZE           32768
@@ -74,12 +76,18 @@
  * scheduler, but cannot use any RTOS functions. */
 #define configMAX_SYSCALL_INTERRUPT_PRIORITY 0x10
 
-
 /* This is the value being used as per the ST library which permits 16
  * priority values, 0 to 15.  This must correspond to the
  * configKERNEL_INTERRUPT_PRIORITY setting.  Here 15 corresponds to the lowest
  * NVIC value of 255. */
 #define configLIBRARY_KERNEL_INTERRUPT_PRIORITY 15
+
+// timer stuff
+#if configGENERATE_RUN_TIME_STATS
+void platform_timer_init(void);
+#define portCONFIGURE_TIMER_FOR_RUN_TIME_STATS() platform_timer_init()
+#define portGET_RUN_TIME_COUNTER_VALUE() (TIM14->CNT)
+#endif
 
 // Useful macros
 #define DISABLE_IRQ         portENTER_CRITICAL

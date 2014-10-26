@@ -1,9 +1,13 @@
 RTOS Reference Implementation Change Log
 ========================================
 
-
-Version 0.1
+Version 0.2
 -----------
+* Add CPU timer for tasks.
+* Add CLI command to display tasks.
+
+Version 0.1 (2014-10-25)
+------------------------
 
 * Support for STM32F103ZE and STM32F103ZG chips.
 * Wire up FreeRTOS.

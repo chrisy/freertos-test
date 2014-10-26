@@ -43,7 +43,7 @@
 #define SYSTEM_STACK_SIZE       0
 
 // This is the STM32 family we're using
-#define STM32F10X_HD            1
+#define STM32F10X_XL            1
 // We have external RAM
 #define DATA_IN_ExtSRAM         1
 
@@ -59,25 +59,19 @@
 #define USE_SPI3                0
 
 /* Highest priority (highest number) */
-#define THREAD_PRIO_VTIMER      4
 #define THREAD_PRIO_MAIN        3
-//#define THREAD_PRIO_TCPIP       2
-//#define THREAD_PRIO_NTPCLIENT   1
+#define THREAD_PRIO_CLI         3
 /* Lowest priority (lowest number) */
 
 /* Highest priority (lowest number) */
-//#define IRQ_PRIO_ETH            4
 #define IRQ_PRIO_SYSTICK        8
 #define IRQ_PRIO_I2C            12
 #define IRQ_PRIO_SPI            12
 #define IRQ_PRIO_USART          12
 /* Lowest priority (highest number) */
 
-#define MSP_STACK_SIZE          512
-#define MAIN_STACK_SIZE         512
-//#define NTPCLIENT_STACK_SIZE    512
-//#define TCPIP_STACK_SIZE        512
-#define VTIMER_STACK_SIZE       512
+#define STACK_SIZE_MAIN         2048
+#define STACK_SIZE_CLI          2048
 
 
 #include <stm32f10x.h>

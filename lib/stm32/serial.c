@@ -133,7 +133,10 @@ serial_start(serial_t *serial, int speed
     }
 
     RCC->APB2ENR |= RCC_APB2ENR_AFIOEN | RCC_APB2ENR_IOPAEN;
-    RCC->AHBENR |= RCC_AHBENR_DMA1EN | RCC_AHBENR_DMA2EN;
+    RCC->AHBENR |= RCC_AHBENR_DMA1EN;
+#if defined (STM32F10X_HD) || defined  (STM32F10X_CL) || defined  (STM32F10X_HD_VL)
+    RCC->AHBENR |= RCC_AHBENR_DMA2EN;
+#endif
     GPIOA->CRL = gpioa_crl;
     GPIOA->CRH = gpioa_crh;
     GPIOB->CRH = gpiob_crh;

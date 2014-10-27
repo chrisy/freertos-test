@@ -42,6 +42,9 @@ static int cmd_echo(struct cli *cli, int argc, const char *const *argv);
 #ifdef CLI_TASKCMDS
 static int cmd_tasks(struct cli *cli, int argc, const char *const *argv);
 #endif
+#ifdef _USE_HISTORY
+static int cmd_history(struct cli *cli, int argc, const char *const *argv);
+#endif
 
 void cli_init(void)
 {
@@ -71,6 +74,16 @@ void cli_init(void)
         .fn     = cmd_tasks,
     };
     cli_addcmd(&tasks);
+#endif
+
+#ifdef _USE_HISTORY
+    struct cli_command history = {
+        .cmd    = "history",
+        .brief  = "Prints the history of commands entered",
+        .help   = "Output the command history. This is a finite-sized list.",
+        .fn     = cmd_history,
+    };
+    cli_addcmd(&history);
 #endif
 }
 
@@ -387,3 +400,12 @@ int cmd_tasks(struct cli *cli, int argc, const char *const *argv)
     return 0;
 }
 #endif
+
+#ifdef _USE_HISTORY
+int cmd_history(struct cli *cli, int argc, const char *const *argv)
+{
+    microrl_print_history(&cli->rl);
+    return 0;
+}
+#endif
+

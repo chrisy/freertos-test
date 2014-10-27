@@ -6,11 +6,11 @@
 
 chip = @chip@
 linker_script = platform/$(chip).ld
-AM_LDFLAGS = -T $(linker_script)
+AM_LDFLAGS = -T $(linker_script) -Wl,-Map=image.map
 EXEEXT = .elf
 
 bin_PROGRAMS = image
-extra_outputs = image.bin image.hex image.lst
+extra_outputs = image.bin image.hex image.lst image.map
 
 sources = \
 	platform/crt0.c \

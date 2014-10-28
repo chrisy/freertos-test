@@ -29,9 +29,11 @@ include/stamp-h1
 .dirstamp
 src/image
 src/image.elf
+src/image.map
 src/image.lst
 src/image.bin
 src/image.hex
+src/image.use
 *.tar.gz
 doc/*.tag
 doc/html

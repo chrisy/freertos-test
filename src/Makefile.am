@@ -50,7 +50,7 @@ image.lst: image$(EXEEXT)
 
 image.use: image.map
 	@printf "%5s %8s %s\n" "Size" "Section" "Module" > $@.tmp
-	@awk '/^ \.(text|data)/{print $$3 " " $$1 " " $$4}' $< | \
+	@awk '/^ \.(text|data)  *0x/{print $$3 " " $$1 " " $$4}' $< | \
 		sed -e "s/ \/.*[(]/ (/" | xargs printf "%5d %8s %s\n" | \
 		sort -rn >> $@.tmp
 	@mv $@.tmp $@

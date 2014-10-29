@@ -20,12 +20,17 @@ char *_sbrk(intptr_t increment)
 {
     char *ret;
 
+    portENTER_CRITICAL();
+
     if (heap_top + increment + SYSTEM_STACK_SIZE > (char *)&_mm_heap_end) {
+        portEXIT_CRITICAL();
         errno = ENOMEM;
         return (char *)-1;
     }
     ret = heap_top;
     heap_top += increment;
+
+    portEXIT_CRITICAL();
 
 #ifdef DEBUG
     dbgf("sbrk %u bytes, ptr=%x heap_top=%x \r\n", increment, (unsigned long)ret, (unsigned long)heap_top);

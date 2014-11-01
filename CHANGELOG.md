@@ -5,6 +5,7 @@ Version 0.2
 -----------
 * Add CPU timer for tasks.
 * Add CLI command to display tasks.
+* Add a font-to-C mechanism.
 
 Version 0.1 (2014-10-25)
 ------------------------

@@ -11,7 +11,8 @@ lib_LTLIBRARIES = \
 	libposixio.la \
 	libmisc.la \
 	libmicrorl.la \
-	libcli.la
+	libcli.la \
+	libfonts.la
 
 rtos_sources = \
 	FreeRTOS/Source/portable/GCC/ARM_CM3/port.c \
@@ -51,6 +52,7 @@ microrl_sources = \
 cli_sources = \
 	cli/cli.c
 
+
 #librtos_la_CFLAGS = -Wno-missing-braces -Wno-missing-field-initializers -Wno-sign-compare
 librtos_la_SOURCES = $(rtos_sources)
 libstm32_la_SOURCES = $(stm32_sources)
@@ -59,4 +61,48 @@ libposixio_la_SOURCES = $(posixio_sources)
 libmisc_la_SOURCES = $(misc_sources)
 libmicrorl_la_SOURCES = $(microrl_sources)
 libcli_la_SOURCES = $(cli_sources)
+
+fontdir := $(top_srcdir)/resources/ttf
+fontemdir := $(top_srcdir)/tools/fontem
+
+# A list of all the fonts we want to build.
+# # The source .ttf is determined from the name.
+fonts_sources :=
+fonts_sources += fonts/font-UbuntuMonoB-7.c
+fonts_sources += fonts/font-UbuntuMonoB-8.c
+fonts_sources += fonts/font-UbuntuMonoB-9.c
+fonts_sources += fonts/font-UbuntuMonoB-10.c
+fonts_sources += fonts/font-UbuntuMonoB-11.c
+fonts_sources += fonts/font-UbuntuMonoB-12.c
+fonts_sources += fonts/font-UbuntuMonoB-13.c
+fonts_sources += fonts/font-UbuntuMonoB-14.c
+fonts_sources += fonts/font-UbuntuMonoB-16.c
+fonts_sources += fonts/font-UbuntuMonoB-18.c
+fonts_sources += fonts/font-UbuntuMonoB-20.c
+fonts_sources += fonts/font-UbuntuMonoB-22.c
+fonts_sources += fonts/font-UbuntuMonoB-24.c
+fonts_sources += fonts/font-UbuntuMonoB-26.c
+fonts_sources += fonts/font-UbuntuMonoB-28.c
+fonts_sources += fonts/font-UbuntuMonoB-30.c
+
+BUILT_SOURCES = $(fonts_sources)
+
+fonts/fontem.h: $(fontemdir)/src/resource/fontem.h
+	cp -p $< $@
+
+.SECONDEXPANSION:
+$(fonts_sources): %.c: $$(fontdir)/$$(word 2,$$(subst -, ,%)).ttf fonts/fontem.h $(fontemdir)/src/fontem
+	$(fontemdir)/src/fontem --font=$(fontdir)/$(word 2,$(subst -, ,$(notdir $@))).ttf \
+		--dir=fonts --name=$(word 2,$(subst -, ,$(notdir $@))) --size=$(word 3,$(subst -, ,$(subst .c,,$(notdir $@))))
+
+fonts/font_all.h: $(fonts_sources)
+	@echo "/* A list of all font headers. */" > $@
+	for font in $(notdir $(fonts_sources:%.c=%.h)); do echo "#include \"$$font\"" >> $@; done
+
+clean-local:
+	rm -f $(fonts_sources) $(fonts_sources:.c=.h)
+
+all-local: fonts/font_all.h
+
+libfonts_la_SOURCES = $(fonts_sources)
 

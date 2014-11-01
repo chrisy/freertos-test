@@ -1,3 +1,6 @@
 [submodule "lib/microrl"]
 	path = lib/microrl
 	url = https://github.com/chrisy/microrl.git
+[submodule "tools/fontem"]
+	path = tools/fontem
+	url = https://github.com/chrisy/fontem.git

@@ -11,13 +11,13 @@ ACLOCAL_AMFLAGS = -I aclocal
 # Doxygen
 include $(top_srcdir)/amlocal/doxygen.am
 
-provider_lib = lib
+extra_sources = tools lib
 sources = include src
-SUBDIRS = $(provider_lib) $(sources)
+SUBDIRS = $(extra_sources) $(sources)
 
-EXTRA_DIST = README LCOPYING \
-	bootstrap do-configure-arm \
-	doxygen.cfg uncrustify.cfg
+EXTRA_DIST = README LICENSE \
+	bootstrap do-configure-arm make-all \
+	amlocal/doxygen.am amlocal/doxygen.cfg amlocal/uncrustify.cfg
 
 # Make the documentation when installing
 $(man3_MANS): doxygen-doc

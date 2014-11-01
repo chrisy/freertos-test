@@ -141,6 +141,7 @@ CPPFLAGS="$CPPFLAGS -I${bdir}/lib/posixio"
 CPPFLAGS="$CPPFLAGS -I${bdir}/lib/misc"
 CPPFLAGS="$CPPFLAGS -I${bdir}/lib/microrl/src"
 CPPFLAGS="$CPPFLAGS -I${bdir}/lib/cli"
+CPPFLAGS="$CPPFLAGS -I${bdir}/lib/fonts"
 CPPFLAGS="$CPPFLAGS -I${bdir}/lib/FreeRTOS/Source/include"
 CPPFLAGS="$CPPFLAGS -I${bdir}/lib/FreeRTOS/Source/portable/GCC/ARM_CM3"
 
@@ -165,6 +166,7 @@ AC_CONFIG_FILES([Makefile
     include/Makefile
     include/cc_config.h
     lib/Makefile
-    src/Makefile])
+    src/Makefile
+    tools/Makefile])
 AC_OUTPUT
 

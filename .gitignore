@@ -37,3 +37,4 @@ src/image.use
 *.tar.gz
 doc/*.tag
 doc/html
+lib/fonts/*.[ch]

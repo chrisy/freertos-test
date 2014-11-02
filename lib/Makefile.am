@@ -85,6 +85,23 @@ fonts_sources += fonts/font-UbuntuMonoB-26.c
 fonts_sources += fonts/font-UbuntuMonoB-28.c
 fonts_sources += fonts/font-UbuntuMonoB-30.c
 
+fonts_sources += fonts/font-DejaVuSansMono-7.c
+fonts_sources += fonts/font-DejaVuSansMono-8.c
+fonts_sources += fonts/font-DejaVuSansMono-9.c
+fonts_sources += fonts/font-DejaVuSansMono-10.c
+fonts_sources += fonts/font-DejaVuSansMono-11.c
+fonts_sources += fonts/font-DejaVuSansMono-12.c
+fonts_sources += fonts/font-DejaVuSansMono-13.c
+fonts_sources += fonts/font-DejaVuSansMono-14.c
+fonts_sources += fonts/font-DejaVuSansMono-16.c
+fonts_sources += fonts/font-DejaVuSansMono-18.c
+fonts_sources += fonts/font-DejaVuSansMono-20.c
+fonts_sources += fonts/font-DejaVuSansMono-22.c
+fonts_sources += fonts/font-DejaVuSansMono-24.c
+fonts_sources += fonts/font-DejaVuSansMono-26.c
+fonts_sources += fonts/font-DejaVuSansMono-28.c
+fonts_sources += fonts/font-DejaVuSansMono-30.c
+
 BUILT_SOURCES = $(fonts_sources)
 
 fonts/fontem.h: $(fontemdir)/src/resource/fontem.h

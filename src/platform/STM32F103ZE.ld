@@ -9,9 +9,13 @@
 
 MEMORY
 {
-    flash (rx)  : ORIGIN = 0x08000000, LENGTH = 512K
-    ram   (rwx) : ORIGIN = 0x20000000, LENGTH = 64K
-    stack (rw)  : ORIGIN = 0x20010000, LENGTH = 0K
+    flash (rx)      : ORIGIN = 0x08000000, LENGTH = 1M
+    ram   (rwx)     : ORIGIN = 0x20000000, LENGTH = 96K
+    stack (rw)      : ORIGIN = 0x20010000, LENGTH = 0K
+    fsmc_bank1 (rw) : ORIGIN = 0x60000000, LENGTH = 1M
+    fsmc_bank2 (rw) : ORIGIN = 0x70000000, LENGTH = 1M
+    fsmc_bank3 (rw) : ORIGIN = 0x80000000, LENGTH = 1M
+    fsmc_bank4 (rw) : ORIGIN = 0x90000000, LENGTH = 1M
 }
 
 ENTRY(_crt0_init)
@@ -70,6 +74,38 @@ SECTIONS
         _mm_heap_end = .;
         _mm_stack_top = .;
     } >stack
+
+    .fsmc_bank1 :
+    {
+        _fsmc_bank1_start = .;
+        *(.fsmc_bank1)
+        *(.fsmc_bank1.*)
+        _fsmc_bank1_end = .;
+    } >fsmc_bank1
+
+    .fsmc_bank2 :
+    {
+        _fsmc_bank2_start = .;
+        *(.fsmc_bank2)
+        *(.fsmc_bank2.*)
+        _fsmc_bank2_end = .;
+    } >fsmc_bank2
+
+    .fsmc_bank3 :
+    {
+        _fsmc_bank3_start = .;
+        *(.fsmc_bank3)
+        *(.fsmc_bank3.*)
+        _fsmc_bank3_end = .;
+    } >fsmc_bank3
+
+    .fsmc_bank4 :
+    {
+        _fsmc_bank4_start = .;
+        *(.fsmc_bank4)
+        *(.fsmc_bank4.*)
+        _fsmc_bank4_end = .;
+    } >fsmc_bank4
 
       /* Stabs debugging sections.  */
   .stab          0 : { *(.stab) }

@@ -12,10 +12,10 @@ MEMORY
     flash (rx)      : ORIGIN = 0x08000000, LENGTH = 1M
     ram   (rwx)     : ORIGIN = 0x20000000, LENGTH = 96K
     stack (rw)      : ORIGIN = 0x20010000, LENGTH = 0K
-    fsmc_bank1 (rw) : ORIGIN = 0x60000000, LENGTH = 1M
-    fsmc_bank2 (rw) : ORIGIN = 0x70000000, LENGTH = 1M
-    fsmc_bank3 (rw) : ORIGIN = 0x80000000, LENGTH = 1M
-    fsmc_bank4 (rw) : ORIGIN = 0x90000000, LENGTH = 1M
+    fsmc_bank1 (rw) : ORIGIN = 0x60000000, LENGTH = 1M /* 256MB max */
+    fsmc_bank2 (rw) : ORIGIN = 0x70000000, LENGTH = 1M /* 256MB max */
+    fsmc_bank3 (rw) : ORIGIN = 0x80000000, LENGTH = 1M /* 256MB max */
+    fsmc_bank4 (rw) : ORIGIN = 0x90000000, LENGTH = 1M /* 256MB max */
 }
 
 ENTRY(_crt0_init)

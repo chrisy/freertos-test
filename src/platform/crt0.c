@@ -11,6 +11,7 @@
 #include <stdint.h>
 #include <FreeRTOS.h>
 #include <nvic.h>
+#include <fsmc.h>
 #include <version.h>
 #include "main.h"
 

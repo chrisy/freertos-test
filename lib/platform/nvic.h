@@ -1,14 +1,14 @@
 /** NVIC vector definition
  * vim: set softtabstop=4 shiftwidth=4 tabstop=4 expandtab:
- * \file lib/platform/sbrk.c
+ * \file lib/platform/nvic.h
  *
  * This file is distributed under the terms of the MIT License.
  * See the LICENSE file at the top of this tree, or if it is missing a copy can
  * be found at http://opensource.org/licenses/MIT
  */
 
-#ifndef NVIC_H
-#define NVIC_H
+#ifndef _NVIC_H
+#define _NVIC_H
 
 #include <stdint.h>
 
@@ -140,4 +140,4 @@ struct nvic {
 extern struct nvic _nvic_vector;
 #endif /* USE_NVIC_VECTOR */
 
-#endif /* NVIC_H */
+#endif /* _NVIC_H */

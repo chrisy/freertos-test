@@ -112,7 +112,7 @@ spi_exchange(spi_t *spi, const uint8_t *tx_buf, uint8_t *rx_buf, uint16_t size)
 }
 
 
-static void
+static inline void
 rx_isr(void *param, uint32_t flags)
 {
     BaseType_t wakeup = 0;
@@ -123,3 +123,27 @@ rx_isr(void *param, uint32_t flags)
     xSemaphoreGiveFromISR(spi->sem, &wakeup);
     portEND_SWITCHING_ISR(wakeup);
 }
+
+#if USE_SPI1
+void
+SPI1_IRQHandler(void)
+{
+    rx_isr(&SPI1_Dev, 0);
+}
+#endif
+
+#if USE_SPI2
+void
+SPI2_IRQHandler(void)
+{
+    rx_isr(&SPI2_Dev, 0);
+}
+#endif
+
+#if USE_SPI3
+void
+SPI3_IRQHandler(void)
+{
+    rx_isr(&SPI3_Dev, 0);
+}
+#endif

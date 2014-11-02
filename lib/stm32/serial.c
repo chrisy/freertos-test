@@ -295,7 +295,7 @@ usart_irq(serial_t *serial)
 }
 
 
-static void
+static inline void
 usart_tcie(void *param, uint32_t flags)
 {
     serial_t *serial = (serial_t *)param;

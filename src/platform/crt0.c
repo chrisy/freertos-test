@@ -79,6 +79,12 @@ struct nvic _nvic_vector __attribute__ ((section(".nvic_vector"))) = {
 #if USE_SERIAL_USART3
     .USART3_IRQHandler          = USART3_IRQHandler,
 #endif
+#if USE_SERIAL_UART4
+    .UART4_IRQHandler           = UART4_IRQHandler,
+#endif
+#if USE_SERIAL_UART5
+    .UART5_IRQHandler           = UART5_IRQHandler,
+#endif
 
     // STM32 I2C handlers
 #if USE_I2C1
@@ -89,10 +95,21 @@ struct nvic _nvic_vector __attribute__ ((section(".nvic_vector"))) = {
     .I2C2_EV_IRQHandler         = I2C2_EV_IRQHandler,
     .I2C2_ER_IRQHandler         = I2C2_ER_IRQHandler,
 #endif
+
+    // STM32 SPI handlers
+#if USE_SPI1
+    .SPI1_IRQHandler            = SPI1_IRQHandler,
+#endif
+#if USE_SPI2
+    .SPI2_IRQHandler            = SPI2_IRQHandler,
+#endif
+#if USE_SPI3
+    .SPI3_IRQHandler            = SPI3_IRQHandler,
+#endif
 };
 
 /* Some static text info for the binary image */
-static char _crt0_info[] __attribute__ ((section(".info"))) =
+static char _crt0_info[] SECTION_INFO =
     PROJECT_NAME " v" PROJECT_VERSION " " PROJECT_COPYRIGHT;
 
 
@@ -131,6 +148,7 @@ void __attribute__ ((noreturn)) _crt0_hardfault_print(uint32_t *faultStack)
     dbg("\r\nHardfault!\r\n");
     dbgf("r0=%08x r1=%08x r2=%08x r3=%08x r12=%08x\r\n", r0, r1, r2, r3, r12);
     dbgf("lr=%08x pc=%08x psr=%08x\r\n\r\n", lr, pc, psr);
+
     for (;; ) ;
 }
 

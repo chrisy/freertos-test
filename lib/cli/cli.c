@@ -408,4 +408,3 @@ int cmd_history(struct cli *cli, int argc, const char *const *argv)
     return 0;
 }
 #endif
-

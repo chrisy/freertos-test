@@ -41,6 +41,16 @@ extern spi_t SPI3_Dev;
 void spi_start(spi_t *spi, uint32_t cr1);
 void spi_exchange(spi_t *spi, const uint8_t *tx_buf, uint8_t *rx_buf, uint16_t size);
 
+#if USE_SPI1
+void SPI1_IRQHandler(void) __attribute__ ((interrupt));
+#endif
+#if USE_SPI2
+void SPI2_IRQHandler(void) __attribute__ ((interrupt));
+#endif
+#if USE_SPI3
+void SPI3_IRQHandler(void) __attribute__ ((interrupt));
+#endif
+
 #define spi_select(spi) { (spi)->cs_pad->BRR = (1 << (spi)->cs_pin); }
 #define spi_deselect(spi) { (spi)->cs_pad->BSRR = (1 << (spi)->cs_pin); }
 

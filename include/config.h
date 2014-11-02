@@ -40,6 +40,7 @@
 #include "cc_config.h"
 
 // The heap size check in sbrk will offset its ceiling by this much
+// This is 0 because once RTOS is up, we don't use this stack
 #define SYSTEM_STACK_SIZE       0
 
 // This is the STM32 family we're using
@@ -54,7 +55,7 @@
 #define USE_SERIAL_USART3       0
 #define USE_SERIAL_UART4        0
 #define USE_SERIAL_UART5        0
-#define USE_SPI1                0
+#define USE_SPI1                1
 #define USE_SPI2                0
 #define USE_SPI3                0
 
@@ -72,6 +73,13 @@
 
 #define STACK_SIZE_MAIN         2048
 #define STACK_SIZE_CLI          2048
+
+/* Section attributes we use */
+#define SECTION_INFO            __attribute__ ((section(".info")))
+#define SECTION_FSMC_BANK1      __attribute__ ((section(".fsmc_bank1")))
+#define SECTION_FSMC_BANK2      __attribute__ ((section(".fsmc_bank2")))
+#define SECTION_FSMC_BANK3      __attribute__ ((section(".fsmc_bank3")))
+#define SECTION_FSMC_BANK4      __attribute__ ((section(".fsmc_bank4")))
 
 
 #include <stm32f10x.h>

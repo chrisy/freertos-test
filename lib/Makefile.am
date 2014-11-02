@@ -68,9 +68,6 @@ fontemdir := $(top_srcdir)/tools/fontem
 # A list of all the fonts we want to build.
 # # The source .ttf is determined from the name.
 fonts_sources :=
-fonts_sources += fonts/font-UbuntuMonoB-7.c
-fonts_sources += fonts/font-UbuntuMonoB-8.c
-fonts_sources += fonts/font-UbuntuMonoB-9.c
 fonts_sources += fonts/font-UbuntuMonoB-10.c
 fonts_sources += fonts/font-UbuntuMonoB-11.c
 fonts_sources += fonts/font-UbuntuMonoB-12.c
@@ -85,9 +82,6 @@ fonts_sources += fonts/font-UbuntuMonoB-26.c
 fonts_sources += fonts/font-UbuntuMonoB-28.c
 fonts_sources += fonts/font-UbuntuMonoB-30.c
 
-fonts_sources += fonts/font-DejaVuSansMono-7.c
-fonts_sources += fonts/font-DejaVuSansMono-8.c
-fonts_sources += fonts/font-DejaVuSansMono-9.c
 fonts_sources += fonts/font-DejaVuSansMono-10.c
 fonts_sources += fonts/font-DejaVuSansMono-11.c
 fonts_sources += fonts/font-DejaVuSansMono-12.c
@@ -101,6 +95,48 @@ fonts_sources += fonts/font-DejaVuSansMono-24.c
 fonts_sources += fonts/font-DejaVuSansMono-26.c
 fonts_sources += fonts/font-DejaVuSansMono-28.c
 fonts_sources += fonts/font-DejaVuSansMono-30.c
+
+fonts_sources += fonts/font-VeraMono-10.c
+fonts_sources += fonts/font-VeraMono-11.c
+fonts_sources += fonts/font-VeraMono-12.c
+fonts_sources += fonts/font-VeraMono-13.c
+fonts_sources += fonts/font-VeraMono-14.c
+fonts_sources += fonts/font-VeraMono-16.c
+fonts_sources += fonts/font-VeraMono-18.c
+fonts_sources += fonts/font-VeraMono-20.c
+fonts_sources += fonts/font-VeraMono-22.c
+fonts_sources += fonts/font-VeraMono-24.c
+fonts_sources += fonts/font-VeraMono-26.c
+fonts_sources += fonts/font-VeraMono-28.c
+fonts_sources += fonts/font-VeraMono-30.c
+
+fonts_sources += fonts/font-LiberationMono-10.c
+fonts_sources += fonts/font-LiberationMono-11.c
+fonts_sources += fonts/font-LiberationMono-12.c
+fonts_sources += fonts/font-LiberationMono-13.c
+fonts_sources += fonts/font-LiberationMono-14.c
+fonts_sources += fonts/font-LiberationMono-16.c
+fonts_sources += fonts/font-LiberationMono-18.c
+fonts_sources += fonts/font-LiberationMono-20.c
+fonts_sources += fonts/font-LiberationMono-22.c
+fonts_sources += fonts/font-LiberationMono-24.c
+fonts_sources += fonts/font-LiberationMono-26.c
+fonts_sources += fonts/font-LiberationMono-28.c
+fonts_sources += fonts/font-LiberationMono-30.c
+
+fonts_sources += fonts/font-dsdigi-10.c
+fonts_sources += fonts/font-dsdigi-11.c
+fonts_sources += fonts/font-dsdigi-12.c
+fonts_sources += fonts/font-dsdigi-13.c
+fonts_sources += fonts/font-dsdigi-14.c
+fonts_sources += fonts/font-dsdigi-16.c
+fonts_sources += fonts/font-dsdigi-18.c
+fonts_sources += fonts/font-dsdigi-20.c
+fonts_sources += fonts/font-dsdigi-22.c
+fonts_sources += fonts/font-dsdigi-24.c
+fonts_sources += fonts/font-dsdigi-26.c
+fonts_sources += fonts/font-dsdigi-28.c
+fonts_sources += fonts/font-dsdigi-30.c
 
 BUILT_SOURCES = $(fonts_sources)
 

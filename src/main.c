@@ -25,6 +25,7 @@
 
 static void main_task(void *param);
 static void platform_init(void);
+static void led_init(void);
 
 QueueSetHandle_t qs_serial = NULL;
 
@@ -147,6 +148,10 @@ static void platform_init(void)
     i2c_start(&I2C2_Dev);
 #endif
 
+    printf("Starting LEDs.\r\n");
+    fflush(stdout);
+    led_init();
+
     // Initialize SPI
 #if USE_SPI1
     printf("Starting SPI 1.\r\n");
@@ -167,10 +172,35 @@ void platform_timer_init(void)
 {
     TIM_TypeDef *tim = TIM14;
 
+    portENTER_CRITICAL();
     RCC->APB1ENR |= RCC_APB1ENR_TIM14EN;
+    portEXIT_CRITICAL();
 
     tim->PSC = 60000; // prescaler - gives us 600Hz
     tim->CR1 = TIM_CR1_CEN;
     tim->EGR |= TIM_EGR_UG;
 }
 #endif
+
+void led_init(void)
+{
+    portENTER_CRITICAL();
+
+    RCC->APB2ENR |= RCC_APB2ENR_IOPFEN;
+
+    GPIOF->CRL &= ~(
+        GPIO_CRL_MODE6 | GPIO_CRL_CNF6 |
+        GPIO_CRL_MODE7 | GPIO_CRL_CNF7);
+    GPIOF->CRH &= ~(
+        GPIO_CRH_MODE8 | GPIO_CRH_CNF8 |
+        GPIO_CRH_MODE9 | GPIO_CRH_CNF9);
+
+    GPIOF->CRL |= GPIO_CRL_MODE6_0 | GPIO_CRL_MODE6_1;
+    GPIOF->CRL |= GPIO_CRL_MODE7_0 | GPIO_CRL_MODE7_1;
+    GPIOF->CRH |= GPIO_CRH_MODE8_0 | GPIO_CRH_MODE8_1;
+    GPIOF->CRH |= GPIO_CRH_MODE9_0 | GPIO_CRH_MODE9_1;
+
+    portEXIT_CRITICAL();
+
+    GPIOF->BSRR = 0xffff;
+}

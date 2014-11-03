@@ -55,7 +55,7 @@
 #define USE_SERIAL_USART3       0
 #define USE_SERIAL_UART4        0
 #define USE_SERIAL_UART5        0
-#define USE_SPI1                1
+#define USE_SPI1                0
 #define USE_SPI2                0
 #define USE_SPI3                0
 
@@ -80,6 +80,10 @@
 #define SECTION_FSMC_BANK2      __attribute__ ((section(".fsmc_bank2")))
 #define SECTION_FSMC_BANK3      __attribute__ ((section(".fsmc_bank3")))
 #define SECTION_FSMC_BANK4      __attribute__ ((section(".fsmc_bank4")))
+#define SECTION_FSMC_BANK1_1    __attribute__ ((section(".fsmc_bank1_1")))
+#define SECTION_FSMC_BANK1_2    __attribute__ ((section(".fsmc_bank1_2")))
+#define SECTION_FSMC_BANK1_3    __attribute__ ((section(".fsmc_bank1_3")))
+#define SECTION_FSMC_BANK1_4    __attribute__ ((section(".fsmc_bank1_4")))
 
 
 #include <stm32f10x.h>

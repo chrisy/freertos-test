@@ -112,7 +112,7 @@ spi_exchange(spi_t *spi, const uint8_t *tx_buf, uint8_t *rx_buf, uint16_t size)
 }
 
 
-static inline void
+static void
 rx_isr(void *param, uint32_t flags)
 {
     BaseType_t wakeup = 0;
@@ -128,7 +128,6 @@ rx_isr(void *param, uint32_t flags)
 void
 SPI1_IRQHandler(void)
 {
-    rx_isr(&SPI1_Dev, 0);
 }
 #endif
 
@@ -136,7 +135,6 @@ SPI1_IRQHandler(void)
 void
 SPI2_IRQHandler(void)
 {
-    rx_isr(&SPI2_Dev, 0);
 }
 #endif
 
@@ -144,6 +142,5 @@ SPI2_IRQHandler(void)
 void
 SPI3_IRQHandler(void)
 {
-    rx_isr(&SPI3_Dev, 0);
 }
 #endif

@@ -8,11 +8,12 @@
 
 
 #include <config.h>
-#include "serial.h"
+#include <task.h>
 #include <string.h>
 #include <stdarg.h>
 #include <stdio.h>
 #include <errno.h>
+#include "serial.h"
 
 #if USE_SERIAL_USART1
 serial_t Serial1;
@@ -61,7 +62,7 @@ serial_start(serial_t *serial, int speed
 
     // we alter GPIO settings which *might* be worked on
     // elsewhere, so disable interrupts
-    portENTER_CRITICAL();
+    taskENTER_CRITICAL();
 
     uint32_t gpioa_crl = GPIOA->CRL;
     uint32_t gpioa_crh = GPIOA->CRH;
@@ -129,6 +130,7 @@ serial_start(serial_t *serial, int speed
     } else
 #endif
     {
+        taskEXIT_CRITICAL();
         HALT_WITH_MSG("invalid serial port");
     }
 
@@ -144,7 +146,7 @@ serial_start(serial_t *serial, int speed
     GPIOD->CRL = gpiod_crl;
 
     // finished with GPIO, we can release this now
-    portEXIT_CRITICAL();
+    taskEXIT_CRITICAL();
 
     NVIC_SetPriority(irqn, IRQ_PRIO_USART);
     NVIC_EnableIRQ(irqn);

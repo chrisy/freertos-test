@@ -8,8 +8,8 @@
 
 #include <config.h>
 #include <errno.h>
+#include <task.h>
 #include "i2c.h"
-
 
 static void i2c_configure(i2c_t *i2c);
 
@@ -208,6 +208,7 @@ i2c_configure(i2c_t *i2c)
 {
     I2C_TypeDef *d = i2c->dev;
 
+    taskENTER_CRITICAL();
 #if USE_I2C1
     if (i2c == &I2C1_Dev) {
         RCC->APB1ENR |= RCC_APB1ENR_I2C1EN;
@@ -231,8 +232,10 @@ i2c_configure(i2c_t *i2c)
     } else
 #endif
     {
-        HALT();
+        taskEXIT_CRITICAL();
+        HALT_WITH_MSG("invalid i2c port");
     }
+    taskEXIT_CRITICAL();
     d->CR1 = I2C_CR1_SWRST;
     d->CR1 = 0;
     /* FIXME: assuming APB1 = sysclk / 2 */

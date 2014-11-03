@@ -6,6 +6,8 @@
  * be found at http://opensource.org/licenses/MIT
  */
 
+#include <config.h>
+#include <task.h>
 #include "dma.h"
 
 const dma_ch_t dma_streams[DMA_STREAMS] = {
@@ -51,6 +53,7 @@ dma_release(const dma_ch_t *ch)
 #ifdef STM32F10X_CL
     NVIC_DisableIRQ(ch->vector);
 #else
+    // TODO: This needs to work on ch4,5
     if (ch->vector != DMA2_Channel4_5_IRQn)
         NVIC_DisableIRQ(ch->vector);
 #endif

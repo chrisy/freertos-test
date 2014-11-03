@@ -172,9 +172,9 @@ void platform_timer_init(void)
 {
     TIM_TypeDef *tim = TIM14;
 
-    portENTER_CRITICAL();
+    taskENTER_CRITICAL();
     RCC->APB1ENR |= RCC_APB1ENR_TIM14EN;
-    portEXIT_CRITICAL();
+    taskEXIT_CRITICAL();
 
     tim->PSC = 60000; // prescaler - gives us 600Hz
     tim->CR1 = TIM_CR1_CEN;
@@ -184,7 +184,7 @@ void platform_timer_init(void)
 
 void led_init(void)
 {
-    portENTER_CRITICAL();
+    taskENTER_CRITICAL();
 
     RCC->APB2ENR |= RCC_APB2ENR_IOPFEN;
 
@@ -200,7 +200,7 @@ void led_init(void)
     GPIOF->CRH |= GPIO_CRH_MODE8_0 | GPIO_CRH_MODE8_1;
     GPIOF->CRH |= GPIO_CRH_MODE9_0 | GPIO_CRH_MODE9_1;
 
-    portEXIT_CRITICAL();
+    taskEXIT_CRITICAL();
 
     GPIOF->BSRR = 0xffff;
 }

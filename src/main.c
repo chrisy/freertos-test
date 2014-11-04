@@ -11,6 +11,7 @@
 #include <cli.h>
 #include <FreeRTOS.h>
 #include <task.h>
+#include <timers.h>
 #include <posixio.h>
 #include <fcntl.h>
 #include <unistd.h>
@@ -182,6 +183,21 @@ void platform_timer_init(void)
 }
 #endif
 
+static void led_advance(TimerHandle_t timer)
+{
+    static uint8_t i = 0;
+
+    uint16_t b = (1 << i) << 6;
+
+    GPIOF->BSRR = b;
+    GPIOF->BRR = (0xf << 6) & ~b;
+
+    i++;
+    if (i > 3) i = 0;
+}
+
+static TimerHandle_t led_timer;
+
 void led_init(void)
 {
     taskENTER_CRITICAL();
@@ -203,4 +219,8 @@ void led_init(void)
     taskEXIT_CRITICAL();
 
     GPIOF->BSRR = 0xffff;
+
+    led_timer = xTimerCreate("led", 500 / portTICK_PERIOD_MS,
+                             pdTRUE, NULL, led_advance);
+    xTimerStart(led_timer, 0);
 }

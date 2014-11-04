@@ -31,6 +31,10 @@ const dma_ch_t dma_streams[DMA_STREAMS] = {
 #endif
 };
 
+#ifndef STM32F10X_CL
+uint8_t dma2_ch4 = 0, dma2_ch5 = 0;
+#endif
+
 static dma_isr_t isr_funcs[DMA_STREAMS];
 static void *isr_params[DMA_STREAMS];
 
@@ -44,6 +48,10 @@ dma_allocate(const dma_ch_t *ch, uint32_t irq_priority, dma_isr_t func, void *pa
     ch->ch->CCR = 0;
     NVIC_SetPriority(ch->vector, irq_priority);
     NVIC_EnableIRQ(ch->vector);
+#ifndef STM32F10X_CL
+    if (ch->ch == DMA2_Channel4) dma2_ch4 = 1;
+    else if (ch->ch == DMA2_Channel5) dma2_ch5 = 1;
+#endif
 }
 
 
@@ -53,9 +61,15 @@ dma_release(const dma_ch_t *ch)
 #ifdef STM32F10X_CL
     NVIC_DisableIRQ(ch->vector);
 #else
-    // TODO: This needs to work on ch4,5
-    if (ch->vector != DMA2_Channel4_5_IRQn)
+    if (ch->vector != DMA2_Channel4_5_IRQn) {
         NVIC_DisableIRQ(ch->vector);
+    } else {
+        if (ch->ch == DMA2_Channel4) dma2_ch4 = 0;
+        else if (ch->ch == DMA2_Channel5) dma2_ch5 = 0;
+
+        if (!dma2_ch4 && !dma2_ch5)
+            NVIC_DisableIRQ(ch->vector);
+    }
 #endif
     dma_disable(ch);
 }

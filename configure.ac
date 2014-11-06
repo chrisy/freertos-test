@@ -142,6 +142,7 @@ CPPFLAGS="$CPPFLAGS -I${bdir}/lib/misc"
 CPPFLAGS="$CPPFLAGS -I${bdir}/lib/microrl/src"
 CPPFLAGS="$CPPFLAGS -I${bdir}/lib/cli"
 CPPFLAGS="$CPPFLAGS -I${bdir}/lib/fonts"
+CPPFLAGS="$CPPFLAGS -I${bdir}/lib/stdperiph/inc"
 CPPFLAGS="$CPPFLAGS -I${bdir}/lib/FreeRTOS/Source/include"
 CPPFLAGS="$CPPFLAGS -I${bdir}/lib/FreeRTOS/Source/portable/GCC/ARM_CM3"
 

@@ -45,4 +45,6 @@
 		for(;;); \
 	} }
 
+#define assert_param(x) ASSERT(x)
+
 #endif /* CC_CONFIG_H */

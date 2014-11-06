@@ -21,6 +21,7 @@
 *
 ******************************************************************************/
 
+#include <config.h>
 #include <stdint.h>
 
 /* define compiler specific symbols */

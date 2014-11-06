@@ -12,7 +12,8 @@ lib_LTLIBRARIES = \
 	libmisc.la \
 	libmicrorl.la \
 	libcli.la \
-	libfonts.la
+	libfonts.la \
+	libstdperiph.la
 
 rtos_sources = \
 	FreeRTOS/Source/portable/GCC/ARM_CM3/port.c \
@@ -52,6 +53,30 @@ microrl_sources = \
 cli_sources = \
 	cli/cli.c
 
+stdperiph_sources = \
+	stdperiph/src/misc.c \
+	stdperiph/src/stm32f10x_adc.c \
+	stdperiph/src/stm32f10x_bkp.c \
+	stdperiph/src/stm32f10x_can.c \
+	stdperiph/src/stm32f10x_cec.c \
+	stdperiph/src/stm32f10x_crc.c \
+	stdperiph/src/stm32f10x_dac.c \
+	stdperiph/src/stm32f10x_dbgmcu.c \
+	stdperiph/src/stm32f10x_dma.c \
+	stdperiph/src/stm32f10x_exti.c \
+	stdperiph/src/stm32f10x_flash.c \
+	stdperiph/src/stm32f10x_fsmc.c \
+	stdperiph/src/stm32f10x_gpio.c \
+	stdperiph/src/stm32f10x_i2c.c \
+	stdperiph/src/stm32f10x_iwdg.c \
+	stdperiph/src/stm32f10x_pwr.c \
+	stdperiph/src/stm32f10x_rcc.c \
+	stdperiph/src/stm32f10x_rtc.c \
+	stdperiph/src/stm32f10x_sdio.c \
+	stdperiph/src/stm32f10x_spi.c \
+	stdperiph/src/stm32f10x_tim.c \
+	stdperiph/src/stm32f10x_usart.c \
+	stdperiph/src/stm32f10x_wwdg.c
 
 #librtos_la_CFLAGS = -Wno-missing-braces -Wno-missing-field-initializers -Wno-sign-compare
 librtos_la_SOURCES = $(rtos_sources)
@@ -61,6 +86,7 @@ libposixio_la_SOURCES = $(posixio_sources)
 libmisc_la_SOURCES = $(misc_sources)
 libmicrorl_la_SOURCES = $(microrl_sources)
 libcli_la_SOURCES = $(cli_sources)
+libstdperiph_la_SOURCES = $(stdperiph_sources)
 
 fontdir := $(top_srcdir)/resources/ttf
 fontemdir := $(top_srcdir)/tools/fontem

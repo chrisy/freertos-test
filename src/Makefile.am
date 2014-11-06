@@ -17,6 +17,7 @@ sources = \
 	platform/sbrk.c \
 	platform/freertos.c \
 	debug.c \
+	stdio_init.c \
 	main.c
 
 ourlibdir = $(top_srcdir)/lib/.libs

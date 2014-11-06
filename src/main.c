@@ -13,9 +13,6 @@
 #include <task.h>
 #include <timers.h>
 #include <posixio.h>
-#include <fcntl.h>
-#include <unistd.h>
-#include <stdio.h>
 
 #include <dma.h>
 #include <serial.h>
@@ -23,6 +20,7 @@
 #include <spi.h>
 
 #include "main.h"
+#include "stdio_init.h"
 
 static void main_task(void *param);
 static void platform_init(void);
@@ -53,7 +51,8 @@ void __attribute__ ((noreturn)) main_task(void *param)
     platform_init();
 
     // announce life!
-    dbg("This platform is running!\r\n");
+    printf("This platform is running!\r\n");
+    fflush(stdout);
 
     // Start the CLI
     cli_init();
@@ -62,33 +61,6 @@ void __attribute__ ((noreturn)) main_task(void *param)
     for (;; )
         DELAY_MS(500);
 }
-
-#if USE_SERIAL_USART1
-static int stdio_init(void)
-{
-    int fd;
-
-    fd = open("/serial/1", O_RDWR);
-    if (fd == -1)
-        return 0;
-
-    // stdin
-    dup2(fd, 0);
-
-    // stdout (buffered)
-    dup2(fd, 1);
-    setvbuf(stderr, NULL, _IOFBF, 0);
-
-    // stderr (not buffered)
-    dup2(fd, 2);
-    setvbuf(stderr, NULL, _IONBF, 0);
-
-    // this fd is no longer needed
-    close(fd);
-
-    return 0;
-}
-#endif
 
 static void platform_init(void)
 {
@@ -107,7 +79,7 @@ static void platform_init(void)
 #endif
                  );
     serial_puts(&Serial1, "STM32 Platform starting up.\r\n");
-    stdio_init();
+    stdio_start();
     printf("STDIO started on USART 1.\r\n");
     fflush(stdout);
 #endif
@@ -149,8 +121,7 @@ static void platform_init(void)
     i2c_start(&I2C2_Dev);
 #endif
 
-    printf("Starting LEDs.\r\n");
-    fflush(stdout);
+    printf("Starting LED task.\r\n");
     led_init();
 
     // Initialize SPI
@@ -220,7 +191,7 @@ void led_init(void)
 
     GPIOF->BSRR = 0xffff;
 
-    led_timer = xTimerCreate("led", 500 / portTICK_PERIOD_MS,
+    led_timer = xTimerCreate("led", 100 / portTICK_PERIOD_MS,
                              pdTRUE, NULL, led_advance);
     xTimerStart(led_timer, 0);
 }

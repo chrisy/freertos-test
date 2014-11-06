@@ -13,10 +13,14 @@
 #include <stdio.h>
 #include <stdarg.h>
 
+#include "stdio_init.h"
+
 #ifdef DEBUG
 
 void dbg_init(void)
 {
+    if (stdio_started) return;
+
     RCC->APB2ENR |= RCC_APB2ENR_USART1EN | RCC_APB2ENR_AFIOEN | RCC_APB2ENR_IOPAEN;
 
     // PA9 = output
@@ -33,6 +37,11 @@ void dbg_init(void)
 void dbg(const char *msg)
 {
     const char *p = msg;
+
+    if (stdio_started) {
+        fputs(msg, stdout);
+        return;
+    }
 
     while (*p) {
         // Send byte
@@ -55,7 +64,7 @@ void dbgf(const char *fmt, ...)
 
 #else /* !DEBUG */
 
-oid dbg_init(void)
+void dbg_init(void)
 {
 }
 

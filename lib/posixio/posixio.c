@@ -185,7 +185,7 @@ struct iodev *posixio_getdev(char *name)
 
 void posixio_fdlock(void)
 {
-    xSemaphoreTake(fd_sem, 1000);
+    xSemaphoreTake(fd_sem, portMAX_DELAY);
 }
 
 void posixio_fdunlock(void)

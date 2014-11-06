@@ -60,33 +60,34 @@ int _open(const char *name, int flags, ...)
     if (posixio_split_path_malloc(name, &device, &path) == -1)
         return -1;
 
+    posixio_fdlock();
+
     // validate device name
     struct iodev *dev = posixio_getdev(device);
     if (dev == NULL) {
+        posixio_fdunlock();
         free(device);
         free(path);
         errno = ENODEV;
         return -1;
     }
 
-    posixio_fdlock();
-
     // get an fd
     int fd = posixio_newfd();
     if (fd == -1) {
+        posixio_fdunlock();
         free(device);
         free(path);
-        posixio_fdunlock();
         return -1;
     }
 
     // allocate a file structure - store it with fd.
     struct iofile *file = malloc(sizeof(struct iofile));
     if (file == NULL) {
+        posixio_fdunlock();
         free(device);
         free(path);
         errno = ENOMEM;
-        posixio_fdunlock();
         return -1;
     }
 
@@ -103,26 +104,25 @@ int _open(const char *name, int flags, ...)
         file->fh = dev->open(path, flags, ap);
         va_end(ap);
         if (file->fh == NULL) {
+            posixio_fdunlock();
             free(device);
             free(path);
             free(file);
-            posixio_fdunlock();
             return -1;
         }
     }
 
     // store the file data
     if (posixio_setfd(fd, file) == -1) {
+        posixio_fdunlock();
         free(device);
         free(path);
         free(file);
-        posixio_fdunlock();
         return -1;
     }
 
-
-    free(device);
     posixio_fdunlock();
+    free(device);
 
     return fd;
 }
@@ -136,8 +136,10 @@ int _stat(const char *file, struct stat *st)
         return -1;
 
     // validate device name
+    posixio_fdlock();
     struct iodev *dev = posixio_getdev(device);
     if (dev == NULL) {
+        posixio_fdunlock();
         free(device);
         free(path);
         errno = ENODEV;
@@ -146,11 +148,13 @@ int _stat(const char *file, struct stat *st)
 
     if (dev->stat != NULL) {
         int ret = dev->stat(path, st);
+        posixio_fdunlock();
         free(device);
         free(path);
         return ret;
     }
 
+    posixio_fdunlock();
     errno = ENOENT;
     return -1;
 }
@@ -164,8 +168,10 @@ int _unlink(const char *name)
         return -1;
 
     // validate device name
+    posixio_fdlock();
     struct iodev *dev = posixio_getdev(device);
     if (dev == NULL) {
+        posixio_fdunlock();
         free(device);
         free(path);
         errno = ENODEV;
@@ -174,11 +180,13 @@ int _unlink(const char *name)
 
     if (dev->unlink != NULL) {
         int ret = dev->unlink(path);
+        posixio_fdunlock();
         free(device);
         free(path);
         return ret;
     }
 
+    posixio_fdunlock();
     errno = EINVAL;
     return -1;
 }

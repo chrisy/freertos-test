@@ -32,9 +32,5 @@ char *_sbrk(intptr_t increment)
 
     portEXIT_CRITICAL();
 
-#ifdef DEBUG
-    dbgf("sbrk %u bytes, ptr=%x heap_top=%x \r\n", increment, (unsigned long)ret, (unsigned long)heap_top);
-#endif
-
     return ret;
 }

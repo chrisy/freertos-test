@@ -27,83 +27,111 @@ extern int errno;
  */
 int _close(int fd)
 {
+    posixio_fdlock();
+
     struct iofile *file = posixio_file_fromfd(fd);
 
     if (file == NULL) {
+        posixio_fdunlock();
         errno = EBADF;
         return -1;
     }
-
-    posixio_fdlock();
 
     // Look for a handler
     if (file->dev->close != NULL)
         file->dev->close(file->fh);
 
-    posixio_fdunlock();
-
     int ret = posixio_setfd(fd, NULL);
+
+    posixio_fdunlock();
 
     return ret;
 }
 
 int _isatty(int fd)
 {
+    posixio_fdlock();
+
     struct iofile *file = posixio_file_fromfd(fd);
 
     if (file == NULL) {
+        posixio_fdunlock();
         errno = EBADF;
         return -1;
     }
-    return (file->dev->flags & POSIXDEV_ISATTY) == POSIXDEV_ISATTY;
+
+    int ret = (file->dev->flags & POSIXDEV_ISATTY) == POSIXDEV_ISATTY;
+
+    posixio_fdunlock();
+    return ret;
 }
 
 off_t _lseek(int fd, off_t ptr, int dir)
 {
+    posixio_fdlock();
+
     struct iofile *file = posixio_file_fromfd(fd);
 
     if (file == NULL) {
+        posixio_fdunlock();
         errno = EBADF;
         return -1;
     }
 
     // Look for a handler
-    if (file->dev->lseek != NULL)
-        return file->dev->lseek(file->fh, ptr, dir);
+    if (file->dev->lseek != NULL) {
+        int ret = file->dev->lseek(file->fh, ptr, dir);
+        posixio_fdunlock();
+        return ret;
+    }
 
+    posixio_fdunlock();
     errno = EINVAL;
     return -1;
 }
 
 ssize_t _read(int fd, void *ptr, size_t len)
 {
+    posixio_fdlock();
+
     struct iofile *file = posixio_file_fromfd(fd);
 
     if (file == NULL) {
+        posixio_fdunlock();
         errno = EBADF;
         return -1;
     }
 
     // Look for a handler
-    if (file->dev->read != NULL)
-        return file->dev->read(file->fh, ptr, len);
+    if (file->dev->read != NULL) {
+        int ret = file->dev->read(file->fh, ptr, len);
+        posixio_fdunlock();
+        return ret;
+    }
 
+    posixio_fdunlock();
     errno = EINVAL;
     return -1;
 }
 
 ssize_t _write(int fd, const void *ptr, size_t len)
 {
+    posixio_fdlock();
+
     struct iofile *file = posixio_file_fromfd(fd);
 
     if (file == NULL) {
+        posixio_fdunlock();
         errno = EBADF;
         return -1;
     }
 
     // Look for a handler
-    if (file->dev->write != NULL)
-        return file->dev->write(file->fh, ptr, len);
+    if (file->dev->write != NULL) {
+        int ret = file->dev->write(file->fh, ptr, len);
+        posixio_fdunlock();
+        return ret;
+    }
 
     errno = EINVAL;
     return -1;
@@ -111,30 +139,38 @@ ssize_t _write(int fd, const void *ptr, size_t len)
 
 int _fstat(int fd, struct stat *st)
 {
+    posixio_fdlock();
+
     struct iofile *file = posixio_file_fromfd(fd);
 
     if (file == NULL) {
+        posixio_fdunlock();
         errno = EBADF;
         return -1;
     }
 
-    if (file->dev->stat != NULL)
-        return file->dev->fstat(file->fh, st);
+    if (file->dev->stat != NULL) {
+        int ret = file->dev->fstat(file->fh, st);
+        posixio_fdunlock();
+        return ret;
+    }
 
+    posixio_fdunlock();
     errno = ENOENT;
     return -1;
 }
 
 int dup(int fd)
 {
+    posixio_fdlock();
+
     struct iofile *file = posixio_file_fromfd(fd);
 
     if (file == NULL) {
+        posixio_fdunlock();
         errno = EBADF;
         return -1;
     }
-
-    posixio_fdlock();
 
     // Get a new descriptor
     int fd2 = posixio_newfd();
@@ -146,8 +182,8 @@ int dup(int fd)
     // allocate a file structure - store it with fd.
     struct iofile *file2 = malloc(sizeof(struct iofile));
     if (file2 == NULL) {
-        errno = ENOMEM;
         posixio_fdunlock();
+        errno = ENOMEM;
         return -1;
     }
 
@@ -158,16 +194,16 @@ int dup(int fd)
     if (file2->dev->open != NULL) {
         file2->fh = file2->dev->open(file2->name, file2->flags);
         if (file2->fh == NULL) {
-            free(file2);
             posixio_fdunlock();
+            free(file2);
             return -1;
         }
     }
 
     // store the file data
     if (posixio_setfd(fd2, file2) == -1) {
-        free(file2);
         posixio_fdunlock();
+        free(file2);
         return -1;
     }
 
@@ -186,20 +222,21 @@ int dup2(int fd, int fd2)
     // Simple optimization
     if (fd == fd2) return fd;
 
+    posixio_fdlock();
+
     struct iofile *file = posixio_file_fromfd(fd);
 
     if (file == NULL) {
+        posixio_fdunlock();
         errno = EBADF;
         return -1;
     }
 
-    posixio_fdlock();
-
     // allocate a file structure - store it with fd.
     struct iofile *file2 = malloc(sizeof(struct iofile));
     if (file2 == NULL) {
-        errno = ENOMEM;
         posixio_fdunlock();
+        errno = ENOMEM;
         return -1;
     }
 
@@ -210,8 +247,8 @@ int dup2(int fd, int fd2)
     if (file2->dev->open != NULL) {
         file2->fh = file2->dev->open(file2->name, file2->flags);
         if (file2->fh == NULL) {
-            free(file2);
             posixio_fdunlock();
+            free(file2);
             return -1;
         }
     }
@@ -219,8 +256,8 @@ int dup2(int fd, int fd2)
     // store the file data
     // this will close any pre-existing fd2
     if (posixio_setfd(fd2, file2) == -1) {
-        free(file2);
         posixio_fdunlock();
+        free(file2);
         return -1;
     }
 

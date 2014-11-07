@@ -31,19 +31,20 @@ AC_PROG_CPP
 AC_PROG_CXX
 AC_PROG_CC_C99
 AM_PROG_CC_C_O
-LT_INIT
-AC_DISABLE_FAST_INSTALL
-AC_DISABLE_SHARED
-AC_ENABLE_STATIC
-AC_PROG_LIBTOOL
-AC_SUBST([LIBTOOL_DEPS])
+#LT_INIT
+#AC_DISABLE_FAST_INSTALL
+#AC_DISABLE_SHARED
+#AC_ENABLE_STATIC
+#AC_PROG_LIBTOOL
+#AC_SUBST([LIBTOOL_DEPS])
 
 if test x"$ac_cv_prog_cc_c99" = xno; then
         AC_MSG_ERROR([We need C99 and cannot figure out how to enable it])
 fi
 
-AC_CHECK_TOOL([OBJCOPY], [${flavor}objcopy], [])
-AC_CHECK_TOOL([OBJDUMP], [${flavor}objdump], [])
+AC_CHECK_TOOL([OBJCOPY], [objcopy], [])
+AC_CHECK_TOOL([OBJDUMP], [objdump], [])
+AC_PROG_RANLIB
 
 # Compiler flags
 AX_CFLAGS_GCC_OPTION([-pipe])

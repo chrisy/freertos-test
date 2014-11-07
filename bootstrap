@@ -16,8 +16,8 @@ set -e
 mkdir -p build-aux
 echo "-- aclocal"
 aclocal -I $aclocal --install
-echo "-- libtoolize"
-$libtoolize
+#echo "-- libtoolize"
+#$libtoolize
 echo "-- autoconf"
 autoconf
 echo "-- autoheader"

@@ -4,11 +4,11 @@
 # See the LICENSE file at the top of this tree, or if it is missing a copy can
 # be found at http://opensource.org/licenses/MIT
 
-lib_LTLIBRARIES = \
-	librtos.la \
-	libplatform.la \
-	libmicrorl.la \
-	libstdperiph.la
+lib_LIBRARIES = \
+	librtos.a \
+	libplatform.a \
+	libmicrorl.a \
+	libstdperiph.a
 
 rtos_sources = \
 	FreeRTOS/Source/portable/GCC/ARM_CM3/port.c \
@@ -53,7 +53,7 @@ stdperiph_sources = \
 	stdperiph/src/stm32f10x_wwdg.c
 
 #librtos_la_CFLAGS = -Wno-missing-braces -Wno-missing-field-initializers -Wno-sign-compare
-librtos_la_SOURCES = $(rtos_sources)
-libplatform_la_SOURCES = $(platform_sources)
-libmicrorl_la_SOURCES = $(microrl_sources)
-libstdperiph_la_SOURCES = $(stdperiph_sources)
+librtos_a_SOURCES = $(rtos_sources)
+libplatform_a_SOURCES = $(platform_sources)
+libmicrorl_a_SOURCES = $(microrl_sources)
+libstdperiph_a_SOURCES = $(stdperiph_sources)

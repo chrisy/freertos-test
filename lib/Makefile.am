@@ -4,12 +4,12 @@
 # See the LICENSE file at the top of this tree, or if it is missing a copy can
 # be found at http://opensource.org/licenses/MIT
 
-lib_LTLIBRARIES = \
-	libstm32.la \
-	libposixio.la \
-	libmisc.la \
-	libcli.la \
-	libfonts.la
+lib_LIBRARIES = \
+	libstm32.a \
+	libposixio.a \
+	libmisc.a \
+	libcli.a \
+	libfonts.a
 
 stm32_sources = \
 	stm32/dma.c \
@@ -33,10 +33,10 @@ cli_sources = \
 	cli/cli.c
 
 #librtos_la_CFLAGS = -Wno-missing-braces -Wno-missing-field-initializers -Wno-sign-compare
-libstm32_la_SOURCES = $(stm32_sources)
-libposixio_la_SOURCES = $(posixio_sources)
-libmisc_la_SOURCES = $(misc_sources)
-libcli_la_SOURCES = $(cli_sources)
+libstm32_a_SOURCES = $(stm32_sources)
+libposixio_a_SOURCES = $(posixio_sources)
+libmisc_a_SOURCES = $(misc_sources)
+libcli_a_SOURCES = $(cli_sources)
 
 fontdir := $(top_srcdir)/resources/ttf
 fontemdir := $(top_srcdir)/tools/fontem
@@ -133,5 +133,5 @@ clean-local:
 
 all-local: fonts/font_all.h
 
-libfonts_la_SOURCES = $(fonts_sources)
+libfonts_a_SOURCES = $(fonts_sources)
 

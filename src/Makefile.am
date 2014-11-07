@@ -20,8 +20,8 @@ sources = \
 	stdio_init.c \
 	main.c
 
-ourlibdir = $(top_srcdir)/lib/.libs
-ourextlibdir = $(top_srcdir)/extlib/.libs
+ourlibdir = $(top_srcdir)/lib
+ourextlibdir = $(top_srcdir)/extlib
 libdirs = -L$(ourlibdir) -L$(ourextlibdir)
 
 image_LDADD = $(libdirs) -lposixio -lmisc -lcli -lfonts -lstm32 \

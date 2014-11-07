@@ -10,11 +10,12 @@
 #include <config.h>
 #include <stdint.h>
 #include <FreeRTOS.h>
-#include <nvic.h>
-#include <fsmc.h>
 #include <version.h>
+#include "nvic.h"
+#include "fsmc.h"
 #include "main.h"
 
+// Peripheral headers
 #include <dma.h>
 #include <serial.h>
 #include <i2c.h>

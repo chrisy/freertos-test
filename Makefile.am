@@ -11,8 +11,8 @@ ACLOCAL_AMFLAGS = -I aclocal
 # Doxygen
 include $(top_srcdir)/amlocal/doxygen.am
 
-extra_sources = tools lib
-sources = include src
+extra_sources = tools extlib
+sources = include lib src
 SUBDIRS = $(extra_sources) $(sources)
 
 EXTRA_DIST = README LICENSE \
@@ -30,7 +30,7 @@ mostlyclean-local: doxygen-clean
 
 # Uncrustify the source
 uncrustify: amlocal/uncrustify.cfg
-	@for dir in $(sources) lib/misc lib/stm32 lib/posixio lib/cli; do \
+	@for dir in $(sources); do \
 		find "$(top_srcdir)/$$dir" -type f -name '*.[ch]' -print0 | \
 			xargs -0 uncrustify -c $(top_srcdir)/amlocal/uncrustify.cfg --replace --no-backup; \
 	done

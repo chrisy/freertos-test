@@ -135,16 +135,18 @@ if test x"${bdir}" = x'.' ; then
     bdir=$(pwd)
 fi
 CPPFLAGS="$CPPFLAGS -I${bdir}/include"
+
 CPPFLAGS="$CPPFLAGS -I${bdir}/lib/stm32"
-CPPFLAGS="$CPPFLAGS -I${bdir}/lib/platform"
 CPPFLAGS="$CPPFLAGS -I${bdir}/lib/posixio"
 CPPFLAGS="$CPPFLAGS -I${bdir}/lib/misc"
-CPPFLAGS="$CPPFLAGS -I${bdir}/lib/microrl/src"
 CPPFLAGS="$CPPFLAGS -I${bdir}/lib/cli"
 CPPFLAGS="$CPPFLAGS -I${bdir}/lib/fonts"
-CPPFLAGS="$CPPFLAGS -I${bdir}/lib/stdperiph/inc"
-CPPFLAGS="$CPPFLAGS -I${bdir}/lib/FreeRTOS/Source/include"
-CPPFLAGS="$CPPFLAGS -I${bdir}/lib/FreeRTOS/Source/portable/GCC/ARM_CM3"
+
+CPPFLAGS="$CPPFLAGS -I${bdir}/extlib/platform"
+CPPFLAGS="$CPPFLAGS -I${bdir}/extlib/stdperiph/inc"
+CPPFLAGS="$CPPFLAGS -I${bdir}/extlib/FreeRTOS/Source/include"
+CPPFLAGS="$CPPFLAGS -I${bdir}/extlib/FreeRTOS/Source/portable/GCC/ARM_CM3"
+CPPFLAGS="$CPPFLAGS -I${bdir}/extlib/microrl/src"
 
 # Display the summary
 CC=`echo $CC | sed -e 's/  / /g'`
@@ -166,6 +168,7 @@ AC_CONFIG_HEADER([include/ac_config.h])
 AC_CONFIG_FILES([Makefile
     include/Makefile
     include/cc_config.h
+    extlib/Makefile
     lib/Makefile
     src/Makefile
     tools/Makefile])

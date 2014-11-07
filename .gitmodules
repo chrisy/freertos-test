@@ -1,5 +1,5 @@
 [submodule "lib/microrl"]
-	path = lib/microrl
+	path = extlib/microrl
 	url = https://github.com/chrisy/microrl.git
 [submodule "tools/fontem"]
 	path = tools/fontem

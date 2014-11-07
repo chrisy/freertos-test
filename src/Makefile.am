@@ -21,18 +21,23 @@ sources = \
 	main.c
 
 ourlibdir = $(top_srcdir)/lib/.libs
-libdirs = -L$(ourlibdir)
+ourextlibdir = $(top_srcdir)/extlib/.libs
+libdirs = -L$(ourlibdir) -L$(ourextlibdir)
 
-image_LDADD = $(libdirs) -lrtos -lplatform -lposixio -lmisc -lcli -lmicrorl -lfonts -lstdperiph -lstm32
+image_LDADD = $(libdirs) -lposixio -lmisc -lcli -lfonts -lstm32 \
+	     -lmicrorl -lstdperiph -lrtos -lplatform
 image_SOURCES = $(sources)
+
 EXTRA_image_DEPENDENCIES = $(linker_script) \
-	$(ourlibdir)/libplatform.a \
-	$(ourlibdir)/librtos.a \
 	$(ourlibdir)/libposixio.a \
 	$(ourlibdir)/libmisc.a \
-	$(ourlibdir)/libmicrorl.a \
 	$(ourlibdir)/libcli.a \
-	$(ourlibdir)/libstm32.a
+	$(ourlibdir)/libstm32.a \
+	$(ourlibdir)/libfonts.a \
+	$(ourextlibdir)/libmicrorl.a \
+	$(ourextlibdir)/libstdperiph.a \
+	$(ourextlibdir)/librtos.a \
+	$(ourextlibdir)/libplatform.a 
 
 image.map: image$(EXEEXT)
 

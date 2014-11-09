@@ -10,9 +10,8 @@
 #define _SPI_H
 
 #include <config.h>
-#include "semphr.h"
-
-#include "dma.h"
+#include <semphr.h>
+#include <stm32/dma.h>
 
 
 typedef struct {

@@ -8,7 +8,6 @@
 #define POSIXIO_PRIVATE
 
 #include <config.h>
-#include <posixio.h>
 
 #include <FreeRTOS.h>
 #include <semphr.h>
@@ -19,7 +18,8 @@
 #include <errno.h>
 #include <string.h>
 
-#include <dev/serial.h>
+#include <posixio/posixio.h>
+#include <posixio/dev/serial.h>
 
 static struct iodev *devs[POSIXIO_MAX_DEVICES];
 static volatile int dev_count = 0;

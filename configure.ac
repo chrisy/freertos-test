@@ -136,12 +136,7 @@ if test x"${bdir}" = x'.' ; then
     bdir=$(pwd)
 fi
 CPPFLAGS="$CPPFLAGS -I${bdir}/include"
-
-CPPFLAGS="$CPPFLAGS -I${bdir}/lib/stm32"
-CPPFLAGS="$CPPFLAGS -I${bdir}/lib/posixio"
-CPPFLAGS="$CPPFLAGS -I${bdir}/lib/misc"
-CPPFLAGS="$CPPFLAGS -I${bdir}/lib/cli"
-CPPFLAGS="$CPPFLAGS -I${bdir}/lib/fonts"
+CPPFLAGS="$CPPFLAGS -I${bdir}/lib"  # slightlt misnamed, but meh
 
 CPPFLAGS="$CPPFLAGS -I${bdir}/extlib/platform"
 CPPFLAGS="$CPPFLAGS -I${bdir}/extlib/stdperiph/inc"

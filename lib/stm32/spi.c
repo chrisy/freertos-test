@@ -7,8 +7,7 @@
  */
 
 #include <config.h>
-
-#include "spi.h"
+#include <stm32/spi.h>
 
 #if USE_SPI1
 spi_t SPI1_Dev;

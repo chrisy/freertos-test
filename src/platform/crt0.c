@@ -15,10 +15,10 @@
 #include "main.h"
 
 // Peripheral headers
-#include <dma.h>
-#include <serial.h>
-#include <i2c.h>
-#include <spi.h>
+#include <stm32/dma.h>
+#include <stm32/serial.h>
+#include <stm32/i2c.h>
+#include <stm32/spi.h>
 
 // Our handlers
 void _crt0_init(void) __attribute__ ((naked, noreturn));

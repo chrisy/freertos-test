@@ -9,7 +9,7 @@
 #include <config.h>
 #include <errno.h>
 #include <task.h>
-#include "i2c.h"
+#include <stm32/i2c.h>
 
 static void i2c_configure(i2c_t *i2c);
 

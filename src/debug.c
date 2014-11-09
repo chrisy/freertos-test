@@ -8,9 +8,11 @@
 
 #include <config.h>
 #include <FreeRTOS.h>
-#include <posixio.h>
+#include <posixio/posixio.h>
 #include <stdio.h>
 #include <stdarg.h>
+#include <string.h>
+#include <stm32/serial.h>
 
 #include "stdio_init.h"
 
@@ -18,7 +20,9 @@
 
 void dbg_init(void)
 {
+#if USE_SERIAL_USART1
     if (stdio_started) return;
+#endif
 
     RCC->APB2ENR |= RCC_APB2ENR_USART1EN | RCC_APB2ENR_AFIOEN | RCC_APB2ENR_IOPAEN;
 
@@ -37,10 +41,12 @@ void dbg(const char *msg)
 {
     const char *p = msg;
 
+#if USE_SERIAL_USART1
     if (stdio_started) {
-        fputs(msg, stdout);
+        serial_write(&Serial1, msg, strlen(msg));
         return;
     }
+#endif
 
     while (*p) {
         // Send byte

@@ -10,7 +10,7 @@
 #define _I2C_H
 
 #include <config.h>
-#include "semphr.h"
+#include <semphr.h>
 
 
 typedef struct {

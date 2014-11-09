@@ -11,9 +11,9 @@
 #define _SERIAL_H
 
 #include <config.h>
-#include "queue.h"
-#include "semphr.h"
-#include "dma.h"
+#include <queue.h>
+#include <semphr.h>
+#include <stm32/dma.h>
 
 #define SERIAL_TX_SIZE  16
 #define SERIAL_RX_SIZE  16

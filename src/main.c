@@ -7,16 +7,16 @@
  */
 
 #include <config.h>
-#include <cli.h>
+#include <cli/cli.h>
 #include <FreeRTOS.h>
 #include <task.h>
 #include <timers.h>
-#include <posixio.h>
+#include <posixio/posixio.h>
 
-#include <dma.h>
-#include <serial.h>
-#include <i2c.h>
-#include <spi.h>
+#include <stm32/dma.h>
+#include <stm32/serial.h>
+#include <stm32/i2c.h>
+#include <stm32/spi.h>
 
 #include "main.h"
 #include "stdio_init.h"

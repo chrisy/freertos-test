@@ -7,13 +7,13 @@
  */
 
 #include <config.h>
-#include "queue.h"
-#include "semphr.h"
-#include "task.h"
+#include <queue.h>
+#include <semphr.h>
+#include <task.h>
 
-#include "net/tcpqueue.h"
-#include "eth_mac.h"
-#include "mii.h"
+#include <net/tcpqueue.h>
+#include <stm32/eth_mac.h>
+#include <misc/mii.h>
 #include <string.h>
 
 #define RX_BUFS 4

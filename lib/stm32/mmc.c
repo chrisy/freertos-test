@@ -7,10 +7,9 @@
  */
 
 #include <config.h>
-
-#include "crc7.h"
-#include "mmc.h"
-#include "spi.h"
+#include <misc/crc7.h>
+#include <stm32/mmc.h>
+#include <stm32/spi.h>
 
 #ifdef MMCSPI
 

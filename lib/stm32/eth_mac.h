@@ -9,7 +9,7 @@
 #ifndef _ETH_MAC_H
 #define _ETH_MAC_H
 
-#include "queue.h"
+#include <queue.h>
 
 #define MAC_BUF_SIZE                1522
 #define SMI_DESCRIBE_SIZE           17

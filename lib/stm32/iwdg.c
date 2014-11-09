@@ -7,7 +7,7 @@
  */
 
 #include <config.h>
-#include "iwdg.h"
+#include <stm32/iwdg.h>
 
 
 void

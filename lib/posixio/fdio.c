@@ -9,7 +9,7 @@
 #define POSIXIO_PRIVATE
 
 #include <config.h>
-#include <posixio.h>
+#include <posixio/posixio.h>
 
 #include <fcntl.h>
 #include <unistd.h>

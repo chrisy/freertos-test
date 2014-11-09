@@ -7,7 +7,7 @@
  */
 
 #include <config.h>
-#include "flash.h"
+#include <stm32/flash.h>
 
 
 static int

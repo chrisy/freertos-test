@@ -13,7 +13,7 @@
 #include <stdarg.h>
 #include <stdio.h>
 #include <errno.h>
-#include "serial.h"
+#include <stm32/serial.h>
 
 #if USE_SERIAL_USART1
 serial_t Serial1;

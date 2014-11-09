@@ -1,5 +1,4 @@
 /** IO Platform driver for serialio
- * vim: set softtabstop=4 shiftwidth=4 tabstop=4 expandtab:
  * \file lib/posixio//dev/serial.h
  *
  * This file is distributed under the terms of the MIT License.
@@ -13,3 +12,5 @@
 int posixio_register_serial(void);
 
 #endif /* _POSIXIO_DEV_SERIAL */
+
+// vim: set softtabstop=4 shiftwidth=4 tabstop=4 expandtab:

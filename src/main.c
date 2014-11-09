@@ -1,5 +1,4 @@
 /** Program start
- * vim: set softtabstop=4 shiftwidth=4 tabstop=4 expandtab:
  * \file src/main.c
  *
  * This file is distributed under the terms of the MIT License.
@@ -195,3 +194,5 @@ void led_init(void)
                              pdTRUE, NULL, led_advance);
     xTimerStart(led_timer, 0);
 }
+
+// vim: set softtabstop=4 shiftwidth=4 tabstop=4 expandtab:

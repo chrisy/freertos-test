@@ -1,6 +1,5 @@
 /** sbrk allocator with bounds checking
- * vim: set softtabstop=4 shiftwidth=4 tabstop=4 expandtab:
- * \file lib/platform/sbrk.c
+ * \file src/platform/sbrk.c
  *
  * This file is distributed under the terms of the MIT License.
  * See the LICENSE file at the top of this tree, or if it is missing a copy can
@@ -34,3 +33,5 @@ char *_sbrk(intptr_t increment)
 
     return ret;
 }
+
+// vim: set softtabstop=4 shiftwidth=4 tabstop=4 expandtab:

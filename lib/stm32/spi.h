@@ -55,3 +55,5 @@ void SPI3_IRQHandler(void) __attribute__ ((interrupt));
 #define spi_deselect(spi) { (spi)->cs_pad->BSRR = (1 << (spi)->cs_pin); }
 
 #endif
+
+// vim: set softtabstop=4 shiftwidth=4 tabstop=4 expandtab:

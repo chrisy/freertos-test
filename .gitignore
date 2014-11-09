@@ -36,7 +36,12 @@ src/image.hex
 src/image.use
 *.tar.gz
 doc/*.tag
-doc/html
+doc/html/
+doc/latex/
+doc/pdf/
+doc/ps/
+doc/*.pdf
+doc/*.ps
 lib/fonts/*.[ch]
 newlib/
 newlib-build/

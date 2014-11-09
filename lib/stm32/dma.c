@@ -179,3 +179,5 @@ DMA2_Channel5_IRQHandler(void)
 {
     dma_service_irq(DMA2, &dma_streams[11]);
 }
+
+// vim: set softtabstop=4 shiftwidth=4 tabstop=4 expandtab:

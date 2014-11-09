@@ -1,5 +1,4 @@
 /**
- * vim: set softtabstop=4 shiftwidth=4 tabstop=4 expandtab:
  * \file include/debug.h
  *
  * This file is distributed under the terms of the MIT License.
@@ -15,3 +14,5 @@ void dbg(const char *msg);
 void dbgf(const char *fmt, ...);
 
 #endif  // _DEBUG_H
+
+// vim: set softtabstop=4 shiftwidth=4 tabstop=4 expandtab:

@@ -280,3 +280,5 @@ mmc_stop_read(void)
 }
 
 #endif
+
+// vim: set softtabstop=4 shiftwidth=4 tabstop=4 expandtab:

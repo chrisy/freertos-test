@@ -1,5 +1,4 @@
 /** FreeRTOS wrapper
- * vim: set softtabstop=4 shiftwidth=4 tabstop=4 expandtab:
  * \file src/platform/freertos.c
  *
  * This file is distributed under the terms of the MIT License.
@@ -44,3 +43,5 @@ milliseconds_get(void)
     taskEXIT_CRITICAL();
     return ret;
 }
+
+// vim: set softtabstop=4 shiftwidth=4 tabstop=4 expandtab:

@@ -1,5 +1,4 @@
 /**
- * vim: set softtabstop=4 shiftwidth=4 tabstop=4 expandtab:
  * \file include/config.h
  *
  * This file is distributed under the terms of the MIT License.
@@ -93,3 +92,5 @@
 #include <debug.h>
 
 #endif /* CONFIG_H */
+
+// vim: set softtabstop=4 shiftwidth=4 tabstop=4 expandtab:

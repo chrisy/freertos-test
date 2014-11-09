@@ -1,5 +1,4 @@
 /**
- * vim: set softtabstop=4 shiftwidth=4 tabstop=4 expandtab:
  * \file src/stdio_init.h
  *
  * This file is distributed under the terms of the MIT License.
@@ -17,3 +16,5 @@ extern uint8_t stdio_started;
 int stdio_start(void);
 
 #endif  // _STDIO_INIT_H
+
+// vim: set softtabstop=4 shiftwidth=4 tabstop=4 expandtab:

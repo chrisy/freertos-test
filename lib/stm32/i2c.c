@@ -270,3 +270,5 @@ i2c_transact(i2c_t *i2c, uint8_t addr_dir,
     /* Check if it worked */
     return i2c->error;
 }
+
+// vim: set softtabstop=4 shiftwidth=4 tabstop=4 expandtab:

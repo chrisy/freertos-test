@@ -1,5 +1,4 @@
 /** Wire up stdio to the posix layer
- * vim: set softtabstop=4 shiftwidth=4 tabstop=4 expandtab:
  * \file src/stdio_init.c
  *
  * This file is distributed under the terms of the MIT License.
@@ -44,3 +43,5 @@ int stdio_start(void)
 
     return 0;
 }
+
+// vim: set softtabstop=4 shiftwidth=4 tabstop=4 expandtab:

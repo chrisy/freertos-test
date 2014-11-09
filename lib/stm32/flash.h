@@ -33,3 +33,5 @@ int flash_page_maybe_write(void *page, const uint8_t *data);
 int flash_page_write(void *page, const uint8_t *data);
 
 #endif
+
+// vim: set softtabstop=4 shiftwidth=4 tabstop=4 expandtab:

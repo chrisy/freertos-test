@@ -21,3 +21,5 @@ iwdg_start(uint8_t prescaler, uint16_t reload)
     IWDG->RLR = reload;
     IWDG->KR = IWDG_KEY_START;
 }
+
+// vim: set softtabstop=4 shiftwidth=4 tabstop=4 expandtab:

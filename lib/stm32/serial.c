@@ -348,3 +348,5 @@ UART5_IRQHandler(void)
     usart_irq(&Serial5);
 }
 #endif
+
+// vim: set softtabstop=4 shiftwidth=4 tabstop=4 expandtab:

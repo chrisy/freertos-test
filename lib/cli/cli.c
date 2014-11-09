@@ -1,5 +1,4 @@
 /** Simple CLI
- * vim: set softtabstop=4 shiftwidth=4 tabstop=4 expandtab:
  * \file lib/cli/cli.c
  *
  * This file is distributed under the terms of the MIT License.
@@ -408,3 +407,5 @@ int cmd_history(struct cli *cli, int argc, const char *const *argv)
     return 0;
 }
 #endif
+
+// vim: set softtabstop=4 shiftwidth=4 tabstop=4 expandtab:

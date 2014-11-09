@@ -1,5 +1,4 @@
 /** MPU bootstrap routine
- * vim: set softtabstop=4 shiftwidth=4 tabstop=4 expandtab:
  * \file src/platform/crt0.c
  *
  * This file is distributed under the terms of the MIT License.
@@ -207,3 +206,5 @@ void _crt0_init(void)
     // Shouldn't get here!
     HALT();
 }
+
+// vim: set softtabstop=4 shiftwidth=4 tabstop=4 expandtab:

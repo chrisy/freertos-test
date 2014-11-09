@@ -1,5 +1,4 @@
 /** Debugging helpers
- * vim: set softtabstop=4 shiftwidth=4 tabstop=4 expandtab:
  * \file src/debug.c
  *
  * This file is distributed under the terms of the MIT License.
@@ -77,3 +76,5 @@ void dbgf(const char *fmt, ...)
 }
 
 #endif /* DEBUG */
+
+// vim: set softtabstop=4 shiftwidth=4 tabstop=4 expandtab:

@@ -1,5 +1,4 @@
 /**
- * vim: set softtabstop=4 shiftwidth=4 tabstop=4 expandtab:
  * \file include/FreeRTOSConfig.h
  *
  * This file is distributed under the terms of the MIT License.
@@ -99,3 +98,5 @@ void platform_timer_init(void);
 #define DELAY_S(ms)         vTaskDelay(S2ST(ms))
 
 #endif /* FREERTOS_CONFIG_H */
+
+// vim: set softtabstop=4 shiftwidth=4 tabstop=4 expandtab:

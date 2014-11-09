@@ -428,3 +428,5 @@ mac_release_rx_descriptor(mac_desc_t *rdes)
         ETH->DMARPDR = ETH_DMASR_RBUS;
     }
 }
+
+// vim: set softtabstop=4 shiftwidth=4 tabstop=4 expandtab:

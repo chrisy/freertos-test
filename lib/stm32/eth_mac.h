@@ -99,3 +99,5 @@ void mac_release_rx_descriptor(mac_desc_t *rdes);
 #define STM32_IP_CHECKSUM_OFFLOAD   3
 
 #endif
+
+// vim: set softtabstop=4 shiftwidth=4 tabstop=4 expandtab:

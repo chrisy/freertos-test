@@ -1,6 +1,5 @@
 /** FSMC definitions
- * vim: set softtabstop=4 shiftwidth=4 tabstop=4 expandtab:
- * \file lib/platform/fsmc.h
+ * \file src/platform/fsmc.h
  *
  * This file is distributed under the terms of the MIT License.
  * See the LICENSE file at the top of this tree, or if it is missing a copy can
@@ -46,3 +45,5 @@ extern uint8_t _fsmc_bank1_4_start;
 extern uint8_t _fsmc_bank1_4_end;
 
 #endif /* _FSMC_H */
+
+// vim: set softtabstop=4 shiftwidth=4 tabstop=4 expandtab:

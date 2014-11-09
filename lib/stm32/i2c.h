@@ -50,3 +50,5 @@ void I2C2_ER_IRQHandler(void);
 #endif
 
 #endif
+
+// vim: set softtabstop=4 shiftwidth=4 tabstop=4 expandtab:

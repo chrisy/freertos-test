@@ -1,6 +1,5 @@
 /** IO Platform
- * vim: set softtabstop=4 shiftwidth=4 tabstop=4 expandtab:
- * \file lib/posixio/io.c
+ * \file lib/posixio/fdio.c
  *
  * This file is distributed under the terms of the MIT License.
  * See the LICENSE file at the top of this tree, or if it is missing a copy can
@@ -265,3 +264,5 @@ int dup2(int fd, int fd2)
 
     return fd2;
 }
+
+// vim: set softtabstop=4 shiftwidth=4 tabstop=4 expandtab:

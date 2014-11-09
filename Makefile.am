@@ -34,6 +34,10 @@ uncrustify: amlocal/uncrustify.cfg
 		find "$(top_srcdir)/$$dir" ! -path '*/lib/fonts/*' -type f -name '*.[ch]' -print0 | \
 			xargs -0 uncrustify -c $(top_srcdir)/amlocal/uncrustify.cfg --replace --no-backup; \
 	done
+	@for file in "$(top_srcdir)/include/*.h.in"; do \
+		uncrustify -c $(top_srcdir)/amlocal/uncrustify.cfg --replace --no-backup $$file; \
+	done
+
 
 LIBTOOL_DEPS = @LIBTOOL_DEPS@
 libtool: $(LIBTOOL_DEPS)

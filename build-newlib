@@ -1,0 +1,65 @@
+#!/bin/sh
+# Build newlib
+
+set -e
+dir=$(dirname $0)
+if which greadlink >/dev/null 2>&1; then
+	readlink=greadlink
+else
+	readlink=readlink
+fi
+dir=$(${readlink} -f "${dir}")
+
+ver=newlib-2.1.0
+source="${ver}.tar.gz"
+url="ftp://sourceware.org/pub/newlib/${source}"
+newlib="${dir}/../${ver}"
+target=arm-none-eabi
+cflags="-g -O2 -fno-unroll-loops -ffunction-sections -fdata-sections" # -mfix-cortex-m3-ldrd"
+pkg_name=newlib
+
+MAKE=make
+which gmake >/dev/null 2>&1 && MAKE=gmake
+export MAKE
+export LD_LIBRARY_PATH=
+
+if [ ! -d "${newlib}" ]; then
+	cd "${dir}/../"
+	if [ ! -f "${source}" ]; then
+		wget "${url}"
+	fi
+	tar -zxvf "${source}"
+fi
+
+instdir="${dir}/newlib"
+builddir="${dir}/newlib-build"
+cd "${dir}"
+mkdir -p "${instdir}" "${builddir}"
+cd "${builddir}"
+
+${newlib}/configure --target=${target} \
+        --prefix=${instdir} \
+        --libdir=${instdir} \
+        --infodir=${instdir}/doc/${pkg_name}/info \
+        --mandir=${instdir}/doc/man \
+        --htmldir=${instdir}/doc/${pkg_name}/html \
+        --pdfdir=${instdir}/doc/${pkg_name}/pdf \
+        --enable-newlib-io-long-long \
+        --enable-newlib-register-fini \
+        --disable-newlib-supplied-syscalls \
+        --disable-nls \
+	CFLAGS="${cflags}" \
+	CC_FOR_TARGET=${target}-gcc \
+	GCC_FOR_TARGET=${target}-gcc \
+	AR_FOR_TARGET=${target}-ar \
+	AS_FOR_TARGET=${target}-as \
+	LD_FOR_TARGET=${target}-ld \
+	NM_FOR_TARGET=${target}-nm \
+	OBJCOPY_FOR_TARGET=${target}-objcopy \
+	OBJDUMP_FOR_TARGET=${target}-objdump \
+	RANLIB_FOR_TARGET=${target}-ranlib \
+	READELF_FOR_TARGET=${target}-readelf \
+	STRIP_FOR_TARGET=${target}-strip
+
+$MAKE -j4
+$MAKE install

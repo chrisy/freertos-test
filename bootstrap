@@ -7,6 +7,9 @@
 # Bootstrap the build tools
 # Run in the root directory of the project
 
+dir=$(dirname $0)
+cd "${dir}"
+
 echo "Bootstraping..."
 aclocal=aclocal
 libtoolize=libtoolize

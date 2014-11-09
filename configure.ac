@@ -149,6 +149,21 @@ CPPFLAGS="$CPPFLAGS -I${bdir}/extlib/FreeRTOS/Source/include"
 CPPFLAGS="$CPPFLAGS -I${bdir}/extlib/FreeRTOS/Source/portable/GCC/ARM_CM3"
 CPPFLAGS="$CPPFLAGS -I${bdir}/extlib/microrl/src"
 
+# If we have a local newlib, use it
+if test -d newlib/arm-none-eabi/lib/armv7-m; then
+    LDFLAGS="$LDFLAGS -L${bdir}/newlib/arm-none-eabi/lib/armv7-m"
+fi
+if test -d newlib/arm-none-eabi/include; then
+    cc1=`arm-none-eabi-gcc ${CFLAGS} -print-prog-name=cc1`
+    CFLAGS="$CFLAGS -nostdinc"
+    stdincs=`$cc1 -v </dev/null 2|& grep '^ /' | grep -v '\.\.'`
+    rm -f gccdump.c
+    for inc in $stdincs; do
+        CPPFLAGS="$CPPFLAGS -isystem ${inc}"
+    done
+    CPPFLAGS="$CPPFLAGS -isystem ${bdir}/newlib/arm-none-eabi/include"
+fi
+
 # Display the summary
 CC=`echo $CC | sed -e 's/  / /g'`
 CPPFLAGS=`echo $CPPFLAGS | sed -e 's/  / /g'`

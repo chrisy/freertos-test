@@ -38,3 +38,6 @@ src/image.use
 doc/*.tag
 doc/html
 lib/fonts/*.[ch]
+newlib/
+newlib-build/
+gccdump.s

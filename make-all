@@ -12,6 +12,7 @@ cd "${dir}"
 MAKE=make
 which gmake >/dev/null 2>&1 && MAKE=gmake
 export MAKE
+export LD_LIBRARY_PATH=
 
 do_bootstrap=
 
@@ -28,4 +29,4 @@ if [ "$do_bootstrap" ]; then
 	$MAKE clean
 fi
 
-exec $MAKE
+exec $MAKE -j4

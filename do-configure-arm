@@ -5,4 +5,7 @@
 # be found at http://opensource.org/licenses/MIT
 #
 
+dir=$(dirname $0)
+cd "${dir}"
+
 exec ./configure --host=arm-none-eabi --with-chip=STM32F103ZG --enable-debug $*

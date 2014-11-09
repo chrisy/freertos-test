@@ -37,7 +37,7 @@ extern uint32_t _mm_bss_start, _mm_bss_end;
 extern uint32_t _mm_heap_start, _mm_heap_end;
 extern uint32_t _mm_stack_top;
 
-// Define the vector table
+// The ARM vector table.
 struct nvic _nvic_vector __attribute__ ((section(".nvic_vector"))) = {
     .stack_top                  = &_mm_stack_top,
 
@@ -109,22 +109,26 @@ struct nvic _nvic_vector __attribute__ ((section(".nvic_vector"))) = {
 #endif
 };
 
-/* Some static text info for the binary image */
+/// Static text info for the binary image, including
+/// project name, version and copyright.
 static char _crt0_info[] SECTION_INFO =
     PROJECT_NAME " v" PROJECT_VERSION " " PROJECT_COPYRIGHT;
 
-
+/// A no-operation 'default' handler.
 void _crt0_default_handler(void)
 {
     return;
 }
 
+/// NMI handler.
 void _crt0_nmi_handler(void)
 {
     dbg("\r\nNMI!\r\n\r\n");
     for (;; ) ;
 }
 
+/// Used by the hardfault handler, this function prints register
+/// details at the time of a fault to the debugging console.
 void __attribute__ ((noreturn)) _crt0_hardfault_print(uint32_t *faultStack)
 {
     volatile uint32_t r0;
@@ -153,6 +157,10 @@ void __attribute__ ((noreturn)) _crt0_hardfault_print(uint32_t *faultStack)
     for (;; ) ;
 }
 
+/// Hardfault handler. Invoked by the processor whenever a fault has no
+/// other handler defined. Here we place current register values on the
+/// stack and call _crt0_hardfault_print() to dump them to the debugging
+/// console.
 void _crt0_hardfault_handler(void)
 {
     __asm volatile
@@ -170,7 +178,10 @@ void _crt0_hardfault_handler(void)
     for (;; ) ;  // this is just for the compiler to feel we satisfied noreturn
 }
 
-// Bootstrap routine
+/// System entry point and bootstrap routing.
+/// Responsible for initializing the BSS, copying initial values
+/// from flash to RAM, basic initial hardware setup and then calling
+/// main().
 void _crt0_init(void)
 {
     /* Initialize the BSS */

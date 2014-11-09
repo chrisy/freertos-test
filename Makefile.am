@@ -31,7 +31,7 @@ mostlyclean-local: doxygen-clean
 # Uncrustify the source
 uncrustify: amlocal/uncrustify.cfg
 	@for dir in $(sources); do \
-		find "$(top_srcdir)/$$dir" -type f -name '*.[ch]' -print0 | \
+		find "$(top_srcdir)/$$dir" ! -path '*/lib/fonts/*' -type f -name '*.[ch]' -print0 | \
 			xargs -0 uncrustify -c $(top_srcdir)/amlocal/uncrustify.cfg --replace --no-backup; \
 	done
 

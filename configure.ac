@@ -155,9 +155,9 @@ if test -d newlib/arm-none-eabi/lib/armv7-m; then
 fi
 if test -d newlib/arm-none-eabi/include; then
     cc1=`arm-none-eabi-gcc ${CFLAGS} -print-prog-name=cc1`
+    stdincs=`$cc1 ${CFLAGS} -v </dev/null 2>&1 |  grep '^ /' | grep -v '\.\.'`
     CFLAGS="$CFLAGS -nostdinc"
-    stdincs=`$cc1 -v </dev/null 2|& grep '^ /' | grep -v '\.\.'`
-    rm -f gccdump.c
+    rm -f gccdump.s
     for inc in $stdincs; do
         CPPFLAGS="$CPPFLAGS -isystem ${inc}"
     done

@@ -1,4 +1,4 @@
-/** MPU bootstrap routine
+/** MPU bootstrap routine.
  * \file src/platform/crt0.c
  *
  * This file is distributed under the terms of the MIT License.
@@ -25,19 +25,39 @@ void _crt0_init(void) __attribute__ ((naked, noreturn));
 void _crt0_nmi_handler(void) __attribute__ ((naked, noreturn));
 void _crt0_hardfault_handler(void) __attribute__ ((naked, noreturn));
 
-// Handlers in FreeRTOS (from portable/GCC/ARM_CM3/port.c)
+/** RTOS service handler (from portable/GCC/ARM_CM3/port.c) */
 extern void vPortSVCHandler(void);
+/** RTOS pending-service handler (from portable/GCC/ARM_CM3/port.c) */
 extern void xPortPendSVHandler(void);
+/** RTOS system tick handler (from portable/GCC/ARM_CM3/port.c) */
 extern void xPortSysTickHandler(void);
 
-// These are defined by the linker script
-extern uint32_t _mm_data_start, _mm_data_end;
-extern uint32_t _mm_datai_start, _mm_datai_end;
-extern uint32_t _mm_bss_start, _mm_bss_end;
-extern uint32_t _mm_heap_start, _mm_heap_end;
+/** Linker hint at the start of the data section in RAM */
+extern uint32_t _mm_data_start;
+/** Linker hint at the end of the data section in RAM */
+extern uint32_t _mm_data_end;
+/** Linker hint at the start of the initialized data section in ROM
+ * from which to initialize the RAM data section. */
+
+extern uint32_t _mm_datai_start;
+/** Linker hint at the end of the initialized data section in ROM
+ * from which to initialize the RAM data section. */
+extern uint32_t _mm_datai_end;
+
+/** Linker hint at the start of the BSS. */
+extern uint32_t _mm_bss_start;
+/** Linker hint at the end of the BSS. */
+extern uint32_t _mm_bss_end;
+
+/** Linker hint at the start of the system heap. */
+extern uint32_t _mm_heap_start;
+/** Linker hint at the end of the system heap. */
+extern uint32_t _mm_heap_end;
+
+/** Linker hint at the top of the system stack. */
 extern uint32_t _mm_stack_top;
 
-// The ARM vector table.
+/** The ARM vector table. */
 struct nvic _nvic_vector __attribute__ ((section(".nvic_vector"))) = {
     .stack_top                  = &_mm_stack_top,
 
@@ -109,26 +129,30 @@ struct nvic _nvic_vector __attribute__ ((section(".nvic_vector"))) = {
 #endif
 };
 
-/// Static text info for the binary image, including
-/// project name, version and copyright.
+/**
+ * Static text info for the binary image, including
+ * project name, version and copyright.
+ */
 static char _crt0_info[] SECTION_INFO =
     PROJECT_NAME " v" PROJECT_VERSION " " PROJECT_COPYRIGHT;
 
-/// A no-operation 'default' handler.
+/** A no-operation 'default' handler. */
 void _crt0_default_handler(void)
 {
     return;
 }
 
-/// NMI handler.
+/** NMI handler. */
 void _crt0_nmi_handler(void)
 {
     dbg("\r\nNMI!\r\n\r\n");
     for (;; ) ;
 }
 
-/// Used by the hardfault handler, this function prints register
-/// details at the time of a fault to the debugging console.
+/**
+ * Used by the hardfault handler, this function prints register
+ * details at the time of a fault to the debugging console.
+ */
 void __attribute__ ((noreturn)) _crt0_hardfault_print(uint32_t *faultStack)
 {
     volatile uint32_t r0;
@@ -157,10 +181,12 @@ void __attribute__ ((noreturn)) _crt0_hardfault_print(uint32_t *faultStack)
     for (;; ) ;
 }
 
-/// Hardfault handler. Invoked by the processor whenever a fault has no
-/// other handler defined. Here we place current register values on the
-/// stack and call _crt0_hardfault_print() to dump them to the debugging
-/// console.
+/**
+ * Hardfault handler. Invoked by the processor whenever a fault has no
+ * other handler defined. Here we place current register values on the
+ * stack and call _crt0_hardfault_print() to dump them to the debugging
+ * console.
+ */
 void _crt0_hardfault_handler(void)
 {
     __asm volatile
@@ -178,10 +204,12 @@ void _crt0_hardfault_handler(void)
     for (;; ) ;  // this is just for the compiler to feel we satisfied noreturn
 }
 
-/// System entry point and bootstrap routing.
-/// Responsible for initializing the BSS, copying initial values
-/// from flash to RAM, basic initial hardware setup and then calling
-/// main().
+/**
+ * System entry point and bootstrap routing.
+ * Responsible for initializing the BSS, copying initial values
+ * from flash to RAM, basic initial hardware setup and then calling
+ * main().
+ */
 void _crt0_init(void)
 {
     /* Initialize the BSS */

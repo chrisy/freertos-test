@@ -1,4 +1,4 @@
-/** Debugging helpers
+/** Debugging helpers.
  * \file src/debug.c
  *
  * This file is distributed under the terms of the MIT License.
@@ -18,6 +18,10 @@
 
 #ifdef DEBUG
 
+/**
+ * Initialize the debug routines.
+ * This does a basic setup of USART1.
+ */
 void dbg_init(void)
 {
 #if USE_SERIAL_USART1
@@ -37,6 +41,13 @@ void dbg_init(void)
     usart->CR1 = USART_CR1_UE | USART_CR1_TE | USART_CR1_RE;
 }
 
+/**
+ * Send a debug message to the debugging console, USART1.
+ * If we notice stdio has been started, use the peripheral driver
+ * instead of writing directly.
+ *
+ * @param msg The string to send to the debugging console.
+ */
 void dbg(const char *msg)
 {
     const char *p = msg;
@@ -56,6 +67,12 @@ void dbg(const char *msg)
     }
 }
 
+/**
+ * A printf-like method to send messages to the debugging console.
+ *
+ * @param fmt Formatting string to use.
+ * @param ... Printf-style parameters.
+ */
 void dbgf(const char *fmt, ...)
 {
     static char buf[128];

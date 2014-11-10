@@ -1,4 +1,4 @@
-/** FSMC definitions
+/** FSMC definitions.
  * \file src/platform/fsmc.h
  *
  * This file is distributed under the terms of the MIT License.

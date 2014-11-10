@@ -1,4 +1,4 @@
-/** sbrk allocator with bounds checking
+/** sbrk allocator with bounds checking.
  * \file src/platform/sbrk.c
  *
  * This file is distributed under the terms of the MIT License.
@@ -10,11 +10,23 @@
 #include <stdint.h>
 #include <errno.h>
 
+/** Linker hint at the start of the system heap. */
 extern uint32_t _mm_heap_start;
+/** Linker hint at the end of the system heap. */
 extern uint32_t _mm_heap_end;
+
+/** The high-water mark of all heap space currently allocated. */
 char *heap_top = (char *)&_mm_heap_start;
 
-/* We assume we're being called in a critical section */
+/**
+ * Implementation of the sbrk call to allocate a fresh section of the
+ * system heap. This implementation has some simple bounds checking
+ * based on hints provided by the linker.
+ *
+ * @param increment The amount of space on the heap to allocate.
+ * @returns Pointer to the start of the new block when successful;
+ * -1 otherwise.
+ */
 char *_sbrk(intptr_t increment)
 {
     char *ret;

@@ -1,4 +1,4 @@
-/** Wire up stdio to the posix layer
+/** Wire up stdio to the POSIX layer.
  * \file src/stdio_init.c
  *
  * This file is distributed under the terms of the MIT License.
@@ -13,8 +13,18 @@
 
 #include "stdio_init.h"
 
+/** Flag indicating whether the stdio FILE handles have been attached
+ * to some sort of I/O device yet. */
 uint8_t stdio_started = 0;
 
+
+/**
+ * Connects the stdio FILE handles stdin, stdout and stderr to
+ * the serial port USART1. This makes use of the POSIX-like I/O
+ * layer.
+ *
+ * @returns 1 on success, 0 otherwise.
+ */
 int stdio_start(void)
 {
     int fd = -1;
@@ -41,7 +51,7 @@ int stdio_start(void)
 
     stdio_started = 1;
 
-    return 0;
+    return 1;
 }
 
 // vim: set softtabstop=4 shiftwidth=4 tabstop=4 expandtab:

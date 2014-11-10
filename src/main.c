@@ -1,4 +1,4 @@
-/** Program start
+/** Program start, platform initialization.
  * \file src/main.c
  *
  * This file is distributed under the terms of the MIT License.
@@ -13,6 +13,7 @@
 #include <timers.h>
 #include <posixio/posixio.h>
 
+// Peripheral headers
 #include <stm32/dma.h>
 #include <stm32/serial.h>
 #include <stm32/i2c.h>
@@ -20,13 +21,19 @@
 
 #include "main.h"
 #include "stdio_init.h"
+#include "led.h"
 
 static void main_task(void *param);
 static void platform_init(void);
-static void led_init(void);
 
-QueueSetHandle_t qs_serial = NULL;
+#if configUSE_QUEUE_SETS
+/** Queue set for serial drivers */
+QueueSetHandle_t qs_serial;
+#endif
 
+/**
+ * Create the initial tasks and start the RTOS scheduler.
+ */
 int main(void)
 {
     dbg("Platform starting up.\r\n");
@@ -42,6 +49,12 @@ int main(void)
 }
 
 
+/**
+ * The "main" task responsible for finishing hardware initialization
+ * and starting the other tasks of the system.
+ *
+ * @param param 'param' is unused.
+ */
 void __attribute__ ((noreturn)) main_task(void *param)
 {
     dbg("Scheduler launched.\r\n");
@@ -61,6 +74,10 @@ void __attribute__ ((noreturn)) main_task(void *param)
         DELAY_MS(500);
 }
 
+/**
+ * Initialize the platform, including any hardware related to the platform.
+ * The platform includes basic I/O hardware and the POSIX-like subsystem.
+ */
 static void platform_init(void)
 {
     // Bootstrap the POSIX IO platform
@@ -136,63 +153,6 @@ static void platform_init(void)
     printf("Starting SPI 3.\r\n");
     spi_start(&SPI3_Dev, 0);
 #endif
-}
-
-#if configGENERATE_RUN_TIME_STATS
-void platform_timer_init(void)
-{
-    TIM_TypeDef *tim = TIM14;
-
-    taskENTER_CRITICAL();
-    RCC->APB1ENR |= RCC_APB1ENR_TIM14EN;
-    taskEXIT_CRITICAL();
-
-    tim->PSC = 60000; // prescaler - gives us 600Hz
-    tim->CR1 = TIM_CR1_CEN;
-    tim->EGR |= TIM_EGR_UG;
-}
-#endif
-
-static void led_advance(TimerHandle_t timer)
-{
-    static uint8_t i = 0;
-
-    uint16_t b = (1 << i) << 6;
-
-    GPIOF->BSRR = b;
-    GPIOF->BRR = (0xf << 6) & ~b;
-
-    i++;
-    if (i > 3) i = 0;
-}
-
-static TimerHandle_t led_timer;
-
-void led_init(void)
-{
-    taskENTER_CRITICAL();
-
-    RCC->APB2ENR |= RCC_APB2ENR_IOPFEN;
-
-    GPIOF->CRL &= ~(
-        GPIO_CRL_MODE6 | GPIO_CRL_CNF6 |
-        GPIO_CRL_MODE7 | GPIO_CRL_CNF7);
-    GPIOF->CRH &= ~(
-        GPIO_CRH_MODE8 | GPIO_CRH_CNF8 |
-        GPIO_CRH_MODE9 | GPIO_CRH_CNF9);
-
-    GPIOF->CRL |= GPIO_CRL_MODE6_0 | GPIO_CRL_MODE6_1;
-    GPIOF->CRL |= GPIO_CRL_MODE7_0 | GPIO_CRL_MODE7_1;
-    GPIOF->CRH |= GPIO_CRH_MODE8_0 | GPIO_CRH_MODE8_1;
-    GPIOF->CRH |= GPIO_CRH_MODE9_0 | GPIO_CRH_MODE9_1;
-
-    taskEXIT_CRITICAL();
-
-    GPIOF->BSRR = 0xffff;
-
-    led_timer = xTimerCreate("led", 100 / portTICK_PERIOD_MS,
-                             pdTRUE, NULL, led_advance);
-    xTimerStart(led_timer, 0);
 }
 
 // vim: set softtabstop=4 shiftwidth=4 tabstop=4 expandtab:

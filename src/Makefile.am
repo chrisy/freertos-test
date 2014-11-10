@@ -17,8 +17,9 @@ sources = \
 	platform/sbrk.c \
 	platform/freertos.c \
 	debug.c \
+	main.c \
 	stdio_init.c \
-	main.c
+	led.c
 
 ourlibdir = $(top_srcdir)/lib
 ourextlibdir = $(top_srcdir)/extlib
@@ -37,7 +38,7 @@ EXTRA_image_DEPENDENCIES = $(linker_script) \
 	$(ourextlibdir)/libmicrorl.a \
 	$(ourextlibdir)/libstdperiph.a \
 	$(ourextlibdir)/librtos.a \
-	$(ourextlibdir)/libplatform.a 
+	$(ourextlibdir)/libplatform.a
 
 image.map: image$(EXEEXT)
 

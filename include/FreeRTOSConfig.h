@@ -11,9 +11,9 @@
 
 #include <config.h>
 
-#define configUSE_IDLE_HOOK             0
+#define configUSE_IDLE_HOOK             1
 #define configUSE_QUEUE_SETS            0
-#define configUSE_TICK_HOOK             0
+#define configUSE_TICK_HOOK             1
 #define configCHECK_FOR_STACK_OVERFLOW  2
 
 #define configUSE_16_BIT_TICKS          0
@@ -96,6 +96,10 @@ void platform_timer_init(void);
 #define S2ST(ms)            ((ms) * configTICK_RATE_HZ)
 #define DELAY_MS(ms)        vTaskDelay(MS2ST(ms))
 #define DELAY_S(ms)         vTaskDelay(S2ST(ms))
+
+#if configUSE_TICK_HOOK
+uint64_t milliseconds_get(void);
+#endif
 
 #endif /* FREERTOS_CONFIG_H */
 

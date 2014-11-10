@@ -1,4 +1,4 @@
-/** NVIC vector definition
+/** NVIC vector definition.
  * \file src/platform/nvic.h
  *
  * This file is distributed under the terms of the MIT License.

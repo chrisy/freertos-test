@@ -206,7 +206,7 @@ int _stat(const char *file, struct stat *st)
  * by calling the unlink handler of the underlying device.
  *
  * @param name The file name of a file to be unlinked.
- * @param returns 0 on success or -1 otherwise with an error value in errno.
+ * @returns 0 on success or -1 otherwise with an error value in errno.
  */
 int _unlink(const char *name)
 {

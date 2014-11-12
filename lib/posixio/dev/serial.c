@@ -18,10 +18,10 @@
 #include <posixio/posixio.h>
 #include <posixio/dev/serial.h>
 #include <stm32/serial.h>
-#include <sys/stat.h>
 
-#include <errno.h>
+#include <sys/stat.h>
 #include <string.h>
+#include <real_errno.h>
 
 static int ser_close(void *fh)
 {

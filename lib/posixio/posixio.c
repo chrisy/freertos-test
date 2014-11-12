@@ -17,8 +17,8 @@
 #include <fcntl.h>
 #include <unistd.h>
 #include <sys/stat.h>
-#include <errno.h>
 #include <string.h>
+#include <real_errno.h>
 
 #include <posixio/posixio.h>
 #include <posixio/dev/serial.h>

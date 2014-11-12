@@ -15,11 +15,9 @@
 #include <fcntl.h>
 #include <unistd.h>
 #include <sys/stat.h>
-#include <errno.h>
 #include <string.h>
+#include <real_errno.h>
 
-#undef errno
-extern int errno;
 
 /* The POSIX-ish I/O primitives!
  * Here we just indirect through the dev structure associated

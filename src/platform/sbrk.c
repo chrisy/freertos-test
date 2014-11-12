@@ -8,7 +8,7 @@
 
 #include <config.h>
 #include <stdint.h>
-#include <errno.h>
+#include <real_errno.h>
 
 /** Linker hint at the start of the system heap. */
 extern uint32_t _mm_heap_start;
@@ -25,7 +25,7 @@ char *heap_top = (char *)&_mm_heap_start;
  *
  * @param increment The amount of space on the heap to allocate.
  * @returns Pointer to the start of the new block when successful;
- * -1 otherwise.
+ * -1 otherwise and errno will be set to an error code.
  */
 char *_sbrk(intptr_t increment)
 {

@@ -1,5 +1,5 @@
-RTOS Reference Implementation Change Log
-========================================
+Change Log
+==========
 
 Version 0.2
 -----------

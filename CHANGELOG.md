@@ -6,6 +6,8 @@ Version 0.2
 * Add CPU timer for tasks.
 * Add CLI command to display tasks.
 * Add a font-to-C mechanism.
+* Add a simple timer task to run the LEDs.
+* Start documenting things.
 
 Version 0.1 (2014-10-25)
 ------------------------

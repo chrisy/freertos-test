@@ -196,7 +196,7 @@ static struct iodev iodev_serial = {
     .fstat  = ser_fstat,
     .stat   = ser_stat,
 
-    .flags  = POSIXDEV_ISATTY
+    .flags  = POSIXDEV_CHARACTER_STREAM | POSIXDEV_ISATTY
 };
 
 

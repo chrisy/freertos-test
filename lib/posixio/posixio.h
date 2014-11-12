@@ -46,11 +46,16 @@ struct iodev {
     int     (*stat)(const char *file, struct stat *st);     ///< Handler for stat() of a filename on this device.
     int     (*unlink)(const char *name);                    ///< Handler for unlink() of a filename on this device.
 
-    int     flags;                                          ///< Device flags. See POSIXDEV_*.
+    int     flags;                                          ///< Device flags. See \ref POSIXIO_DEVICE_FLAGS.
 };
 
-/// Device is a TTY-type device.
-#define POSIXDEV_ISATTY     0x01
+enum POSIXIO_DEVICE_FLAGS {
+    POSIXDEV_CHARACTER_STREAM = 0x0001, ///< Device is a character stream.
+    POSIXDEV_BLOCK_FILE = 0x0002,       ///< Device is a file-like block device.
+    POSIXDEV_ISATTY = 0x0004,           ///< Device is a TTY-type device.
+    POSIXDEV_SOCKET = 0x0008,           ///< Device implements a sockets layer.
+};
+
 
 /**
  * The state of an open file.
@@ -63,21 +68,42 @@ struct iofile {
 };
 
 /**
- * Known device types.
+ * Known devices. Primarily used to fill st_dev in responses from _stat()
+ * and _fstat().
  */
 enum POSIXIO_DEVICES {
-    DEV_NONE,   ///< No (or unknown) device.
-    DEV_USART1, ///< Serial port 1
-    DEV_USART2, ///< Serial port 2
-    DEV_USART3, ///< Serial port 3
-    DEV_UART4,  ///< Serial port 4
-    DEV_UART5,  ///< Serial port 5
+    DEV_NONE = 0,   ///< No (or unknown) device.
+    DEV_USART1,     ///< Serial port 1
+    DEV_USART2,     ///< Serial port 2
+    DEV_USART3,     ///< Serial port 3
+    DEV_UART4,      ///< Serial port 4
+    DEV_UART5,      ///< Serial port 5
+    DEV_SPI1,       ///< SPI port 1
+    DEV_SPI2,       ///< SPI port 2
+    DEV_I2C1,       ///< I2C port 1
+    DEV_I2C2,       ///< I2C port 2
+    DEV_MMC1,       ///< MMC/SDIO port 1
 };
 
 int posixio_start(void);
 
 int posixio_split_path(const char *path, char *device, size_t device_len, char *file, size_t file_len);
 int posixio_split_path_malloc(const char *path, char **device, char **file);
+
+int _link(const char *old, const char *new);
+int _open(const char *name, int flags, ...);
+int _stat(const char *file, struct stat *st);
+int _unlink(const char *name);
+
+int _close(int fd);
+int _isatty(int fd);
+off_t _lseek(int fd, off_t ptr, int dir);
+ssize_t _read(int fd, void *ptr, size_t len);
+ssize_t _write(int fd, const void *ptr, size_t len);
+int _fstat(int fd, struct stat *st);
+int dup(int fd);
+int dup2(int fd, int fd2);
+
 
 #ifdef POSIXIO_PRIVATE
 int posixio_register_dev(struct iodev *dev);
@@ -87,11 +113,8 @@ int posixio_setfd(int fd, struct iofile *file);
 struct iodev *posixio_getdev(char *name);
 void posixio_fdlock(void);
 void posixio_fdunlock(void);
-int _open(const char *name, int flags, ...);
-int _close(int fd);
+#endif  /* POSIXIO_PRIVATE */
 
-#endif
-
-#endif /* POSIXIO_H */
+#endif  /* POSIXIO_H */
 
 // vim: set softtabstop=4 shiftwidth=4 tabstop=4 expandtab:

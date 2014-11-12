@@ -1,4 +1,10 @@
-/** IO Platform driver for serialio
+/** IO Platform driver for serialio.
+ *
+ * This will honor file I/O requests for all serial ports configured
+ * as in-use by the platform based on the value of macros such as
+ * USE_SERIAL_USART1. The structure of the "filesystem" is that
+ * /serial/1 refers to USART1, etc.
+ *
  * \file lib/posixio//dev/serial.c
  *
  * This file is distributed under the terms of the MIT License.
@@ -88,7 +94,7 @@ static ssize_t ser_write(void *fh, const void *ptr, size_t len)
     return len;
 }
 
-int ser_fstat(void *fh, struct stat *st)
+static int ser_fstat(void *fh, struct stat *st)
 {
     if (st == NULL) {
         errno = EFAULT;
@@ -132,7 +138,7 @@ int ser_fstat(void *fh, struct stat *st)
     return 0;
 }
 
-int ser_stat(const char *file, struct stat *st)
+static int ser_stat(const char *file, struct stat *st)
 {
     if (file == NULL || st == NULL) {
         errno = EFAULT;
@@ -176,6 +182,7 @@ int ser_stat(const char *file, struct stat *st)
     return 0;
 }
 
+/// Serial port device structure
 static struct iodev iodev_serial = {
     .name   = "serial",
 
@@ -189,6 +196,16 @@ static struct iodev iodev_serial = {
     .flags  = POSIXDEV_ISATTY
 };
 
+
+/**
+ * Register the serial port device handler.
+ * This will honor file I/O requests for all serial ports configured
+ * as in-use by the platform based on the value of macros such as
+ * USE_SERIAL_USART1. The structure of the "filesystem" is that
+ * /serial/1 refers to USART1, etc.
+ *
+ * @returns 0 on success, -1 otherwise with an error value in errno.
+ */
 int posixio_register_serial(void)
 {
     return posixio_register_dev(&iodev_serial);

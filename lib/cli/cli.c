@@ -19,6 +19,7 @@
 
 #include "cli.h"
 
+/** The maximum time we'll wait for our semaphore. */
 #define SEM_DELAY (5000 / portTICK_PERIOD_MS)
 
 #if configUSE_TRACE_FACILITY
@@ -26,9 +27,13 @@
 #endif
 
 
+/** A list of all the CLI commands available. */
 static struct cli_command *cli_commands = NULL;
+/** Count of the number of commands in the cli_commands list. */
 static int cli_command_num = 0;
+/** A semaphore to protect some critical sections of the CLI. */
 static SemaphoreHandle_t cmd_sem = NULL;
+/** A flag indicating whether the current list of commands has been sorted or not. */
 static char cli_commands_sorted = 0;
 
 
@@ -45,6 +50,11 @@ static int cmd_tasks(struct cli *cli, int argc, const char *const *argv);
 static int cmd_history(struct cli *cli, int argc, const char *const *argv);
 #endif
 
+
+/**
+ * Initialize the CLI. Called once at platform startup this creates a
+ * set of basic commands that the CLI will respond to.
+ */
 void cli_init(void)
 {
     cmd_sem = xSemaphoreCreateMutex();
@@ -86,6 +96,11 @@ void cli_init(void)
 #endif
 }
 
+
+/**
+ * A helper routine for the readline library that will send a string
+ * to the output stream for a given CLI instance.
+ */
 static void cli_print(void *opaque, const char *str)
 {
     struct cli *cli = (struct cli *)opaque;
@@ -96,6 +111,11 @@ static void cli_print(void *opaque, const char *str)
     }
 }
 
+
+/**
+ * Helper routine called by the readline library when control-C is
+ * seen in the input stream.
+ */
 static void cli_sigint(void *opaque)
 {
     struct cli *cli = (struct cli *)opaque;
@@ -103,6 +123,13 @@ static void cli_sigint(void *opaque)
     (void)cli;
 }
 
+
+/**
+ * The RTOS task that implements the CLI.
+ *
+ * @param param An opaque reference to the instance of the CLI this task
+ * is servicing.
+ */
 static void __attribute__ ((noreturn)) cli_task(void *param)
 {
     struct cli *cli = (struct cli *)param;
@@ -130,6 +157,15 @@ static void __attribute__ ((noreturn)) cli_task(void *param)
     }
 }
 
+
+/**
+ * Creates an instance of the CLI attached to the I/O streams supplied.
+ *
+ * @param name The name of the CLI task. This string will be prepended with
+ *      "cli_" when the task is created.
+ * @param in The FILE stream from which input characters are to be read.
+ * @param out The FILE stream to which output strings are to be sent.
+ */
 void cli_start(char *name, FILE *in, FILE *out)
 {
     struct cli *cli;
@@ -150,13 +186,26 @@ void cli_start(char *name, FILE *in, FILE *out)
                 THREAD_PRIO_CLI, &cli->task);
 }
 
+
+/**
+ * Stops a running CLI task.
+ *
+ * @param cli The reference to a CLI instance to stop.
+ */
 void cli_stop(struct cli *cli)
 {
-    free(cli->name);
     vTaskDelete(cli->task);
+    free(cli->name);
     free(cli);
 }
 
+
+/**
+ * Adds a command to the list of commands the CLI will respond to.
+ *
+ * @param cmd A command to add. The contents of this structure are copied
+ *      into the command list.
+ */
 void cli_addcmd(struct cli_command *cmd)
 {
     xSemaphoreTake(cmd_sem, SEM_DELAY);
@@ -172,6 +221,8 @@ void cli_addcmd(struct cli_command *cmd)
     cli_commands_sorted = 0;
 }
 
+
+/** qsort helper routine used when sorting the command list. */
 static int cli_cmpstringp(const void *p1, const void *p2)
 {
     struct cli_command *c1 = (struct cli_command *)p1;
@@ -180,6 +231,10 @@ static int cli_cmpstringp(const void *p1, const void *p2)
     return stricmp(c1->cmd, c2->cmd);
 }
 
+
+/**
+ * Sorts the command list into ascending alphanumerical command name order.
+ */
 void cli_sortcmds(void)
 {
     xSemaphoreTake(cmd_sem, SEM_DELAY);
@@ -188,6 +243,23 @@ void cli_sortcmds(void)
     cli_commands_sorted = 1;
 }
 
+
+/**
+ * Called by the readline library when an input string should be interpreted
+ * and executed.
+ *
+ * This function searches for the command in the list of commands. The
+ * command is the first word in the string.
+ *
+ * If a command is not found in the list then an error is printed and no
+ * further action taken.
+ *
+ * If a command is found and it defines a function to call then that function
+ * is called with the complete command line in the argc and argv parameters.
+ *
+ * @returns -1 when the command is not found or the value returned by the
+ *      commands function.
+ */
 int cli_exec(void *opaque, int argc, const char *const *argv)
 {
     struct cli *cli = (struct cli *)opaque;
@@ -217,6 +289,10 @@ int cli_exec(void *opaque, int argc, const char *const *argv)
 
 
 #ifdef _USE_COMPLETE
+/**
+ * Used by the readline library when "tab" is pressed to discover all
+ * partially matching commands.
+ */
 char **cli_autocomplete(void *opaque, int argc, const char *const *argv)
 {
     struct cli *cli = (struct cli *)opaque;
@@ -262,6 +338,12 @@ char **cli_autocomplete(void *opaque, int argc, const char *const *argv)
 }
 #endif
 
+
+/**
+ * A simple "help" command that prints the list of commands with their
+ * "brief" text. If invoked with the name of a command as a parameter then
+ * it prints the more detailed help text, if available.
+ */
 int cmd_help(struct cli *cli, int argc, const char *const *argv)
 {
     if (argc == 1) {
@@ -301,6 +383,11 @@ int cmd_help(struct cli *cli, int argc, const char *const *argv)
     return 0;
 }
 
+
+/**
+ * Simple "echo" command. Simply prints to the output stream whatever
+ * was presented as parameters to the command.
+ */
 int cmd_echo(struct cli *cli, int argc, const char *const *argv)
 {
     argc--; argv++;
@@ -313,7 +400,9 @@ int cmd_echo(struct cli *cli, int argc, const char *const *argv)
     return 0;
 }
 
+
 #ifdef CLI_TASKCMDS
+/** qsort helper to sort tasks by id. */
 static int cmd_taskidcmp(const void *p1, const void *p2)
 {
     TaskStatus_t *t1 = (TaskStatus_t *)p1;
@@ -322,6 +411,11 @@ static int cmd_taskidcmp(const void *p1, const void *p2)
     return t1->xTaskNumber - t2->xTaskNumber;
 }
 
+
+/**
+ * A command that prints the list of currently defined tasks the RTOS
+ * scheduler is aware of.
+ */
 int cmd_tasks(struct cli *cli, int argc, const char *const *argv)
 {
     int count = uxTaskGetNumberOfTasks();
@@ -400,7 +494,11 @@ int cmd_tasks(struct cli *cli, int argc, const char *const *argv)
 }
 #endif
 
+
 #ifdef _USE_HISTORY
+/**
+ * Command that prints the current readline history buffer.
+ */
 int cmd_history(struct cli *cli, int argc, const char *const *argv)
 {
     microrl_print_history(&cli->rl);

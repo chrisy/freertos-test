@@ -14,22 +14,31 @@
 #include <stdio.h>
 #include <microrl.h>
 
+/**
+ * An instance of the CLI.
+ * We can concievably run more than one copy of the CLI againsts different
+ * I/O streams. All CLI state must therefore be stored in an instance of
+ * this structure.
+ */
 struct cli {
-    char            *name;          // name of the task
-    TaskHandle_t    task;           // task reference
-    FILE            *in;            // input stream
-    FILE            *out;           // output stream
-    char            **completions;  // for autocomplete
-    int             completion_num; // number of entries malloc'ed
-    microrl_t       rl;             // micro readline reference
+    char            *name;          ///< name of the task
+    TaskHandle_t    task;           ///< task reference
+    FILE            *in;            ///< input stream
+    FILE            *out;           ///< output stream
+    char            **completions;  ///< for autocomplete
+    int             completion_num; ///< number of entries malloc'ed
+    microrl_t       rl;             ///< micro readline reference
 };
 
+/**
+ * An individual CLI command.
+ */
 struct cli_command {
-    char    *cmd;                                                       // the command
-    char    *brief;                                                     // brief description of the command
-    char    *help;                                                      // more complete help text for the command
-    int     (*fn)(struct cli *cli, int argc, const char *const *argv);  // function to call for the command
-    char    ** (*completion)(int, const char *const *);                 // function to call for autocompletion of parameters
+    char    *cmd;                                                       ///< the command
+    char    *brief;                                                     ///< brief description of the command
+    char    *help;                                                      ///< more complete help text for the command
+    int     (*fn)(struct cli *cli, int argc, const char *const *argv);  ///< function to call for the command
+    char    ** (*completion)(int, const char *const *);                 ///< function to call for autocompletion of parameters
 };
 
 void cli_init(void);

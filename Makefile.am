@@ -35,7 +35,7 @@ uncrustify: amlocal/uncrustify.cfg
 			xargs -0 uncrustify -c $(top_srcdir)/amlocal/uncrustify.cfg --replace --no-backup; \
 	done
 	@for file in "$(top_srcdir)/include/*.h.in"; do \
-		uncrustify -c $(top_srcdir)/amlocal/uncrustify.cfg --replace --no-backup $$file; \
+		uncrustify -c $(top_srcdir)/amlocal/uncrustify.cfg --mtime --replace --no-backup $$file; \
 	done
 
 

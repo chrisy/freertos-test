@@ -1,11 +1,15 @@
-/*
- * Copyright (c) Michael Tharp <gxti@partiallystapled.com>
+/** RTOS-friendly STM32 serial port peripheral driver.
+ * \file
  *
- * This file is distributed under the terms of the MIT License.
+ * \author Michael Tharp <gxti@partiallystapled.com>
+ * \author Chris Luke <chrisy@flirble.org>
+ * \copyright Copyright (c) Michael Tharp <gxti@partiallystapled.com>
+ * \copyright Copyright (c) Chris Luke <chrisy@flirble.org>
+ *
+ * \copyright This file is distributed under the terms of the MIT License.
  * See the LICENSE file at the top of this tree, or if it is missing a copy can
  * be found at http://opensource.org/licenses/MIT
  */
-
 
 #ifndef _SERIAL_H
 #define _SERIAL_H

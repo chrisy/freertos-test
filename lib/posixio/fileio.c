@@ -26,12 +26,13 @@
  */
 
 /**
- * Implements link() by passing the call through to the link handler
+ * Implements \c link() by passing the call through to the \c link handler
  * of the underlying device of the second filename.
  *
  * @param old The existing file to make a link towards.
  * @param new The new filename that will contain the link.
- * @returns 0 on success, -1 otherwise with errno set to an error value.
+ * @returns \c 0 on success, \c -1 otherwise with \c errno set to an
+ *      error value.
  */
 int _link(const char *old, const char *new)
 {
@@ -64,24 +65,24 @@ int _link(const char *old, const char *new)
 
 
 /**
- * Implements open() to open a file with a given mode.
+ * Implements \c open() to open a file with a given mode.
  * Several things happen in this function, including validating the
  * filename (this platform requires all filenames be fully qualified
- * and that they begin with /DEVICE/), a file descriptor is assigned
+ * and that they begin with \c "/DEVICE/ ), a file descriptor is assigned
  * and the underlying device asked to "open" the file (the precise
  * nature of which will vary between device implmentations.)
  *
  * @param name The file name to open. This is expected to be in the form
- *      "/DEVICE/FILE".
+ *      \c "/DEVICE/FILE" .
  * @param flags Flags to pass to the underlying device. Common values that
- *      can be bitwise-ORed into this include O_RDONLY, O_WRONLY, O_RDWR,
- *      O_CREAT, O_APPEND, though device implementations will vary. 0 is an
- *      acceptable value if no flags are required.
+ *      can be bitwise-ORed into this include \c O_RDONLY, \c O_WRONLY,
+ *      \c O_RDWR, \c O_CREAT, \c O_APPEND, though device implementations
+ *      will vary. \c 0 is an acceptable value if no flags are required.
  * @param ... Some devices will allow the caller to indicate the initial
  *      mode of a file if open() is creating it. If used, this may be
  *      indicated in this parameter.
- * @returns A new file descriptor on success or -1 on error with an error
- *      value in errno.
+ * @returns A new file descriptor on success or \c -1 on error with an error
+ *      value in \c errno.
  */
 int _open(const char *name, int flags, ...)
 {
@@ -161,12 +162,14 @@ int _open(const char *name, int flags, ...)
 
 
 /**
- * Implements stat() by passing the call through to the stat handler
+ * Implements \c stat() by passing the call through to the \c stat handler
  * of the underlying device of the given filename.
  *
  * @param file The file name that should be stat()ed.
- * @param st A struct stat into which the results of the operation are placed.
- * @returns 0 on success, -1 otherwise with errno set to an error value.
+ * @param st A <tt>struct stat</tt> into which the results of the
+ *      operation are placed.
+ * @returns \c 0 on success, \c -1 otherwise with \c errno set to an error
+ *      value.
  */
 int _stat(const char *file, struct stat *st)
 {
@@ -202,11 +205,12 @@ int _stat(const char *file, struct stat *st)
 
 
 /**
- * Implements unlink(), which usually deletes a file from a filesystem,
- * by calling the unlink handler of the underlying device.
+ * Implements \c unlink(), which usually deletes a file from a filesystem,
+ * by calling the \c unlink handler of the underlying device.
  *
  * @param name The file name of a file to be unlinked.
- * @returns 0 on success or -1 otherwise with an error value in errno.
+ * @returns \c 0 on success or \c -1 otherwise with an error value in
+ *      \c errno.
  */
 int _unlink(const char *name)
 {

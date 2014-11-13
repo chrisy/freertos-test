@@ -41,6 +41,8 @@ static struct iofile *files[POSIXIO_MAX_OPEN_FILES];
 /**
  * Initialize the POSIX I/O layer. At minimum, this will reset the list
  * of open files and register a serial port device.
+ *
+ * @returns \c 1 on success; there is currently no failing return.
  */
 int posixio_start(void)
 {
@@ -65,7 +67,8 @@ int posixio_start(void)
  * Register a device.
  *
  * @param dev The device to register.
- * @returns 0 on success or, on error, -1 with an error code in errno.
+ * @returns \c 0 on success or, on error, \c -1 with an error code in
+ *      \c errno.
  */
 int posixio_register_dev(struct iodev *dev)
 {
@@ -90,7 +93,8 @@ int posixio_register_dev(struct iodev *dev)
  * This function assumes that the current task holds posixio_fdlock().
  * This is an internal function.
  *
- * @returns A new file descriptor on success, or -1 with an error code in errno.
+ * @returns A new file descriptor on success, or \c -1 with an error code
+ *      in \c errno.
  */
 int posixio_newfd(void)
 {
@@ -113,8 +117,8 @@ int posixio_newfd(void)
  * This is an internal function.
  *
  * @param fd The file descriptor to fetch the iofile for.
- * @returns A struct iofile on success or NULL, with an error code in errno,
- *      on error.
+ * @returns A struct iofile on success or \c NULL, with an error code
+ *      in \c errno, on error.
  */
 struct iofile *posixio_file_fromfd(int fd)
 {
@@ -129,17 +133,17 @@ struct iofile *posixio_file_fromfd(int fd)
 
 
 /**
- * Record the iofile structure of an open file against a given file
+ * Record the \ref iofile structure of an open file against a given file
  * descriptor.
  * This function assumes that the current task holds posixio_fdlock().
  * This is an internal function.
  *
  * @param fd The file descriptor to update. If the descriptor currently
  *      references an open file that file will first be closed.
- * @param file The struct iofile to update the descriptor with. The contents
- *      are copied.
- * @returns 0 on success or, if there is an error, -1 with an error code
- *      in errno.
+ * @param file The struct \ref iofile to update the descriptor with.
+ *      The contents are copied.
+ * @returns \c 0 on success or, if there is an error, \c -1 with an error code
+ *      in \c errno.
  */
 int posixio_setfd(int fd, struct iofile *file)
 {
@@ -166,8 +170,8 @@ int posixio_setfd(int fd, struct iofile *file)
 
 
 /**
- * Attempts to split a string that looks like /DEVICE/FILE
- * into two strings; one for DEVICE and one for FILE. This
+ * Attempts to split a string that looks like \c "/DEVICE/FILE"
+ * into two strings; one for \c "DEVICE" and one for \c "FILE". This
  * helper copies the results into two string buffers provided
  * by the caller.
  *
@@ -176,7 +180,8 @@ int posixio_setfd(int fd, struct iofile *file)
  * @param device_len The maximum length that may be copied into device.
  * @param file The string to copy the file name into.
  * @param file_len The maximum length that may be copied into file.
- * @returns 0 on success, -1 otherwise with errno set to an error code.
+ * @returns \c 0 on success, \c -1 otherwise with \c errno set to an error
+ *      code.
  */
 int posixio_split_path(const char *path,
                        char *device, size_t device_len,
@@ -209,16 +214,17 @@ int posixio_split_path(const char *path,
 
 
 /**
- * Attempts to split a string that looks like /DEVICE/FILE
- * into two strings; one for DEVICE and one for FILE. This
+ * Attempts to split a string that looks like \c "/DEVICE/FILE"
+ * into two strings; one for \c "DEVICE" and one for \c "FILE". This
  * helper copies the results into two string buffers allocated
- * using malloc(). It is the callers responsibilty to free() these
+ * using \c malloc(). It is the callers responsibilty to \c free() these
  * strings when no longer needed.
  *
  * @param path The string to split.
  * @param device Pointer to the string to copy the device name into.
  * @param file Pointer to the string to copy the file name into.
- * @returns 0 on success, -1 otherwise with errno set to an error code.
+ * @returns \c 0 on success, \c -1 otherwise with \c errno set to an
+ *      error code.
  */
 int posixio_split_path_malloc(const char *path,
                               char **device, char **file)
@@ -262,7 +268,7 @@ int posixio_split_path_malloc(const char *path,
  * This function assumes that the current task holds posixio_fdlock().
  *
  * @param name The name of the device to search for.
- * @returns A struct iodev on success or NULL otherwise.
+ * @returns A struct \ref iodev on success or \c NULL otherwise.
  */
 struct iodev *posixio_getdev(char *name)
 {

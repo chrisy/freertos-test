@@ -20,7 +20,7 @@
 #define POSIXIO_MAX_OPEN_FILES 32
 #endif
 #ifndef POSIXIO_MAX_DEVICES
-/// Maxium number of known devices.
+/// Maxium number of registered devices.
 #define POSIXIO_MAX_DEVICES 32
 #endif
 
@@ -34,17 +34,17 @@ struct iodev {
     char    *name; /// The name of the device.
 
     // fdio handlers
-    int     (*close)(void *fh);                                 ///< Handler for close() of a file on this device.
-    off_t   (*lseek)(void *fh, off_t ptr, int dir);             ///< Handler for lseek() of a file on this device.
-    ssize_t (*read)(void *fh, void *ptr, size_t len);           ///< Handler for read() from a file on this device.
-    ssize_t (*write)(void *fh, const void *ptr, size_t len);    ///< Handler for write() to a file on this device.
-    int     (*fstat)(void *fh, struct stat *st);                ///< Handler for fstat() of a file on this device.
+    int     (*close)(void *fh);                                 ///< Handler for \c close() of a file on this device.
+    off_t   (*lseek)(void *fh, off_t ptr, int dir);             ///< Handler for \c lseek() of a file on this device.
+    ssize_t (*read)(void *fh, void *ptr, size_t len);           ///< Handler for \c read() from a file on this device.
+    ssize_t (*write)(void *fh, const void *ptr, size_t len);    ///< Handler for \c write() to a file on this device.
+    int     (*fstat)(void *fh, struct stat *st);                ///< Handler for \c fstat() of a file on this device.
 
     // fileio handlers
-    int     (*link)(const char *old, const char *new);      ///< Handler for link() targetting filenames on this device.
-    void    * (*open)(const char *name, int flags, ...);    ///< Handler for open() of a filename on this device.
-    int     (*stat)(const char *file, struct stat *st);     ///< Handler for stat() of a filename on this device.
-    int     (*unlink)(const char *name);                    ///< Handler for unlink() of a filename on this device.
+    int     (*link)(const char *old, const char *new);      ///< Handler for \c link() targeting filenames on this device.
+    void    * (*open)(const char *name, int flags, ...);    ///< Handler for \c open() of a filename on this device.
+    int     (*stat)(const char *file, struct stat *st);     ///< Handler for \c stat() of a filename on this device.
+    int     (*unlink)(const char *name);                    ///< Handler for \c unlink() of a filename on this device.
 
     int     flags;                                          ///< Device flags. See \ref POSIXIO_DEVICE_FLAGS.
 };
@@ -64,7 +64,7 @@ struct iofile {
     char            *name;  ///< The name of the file.
     struct iodev    *dev;   ///< The device the file resides on.
     void            *fh;    ///< An opaque handle given to us by the dev.
-    int             flags;  ///< Any flags given to open()
+    int             flags;  ///< Any flags given to \c open()
 };
 
 /**

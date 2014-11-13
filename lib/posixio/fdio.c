@@ -28,12 +28,13 @@
  */
 
 /**
- * Implements close() on an open file by calling the close handler
+ * Implements \c close() on an open file by calling the \c close handler
  * of any underlying device and then removing any association for the
  * file descriptor of the open file.
  *
  * @param fd File descriptor of a file that needs to be closed.
- * @returns 0 on success, -1 otherwise with errno set to an error code.
+ * @returns \c 0 on success, \c -1 otherwise with \c errno set to an
+ *      error code.
  */
 int _close(int fd)
 {
@@ -60,12 +61,12 @@ int _close(int fd)
 
 
 /**
- * Implements isatty() by seeing if POSIXDEV_ISATTY is set in the
+ * Implements \c isatty() by seeing if \ref POSIXDEV_ISATTY is set in the
  * underlying device flags.
  *
  * @param fd An open file whose device is to be queried.
- * @return 1 if the device is a tty, 0 if not and -1 on error with errno
- *      set to an error value.
+ * @return \c 1 if the device is a tty, \c 0 if not and \c -1 on error
+ *      with \c errno set to an error value.
  */
 int _isatty(int fd)
 {
@@ -87,16 +88,16 @@ int _isatty(int fd)
 
 
 /**
- * Implements lseek() on an open file by passing the call through to the
- * lseek handler of the underlying device.
+ * Implements \c lseek() on an open file by passing the call through to the
+ * \c lseek handler of the underlying device.
  *
  * @param fd File descriptor of an open file to operate on.
  * @param ptr The offset, in bytes, to seek to in the open file.
- * @param dir The direction to seek in the open file, usually SEEK_SET,
- *      SEEK_CUR or SEEK_END.
- * @returns -1 on error, with errno set to an error value. Other values
+ * @param dir The direction to seek in the open file, usually \c SEEK_SET,
+ *      \c SEEK_CUR or \c SEEK_END.
+ * @returns \c -1 on error, with \c  errno set to an error value. Other values
  *      may be device implementation specific, but POSIX expects that
- *      lseek() returns the resulting offset from the beginning of the file.
+ *      \c lseek() returns the resulting offset from the beginning of the file.
  */
 off_t _lseek(int fd, off_t ptr, int dir)
 {
@@ -124,16 +125,16 @@ off_t _lseek(int fd, off_t ptr, int dir)
 
 
 /**
- * Implements read() on an open file by passing the call through to the
- * read handler of the underlying device.
+ * Implements \c read() on an open file by passing the call through to the
+ * \c read handler of the underlying device.
  *
  * @param fd An open file to operate on.
  * @param ptr A pointer to a region of memory into which bytes read from the
  *      file can be placed.
  * @param len An upper limit on the number of bytes to read from the open
  *      file. This will often be the size of the buffer referred to by ptr.
- * @returns The number of bytes read into ptr or -1 on error with errno set
- *      to an error value. For most types of device a return value of 0
+ * @returns The number of bytes read into ptr or \c -1 on error with \c errno
+ *      set to an error value. For most types of device a return value of \c 0
  *      indicates that the file has met an end-of-file condition; in
  *      the case of network devices, this means a stream connection was
  *      terminated remotely.
@@ -164,16 +165,16 @@ ssize_t _read(int fd, void *ptr, size_t len)
 
 
 /**
- * Implements write() on an open file by passing the call through to the
- * write handler of the underlying device.
+ * Implements \c write() on an open file by passing the call through to the
+ * \c write handler of the underlying device.
  *
  * @param fd An open file to operate on.
  * @param ptr A pointer to a region of memory from which bytes are written
  *      to the open file.
  * @param len An upper limit on the number of bytes to write to the open
  *      file.
- * @returns The number of bytes written to the open file or -1 on error
- *      with errno set to an error value.
+ * @returns The number of bytes written to the open file or \c -1 on error
+ *      with \c errno set to an error value.
  */
 ssize_t _write(int fd, const void *ptr, size_t len)
 {
@@ -200,12 +201,13 @@ ssize_t _write(int fd, const void *ptr, size_t len)
 
 
 /**
- * Implements fstat() on an open file by passing the call through to the
- * fstat handler of the underlying device.
+ * Implements \c fstat() on an open file by passing the call through to the
+ * \c fstat handler of the underlying device.
  *
  * @param fd An open file to operate on.
  * @param st A struct stat into which the results of the operation are placed.
- * @returns 0 on success, -1 otherwise with errno set to an error value.
+ * @returns \c 0 on success, \c -1 otherwise with \c errno set to an
+ *      error value.
  */
 int _fstat(int fd, struct stat *st)
 {
@@ -232,12 +234,12 @@ int _fstat(int fd, struct stat *st)
 
 
 /**
- * Duplicates the file descriptor for an open file. This allocates a new
- * file descriptor and clones the references of the open file into it.
+ * Duplicates the file descriptor for an open file \c fd. This allocates a new
+ * file descriptor and clones the references of the open file \c fd into it.
  *
  * @param fd An open file to operate on.
- * @returns A new file descriptor or -1 on error with errno set to an error
- *      value.
+ * @returns A new file descriptor or \c -1 on error with \c errno set to an
+ *      error value.
  */
 int dup(int fd)
 {
@@ -293,15 +295,16 @@ int dup(int fd)
 
 
 /**
- * Duplicates a file descriptor for an open file into a specified other
- * file descriptor. It closes the second descriptor if it has an open
- * file attached to it and then clones the references of the first descriptor
- * into the second.
+ * Duplicates a file descriptor for the open file \c fd into a specified other
+ * file descriptor \c fd2. It closes the descriptor \c fd2 if it has an open
+ * file attached to it and then clones the references of the descriptor
+ * \c fd into the descriptor \c fd2.
  *
  * @param fd An open file to clone.
  * @param fd2 An arbitrary file descriptor value into which fd should be
  *      cloned.
- * @returns fd2 or -1 on error with errno set to an error value.
+ * @returns The value of \c fd2 or \c -1 on error with \c errno set to an
+ *      error value.
  */
 int dup2(int fd, int fd2)
 {

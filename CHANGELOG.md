@@ -8,6 +8,7 @@ Version 0.2
 * Add a font-to-C mechanism.
 * Add a simple timer task to run the LEDs.
 * Start documenting things.
+* Add helpers for using fonts.
 
 Version 0.1 (2014-10-25)
 ------------------------

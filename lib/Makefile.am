@@ -84,7 +84,7 @@ $(fontout)/fontem.h: $(fontemdir)/src/resource/fontem.h
 $(fontout)/fontrender.c: $(fontemdir)/src/fontrender.c
 	cp -p $< $@
 
-$(fontout)/fontfinder.c: $(fontemdir)/src/fontfinder.c $(fontout)/font_all.c
+$(fontout)/fontfinder.c: $(fontemdir)/src/fontfinder.c
 	cp -p $< $@
 
 .SECONDEXPANSION:

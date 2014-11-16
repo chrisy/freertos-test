@@ -2,8 +2,8 @@
  *
  * This will honor file I/O requests for all serial ports configured
  * as in-use by the platform based on the value of macros such as
- * USE_SERIAL_USART1. The structure of the "filesystem" is that
- * /serial/1 refers to USART1, etc.
+ * \c USE_SERIAL_USART1. The structure of the "filesystem" is that
+ * \c "/serial/1" refers to USART1, etc.
  *
  * \file lib/posixio/dev/serial.c
  *
@@ -204,10 +204,10 @@ static struct iodev iodev_serial = {
  * Register the serial port device handler.
  * This will honor file I/O requests for all serial ports configured
  * as in-use by the platform based on the value of macros such as
- * USE_SERIAL_USART1. The structure of the "filesystem" is that
- * /serial/1 refers to USART1, etc.
+ * \c USE_SERIAL_USART1. The structure of the "filesystem" is that
+ * \c "/serial/1" refers to USART1, etc.
  *
- * @returns 0 on success, -1 otherwise with an error value in errno.
+ * @returns \c 0 on success, \c -1 otherwise with an error value in \c errno.
  */
 int posixio_register_serial(void)
 {

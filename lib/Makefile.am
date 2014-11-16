@@ -40,101 +40,84 @@ libcli_a_SOURCES = $(cli_sources)
 
 fontdir := $(top_srcdir)/resources/ttf
 fontemdir := $(top_srcdir)/tools/fontem
+fontout := fonts
 
 # A list of all the fonts we want to build.
 # # The source .ttf is determined from the name.
 fonts_sources :=
-fonts_sources += fonts/font-UbuntuMonoB-10.c
-fonts_sources += fonts/font-UbuntuMonoB-11.c
-fonts_sources += fonts/font-UbuntuMonoB-12.c
-fonts_sources += fonts/font-UbuntuMonoB-13.c
-fonts_sources += fonts/font-UbuntuMonoB-14.c
-fonts_sources += fonts/font-UbuntuMonoB-16.c
-fonts_sources += fonts/font-UbuntuMonoB-18.c
-fonts_sources += fonts/font-UbuntuMonoB-20.c
-fonts_sources += fonts/font-UbuntuMonoB-22.c
-fonts_sources += fonts/font-UbuntuMonoB-24.c
-fonts_sources += fonts/font-UbuntuMonoB-26.c
-fonts_sources += fonts/font-UbuntuMonoB-28.c
-fonts_sources += fonts/font-UbuntuMonoB-30.c
+fonts_sources += $(fontout)/font-UbuntuMonoR-10.c
+fonts_sources += $(fontout)/font-UbuntuMonoR-12.c
+fonts_sources += $(fontout)/font-UbuntuMonoR-14.c
+fonts_sources += $(fontout)/font-UbuntuMonoR-16.c
+fonts_sources += $(fontout)/font-UbuntuMonoR-18.c
+fonts_sources += $(fontout)/font-UbuntuMonoR-20.c
 
-fonts_sources += fonts/font-DejaVuSansMono-10.c
-fonts_sources += fonts/font-DejaVuSansMono-11.c
-fonts_sources += fonts/font-DejaVuSansMono-12.c
-fonts_sources += fonts/font-DejaVuSansMono-13.c
-fonts_sources += fonts/font-DejaVuSansMono-14.c
-fonts_sources += fonts/font-DejaVuSansMono-16.c
-fonts_sources += fonts/font-DejaVuSansMono-18.c
-fonts_sources += fonts/font-DejaVuSansMono-20.c
-fonts_sources += fonts/font-DejaVuSansMono-22.c
-fonts_sources += fonts/font-DejaVuSansMono-24.c
-fonts_sources += fonts/font-DejaVuSansMono-26.c
-fonts_sources += fonts/font-DejaVuSansMono-28.c
-fonts_sources += fonts/font-DejaVuSansMono-30.c
+fonts_sources += $(fontout)/font-UbuntuMonoB-10.c
+fonts_sources += $(fontout)/font-UbuntuMonoB-12.c
+fonts_sources += $(fontout)/font-UbuntuMonoB-14.c
+fonts_sources += $(fontout)/font-UbuntuMonoB-16.c
+fonts_sources += $(fontout)/font-UbuntuMonoB-18.c
+fonts_sources += $(fontout)/font-UbuntuMonoB-20.c
 
-fonts_sources += fonts/font-VeraMono-10.c
-fonts_sources += fonts/font-VeraMono-11.c
-fonts_sources += fonts/font-VeraMono-12.c
-fonts_sources += fonts/font-VeraMono-13.c
-fonts_sources += fonts/font-VeraMono-14.c
-fonts_sources += fonts/font-VeraMono-16.c
-fonts_sources += fonts/font-VeraMono-18.c
-fonts_sources += fonts/font-VeraMono-20.c
-fonts_sources += fonts/font-VeraMono-22.c
-fonts_sources += fonts/font-VeraMono-24.c
-fonts_sources += fonts/font-VeraMono-26.c
-fonts_sources += fonts/font-VeraMono-28.c
-fonts_sources += fonts/font-VeraMono-30.c
+fonts_sources += $(fontout)/font-DejaVuSansMono-10.c
+fonts_sources += $(fontout)/font-DejaVuSansMono-11.c
+fonts_sources += $(fontout)/font-DejaVuSansMono-12.c
 
-fonts_sources += fonts/font-LiberationMono-10.c
-fonts_sources += fonts/font-LiberationMono-11.c
-fonts_sources += fonts/font-LiberationMono-12.c
-fonts_sources += fonts/font-LiberationMono-13.c
-fonts_sources += fonts/font-LiberationMono-14.c
-fonts_sources += fonts/font-LiberationMono-16.c
-fonts_sources += fonts/font-LiberationMono-18.c
-fonts_sources += fonts/font-LiberationMono-20.c
-fonts_sources += fonts/font-LiberationMono-22.c
-fonts_sources += fonts/font-LiberationMono-24.c
-fonts_sources += fonts/font-LiberationMono-26.c
-fonts_sources += fonts/font-LiberationMono-28.c
-fonts_sources += fonts/font-LiberationMono-30.c
+fonts_sources += $(fontout)/font-VeraMono-10.c
+fonts_sources += $(fontout)/font-VeraMono-11.c
+fonts_sources += $(fontout)/font-VeraMono-12.c
 
-fonts_sources += fonts/font-dsdigi-10.c
-fonts_sources += fonts/font-dsdigi-11.c
-fonts_sources += fonts/font-dsdigi-12.c
-fonts_sources += fonts/font-dsdigi-13.c
-fonts_sources += fonts/font-dsdigi-14.c
-fonts_sources += fonts/font-dsdigi-16.c
-fonts_sources += fonts/font-dsdigi-18.c
-fonts_sources += fonts/font-dsdigi-20.c
-fonts_sources += fonts/font-dsdigi-22.c
-fonts_sources += fonts/font-dsdigi-24.c
-fonts_sources += fonts/font-dsdigi-26.c
-fonts_sources += fonts/font-dsdigi-28.c
-fonts_sources += fonts/font-dsdigi-30.c
+fonts_sources += $(fontout)/font-LiberationMono-10.c
+fonts_sources += $(fontout)/font-LiberationMono-11.c
+fonts_sources += $(fontout)/font-LiberationMono-12.c
 
-BUILT_SOURCES = $(fonts_sources)
+fonts_sources += $(fontout)/font-dsdigi-10.c
+fonts_sources += $(fontout)/font-dsdigi-11.c
+fonts_sources += $(fontout)/font-dsdigi-12.c
 
-fonts/fontem.h: $(fontemdir)/src/resource/fontem.h
+fonts_extra_sources = $(fontout)/font_all.c $(fontout)/fontrender.c $(fontout)/fontfinder.c
+BUILT_SOURCES = $(fonts_sources) $(fonts_extra_sources)
+
+$(fontout)/fontem.h: $(fontemdir)/src/resource/fontem.h
 	cp -p $< $@
 
-fonts_extra_sources = fonts/fontrender.c
+$(fontout)/fontrender.c: $(fontemdir)/src/fontrender.c
+	cp -p $< $@
 
-fonts/fontrender.c: $(fontemdir)/src/fontrender.c
+$(fontout)/fontfinder.c: $(fontemdir)/src/fontfinder.c $(fontout)/font_all.c
 	cp -p $< $@
 
 .SECONDEXPANSION:
-$(fonts_sources): %.c: $$(fontdir)/$$(word 2,$$(subst -, ,%)).ttf fonts/fontem.h $(fontemdir)/src/fontem
+$(fonts_sources): %.c: $$(fontdir)/$$(word 2,$$(subst -, ,%)).ttf $(fontout)/fontem.h $(fontemdir)/src/fontem
 	$(fontemdir)/src/fontem --font=$(fontdir)/$(word 2,$(subst -, ,$(notdir $@))).ttf \
-		--dir=fonts --name=$(word 2,$(subst -, ,$(notdir $@))) --size=$(word 3,$(subst -, ,$(subst .c,,$(notdir $@))))
+		--dir=$(fontout) --name=$(word 2,$(subst -, ,$(notdir $@))) --size=$(word 3,$(subst -, ,$(subst .c,,$(notdir $@))))
 
-fonts/font_all.h: $(fonts_sources)
+$(fontout)/font_all.h: $(fonts_sources) Makefile
 	@echo "/* A list of all font headers. */" > $@
-	for font in $(notdir $(fonts_sources:%.c=%.h)); do echo "#include \"$$font\"" >> $@; done
+	@echo >> $@
+	@echo "#include \"fontem.h\"" >> $@
+	@echo >> $@
+	for font in $(sort $(notdir $(fonts_sources:%.c=%.h))); do echo "#include \"$$font\"" >> $@; done
+	@echo >> $@
+	@echo "extern const struct font *fonts[];" >> $@
+	@echo "extern const int font_count;" >> $@
+
+$(fontout)/font_all.c: $(fontout)/font_all.h Makefile
+	@echo "/* A list of all fonts. */" > $@
+	@echo >> $@
+	@echo "#include <stdio.h>" > $@
+	@echo "#include \"fontem.h\"" >> $@
+	@echo "#include \"font_all.h\"" >> $@
+	@echo >> $@
+	@echo "const int font_count = $(words $(fonts_sources));" >> $@
+	@echo >> $@
+	@echo "const struct font *fonts[] = {" >> $@
+	for font in $(sort $(subst -,_,$(notdir $(fonts_sources:%.c=%)))); do printf "\t&$$font,\n" >> $@; done
+	@printf "\tNULL\n" >> $@
+	@echo "};" >> $@
 
 clean-local:
-	rm -f $(fonts_sources) $(fonts_sources:.c=.h)
+	rm -f $(fonts_sources) $(fonts_sources:.c=.h) $(fontout)/font_all.h $(fontout)/font_all.c
 
 all-local: fonts/font_all.h
 

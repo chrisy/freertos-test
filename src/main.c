@@ -25,6 +25,7 @@
 #include "main.h"
 #include "stdio_init.h"
 #include "led.h"
+#include "fonts.h"
 
 static void main_task(void *param);
 static void platform_init(void);
@@ -62,15 +63,20 @@ void __attribute__ ((noreturn)) main_task(void *param)
 {
     dbg("Scheduler launched.\r\n");
 
+    // Bootstrap the CLI
+    cli_init();
+
     // setup the peripherals
     platform_init();
+
+    // Other stuff
+    font_init();
 
     // announce life!
     printf("This platform is running!\r\n");
     fflush(stdout);
 
-    // Start the CLI
-    cli_init();
+    // Start the console CLI
     cli_start("serial", NULL, NULL);
 
     for (;; )

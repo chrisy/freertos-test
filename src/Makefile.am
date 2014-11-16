@@ -19,7 +19,8 @@ sources = \
 	debug.c \
 	main.c \
 	stdio_init.c \
-	led.c
+	led.c \
+	fonts.c
 
 ourlibdir = $(top_srcdir)/lib
 ourextlibdir = $(top_srcdir)/extlib

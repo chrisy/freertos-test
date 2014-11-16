@@ -43,7 +43,7 @@ int stdio_start(void)
 
     // stdout (buffered)
     dup2(fd, 1);
-    setvbuf(stderr, NULL, _IOFBF, 0);
+    setvbuf(stdout, NULL, _IOFBF, 0);
 
     // stderr (not buffered)
     dup2(fd, 2);

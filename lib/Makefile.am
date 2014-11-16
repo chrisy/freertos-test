@@ -45,37 +45,37 @@ fontout := fonts
 # A list of all the fonts we want to build.
 # # The source .ttf is determined from the name.
 fonts_sources :=
-fonts_sources += $(fontout)/font-UbuntuMonoR-10.c
-fonts_sources += $(fontout)/font-UbuntuMonoR-12.c
-fonts_sources += $(fontout)/font-UbuntuMonoR-14.c
-fonts_sources += $(fontout)/font-UbuntuMonoR-16.c
-fonts_sources += $(fontout)/font-UbuntuMonoR-18.c
-fonts_sources += $(fontout)/font-UbuntuMonoR-20.c
+fonts_sources += fonts/font-UbuntuMonoR-10.c
+fonts_sources += fonts/font-UbuntuMonoR-12.c
+fonts_sources += fonts/font-UbuntuMonoR-14.c
+fonts_sources += fonts/font-UbuntuMonoR-16.c
+fonts_sources += fonts/font-UbuntuMonoR-18.c
+fonts_sources += fonts/font-UbuntuMonoR-20.c
 
-fonts_sources += $(fontout)/font-UbuntuMonoB-10.c
-fonts_sources += $(fontout)/font-UbuntuMonoB-12.c
-fonts_sources += $(fontout)/font-UbuntuMonoB-14.c
-fonts_sources += $(fontout)/font-UbuntuMonoB-16.c
-fonts_sources += $(fontout)/font-UbuntuMonoB-18.c
-fonts_sources += $(fontout)/font-UbuntuMonoB-20.c
+fonts_sources += fonts/font-UbuntuMonoB-10.c
+fonts_sources += fonts/font-UbuntuMonoB-12.c
+fonts_sources += fonts/font-UbuntuMonoB-14.c
+fonts_sources += fonts/font-UbuntuMonoB-16.c
+fonts_sources += fonts/font-UbuntuMonoB-18.c
+fonts_sources += fonts/font-UbuntuMonoB-20.c
 
-fonts_sources += $(fontout)/font-DejaVuSansMono-10.c
-fonts_sources += $(fontout)/font-DejaVuSansMono-11.c
-fonts_sources += $(fontout)/font-DejaVuSansMono-12.c
+fonts_sources += fonts/font-DejaVuSansMono-10.c
+fonts_sources += fonts/font-DejaVuSansMono-11.c
+fonts_sources += fonts/font-DejaVuSansMono-12.c
 
-fonts_sources += $(fontout)/font-VeraMono-10.c
-fonts_sources += $(fontout)/font-VeraMono-11.c
-fonts_sources += $(fontout)/font-VeraMono-12.c
+fonts_sources += fonts/font-VeraMono-10.c
+fonts_sources += fonts/font-VeraMono-11.c
+fonts_sources += fonts/font-VeraMono-12.c
 
-fonts_sources += $(fontout)/font-LiberationMono-10.c
-fonts_sources += $(fontout)/font-LiberationMono-11.c
-fonts_sources += $(fontout)/font-LiberationMono-12.c
+fonts_sources += fonts/font-LiberationMono-10.c
+fonts_sources += fonts/font-LiberationMono-11.c
+fonts_sources += fonts/font-LiberationMono-12.c
 
-fonts_sources += $(fontout)/font-dsdigi-10.c
-fonts_sources += $(fontout)/font-dsdigi-11.c
-fonts_sources += $(fontout)/font-dsdigi-12.c
+fonts_sources += fonts/font-dsdigi-10.c
+fonts_sources += fonts/font-dsdigi-11.c
+fonts_sources += fonts/font-dsdigi-12.c
 
-fonts_extra_sources = $(fontout)/font_all.c $(fontout)/fontrender.c $(fontout)/fontfinder.c
+fonts_extra_sources = fonts/font_all.c fonts/fontrender.c fonts/fontfinder.c
 BUILT_SOURCES = $(fonts_sources) $(fonts_extra_sources)
 
 $(fontout)/fontem.h: $(fontemdir)/src/resource/fontem.h
@@ -88,7 +88,7 @@ $(fontout)/fontfinder.c: $(fontemdir)/src/fontfinder.c $(fontout)/font_all.c
 	cp -p $< $@
 
 .SECONDEXPANSION:
-$(fonts_sources): %.c: $$(fontdir)/$$(word 2,$$(subst -, ,%)).ttf $(fontout)/fontem.h $(fontemdir)/src/fontem
+$(fonts_sources): %.c: $$(fontdir)/$$(word 2,$$(subst -, ,%)).ttf $$(fontout)/fontem.h $$(fontemdir)/src/fontem
 	$(fontemdir)/src/fontem --font=$(fontdir)/$(word 2,$(subst -, ,$(notdir $@))).ttf \
 		--dir=$(fontout) --name=$(word 2,$(subst -, ,$(notdir $@))) --size=$(word 3,$(subst -, ,$(subst .c,,$(notdir $@))))
 
@@ -119,7 +119,7 @@ $(fontout)/font_all.c: $(fontout)/font_all.h Makefile
 clean-local:
 	rm -f $(fonts_sources) $(fonts_sources:.c=.h) $(fontout)/font_all.h $(fontout)/font_all.c
 
-all-local: fonts/font_all.h
+all-local: $(fontout)/font_all.h $(fontout)/font_all.c
 
 libfonts_a_SOURCES = $(fonts_sources) $(fonts_extra_sources)
 

@@ -119,6 +119,11 @@ BUILT_SOURCES = $(fonts_sources)
 fonts/fontem.h: $(fontemdir)/src/resource/fontem.h
 	cp -p $< $@
 
+fonts_extra_sources = fonts/fontrender.c
+
+fonts/fontrender.c: $(fontemdir)/src/fontrender.c
+	cp -p $< $@
+
 .SECONDEXPANSION:
 $(fonts_sources): %.c: $$(fontdir)/$$(word 2,$$(subst -, ,%)).ttf fonts/fontem.h $(fontemdir)/src/fontem
 	$(fontemdir)/src/fontem --font=$(fontdir)/$(word 2,$(subst -, ,$(notdir $@))).ttf \
@@ -133,5 +138,5 @@ clean-local:
 
 all-local: fonts/font_all.h
 
-libfonts_a_SOURCES = $(fonts_sources)
+libfonts_a_SOURCES = $(fonts_sources) $(fonts_extra_sources)
 

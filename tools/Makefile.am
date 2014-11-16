@@ -9,13 +9,15 @@
 
 all-local: fontem/src/fontem
 
-fontem/src/fontem: fontem/src/Makefile fontem/src/*.[ch]
-	$(MAKE) -C fontem/src
+fontem/src/fontem: fontem/Makefile fontem/src/Makefile fontem/src/*.[ch]
+	$(MAKE) -C fontem
 
 fontem/src/Makefile: fontem/configure
+
+fontem/Makefile: fontem/configure
 	cd fontem && ./configure
 
-fontem/configure: fontem/configure.ac fontem/src/Makefile.am
+fontem/configure: fontem/bootstrap fontem/configure.ac fontem/Makefile.am fontem/src/Makefile.am
 	cd fontem && ./bootstrap
 
 clean-local:

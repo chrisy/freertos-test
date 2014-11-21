@@ -21,19 +21,19 @@
 
 static int cmd_fontlist(struct cli *cli, int argc, const char *const *argv)
 {
-	font_print_all(cli->out);
-	return 0;
+    font_print_all(cli->out);
+    return 0;
 }
 
 void font_init(void)
 {
-	printf("Initializing font subsystem.\r\n");
+    printf("Initializing font subsystem.\r\n");
 
-	struct cli_command fontlist	= {
-		.cmd = "fontlist",
-		.brief = "List available fonts",
-		.help = "Lists all available fonts and some basic details on each.",
-		.fn = cmd_fontlist,
-	};
-	cli_addcmd(&fontlist);
+    struct cli_command fontlist = {
+        .cmd    = "fontlist",
+        .brief  = "List available fonts",
+        .help   = "Lists all available fonts and some basic details on each.",
+        .fn     = cmd_fontlist,
+    };
+    cli_addcmd(&fontlist);
 }

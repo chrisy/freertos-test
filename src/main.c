@@ -41,7 +41,7 @@ QueueSetHandle_t qs_serial;
  */
 int main(void)
 {
-    dbg("Platform starting up.\r\n");
+    dbg("Platform starting up." EOL);
 
     // add main thread
     xTaskCreate(main_task, "main",
@@ -49,7 +49,7 @@ int main(void)
                 THREAD_PRIO_MAIN, NULL);
 
     // start it up
-    dbg("Launching RTOS scheduler.\r\n");
+    dbg("Launching RTOS scheduler." EOL);
     vTaskStartScheduler();
 }
 
@@ -62,7 +62,7 @@ int main(void)
  */
 void __attribute__ ((noreturn)) main_task(void *param)
 {
-    dbg("Scheduler launched.\r\n");
+    dbg("Scheduler launched." EOL);
 
     // Bootstrap the CLI
     cli_init();
@@ -73,11 +73,12 @@ void __attribute__ ((noreturn)) main_task(void *param)
     // Other stuff
     STM3210E_LCD_Init();
     LCD_PowerOn();
-    LCD_Clear(0);
+    LCD_DisplayOn();
+    LCD_Clear(0xa0a0);
     font_init();
 
     // announce life!
-    printf("This platform is running!\r\n");
+    printf("This platform is running!" EOL);
     fflush(stdout);
 
     // Start the console CLI
@@ -107,14 +108,14 @@ static void platform_init(void)
                  , qs_serial
 #endif
                  );
-    serial_puts(&Serial1, "STM32 Platform starting up.\r\n");
+    serial_puts(&Serial1, "STM32 Platform starting up." EOL);
     stdio_start();
-    printf("STDIO started on USART 1.\r\n");
+    printf("STDIO started on USART 1." EOL);
     fflush(stdout);
 #endif
 
 #if USE_SERIAL_USART2
-    printf("Starting USART 2.\r\n");
+    printf("Starting USART 2." EOL);
     serial_start(&Serial2, 9600
 #if configUSE_QUEUE_SETS
                  , qs_serial
@@ -123,7 +124,7 @@ static void platform_init(void)
 #endif
 
 #if USE_SERIAL_USART3
-    printf("Starting USART 3.\r\n");
+    printf("Starting USART 3." EOL);
     serial_start(&Serial3, 9600
 #if configUSE_QUEUE_SETS
                  , qs_serial
@@ -132,7 +133,7 @@ static void platform_init(void)
 #endif
 
 #if USE_SERIAL_UART4
-    printf("Starting USART 4.\r\n");
+    printf("Starting USART 4." EOL);
     serial_start(&Serial4, 9600
 #if configUSE_QUEUE_SETS
                  , qs_serial
@@ -142,28 +143,28 @@ static void platform_init(void)
 
     // Initialize i2c
 #if USE_I2C1
-    printf("Starting I2C 1.\r\n");
+    printf("Starting I2C 1." EOL);
     i2c_start(&I2C1_Dev);
 #endif
 #if USE_I2C2
-    printf("Starting I2C 2.\r\n");
+    printf("Starting I2C 2." EOL);
     i2c_start(&I2C2_Dev);
 #endif
 
-    printf("Starting LED task.\r\n");
+    printf("Starting LED task." EOL);
     led_init();
 
     // Initialize SPI
 #if USE_SPI1
-    printf("Starting SPI 1.\r\n");
+    printf("Starting SPI 1." EOL);
     spi_start(&SPI1_Dev, 0); // todo - workout the SPI mode bits
 #endif
 #if USE_SPI2
-    printf("Starting SPI 2.\r\n");
+    printf("Starting SPI 2." EOL);
     spi_start(&SPI2_Dev, 0);
 #endif
 #if USE_SPI3
-    printf("Starting SPI 3.\r\n");
+    printf("Starting SPI 3." EOL);
     spi_start(&SPI3_Dev, 0);
 #endif
 }

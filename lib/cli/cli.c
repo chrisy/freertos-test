@@ -22,6 +22,10 @@
 
 #include "cli.h"
 
+#ifndef EOL
+#define EOL "\r\n"
+#endif
+
 /** The maximum time we'll wait for our semaphore. */
 #define SEM_DELAY (5000 / portTICK_PERIOD_MS)
 
@@ -142,9 +146,9 @@ static void __attribute__ ((noreturn)) cli_task(void *param)
     if (cli->out == NULL)
         cli->out = stdout;
     else
-        fprintf(cli->out, "CLI task %s started.\r\n", cli->name);
+        fprintf(cli->out, "CLI task %s started." EOL, cli->name);
 
-    fprintf(stdout, "CLI task %s started.\r\n", cli->name);
+    fprintf(stdout, "CLI task %s started." EOL, cli->name);
 
     microrl_init(&cli->rl, cli, cli_print);
     microrl_set_execute_callback(&cli->rl, cli_exec);
@@ -284,7 +288,7 @@ int cli_exec(void *opaque, int argc, const char *const *argv)
     if (fn != NULL) {
         ret = fn(cli, argc, argv);
     } else {
-        fprintf(cli->out, "Command '%s' not found.\r\n", argv[0]);
+        fprintf(cli->out, "Command '%s' not found." EOL, argv[0]);
         ret = -1;
     }
     return ret;
@@ -356,7 +360,7 @@ int cmd_help(struct cli *cli, int argc, const char *const *argv)
 
         xSemaphoreTake(cmd_sem, SEM_DELAY);
         for (int i = 0; i < cli_command_num; i++) {
-            fprintf(cli->out, "%-20s %s\r\n",
+            fprintf(cli->out, "%-20s %s" EOL,
                     cli_commands[i].cmd,
                     cli_commands[i].brief ? cli_commands[i].brief : "");
         }
@@ -369,17 +373,17 @@ int cmd_help(struct cli *cli, int argc, const char *const *argv)
             if (!strcmp(argv[1], cli_commands[i].cmd)) break;
 
         if (i < cli_command_num) {
-            fprintf(cli->out, "Help for '%s':\r\n\r\n", argv[1]);
-            fprintf(cli->out, "%s\r\n",
+            fprintf(cli->out, "Help for '%s':" EOL EOL, argv[1]);
+            fprintf(cli->out, "%s" EOL,
                     cli_commands[i].help ? cli_commands[i].help :
                     cli_commands[i].brief ? cli_commands[i].brief :
                     "");
         } else {
-            fprintf(cli->out, "Command '%s' not found.\r\n", argv[1]);
+            fprintf(cli->out, "Command '%s' not found." EOL, argv[1]);
         }
         xSemaphoreGive(cmd_sem);
     } else {
-        fprintf(cli->out, "Too many parameters given.\r\n");
+        fprintf(cli->out, "Too many parameters given." EOL);
         return -1;
     }
 
@@ -398,7 +402,7 @@ int cmd_echo(struct cli *cli, int argc, const char *const *argv)
     while (argc--)
         fprintf(cli->out, "%s%s", *argv++, argc ? " " : "");
 
-    fprintf(cli->out, "\r\n");
+    fprintf(cli->out, EOL);
 
     return 0;
 }
@@ -427,7 +431,7 @@ int cmd_tasks(struct cli *cli, int argc, const char *const *argv)
 
     tasks = malloc(count * sizeof(TaskStatus_t));
     if (tasks == NULL) {
-        fprintf(cli->out, "malloc failed\r\n");
+        fprintf(cli->out, "malloc failed" EOL);
         return -1;
     }
 
@@ -438,7 +442,7 @@ int cmd_tasks(struct cli *cli, int argc, const char *const *argv)
 #if configGENERATE_RUN_TIME_STATS
             " %8s"
 #endif
-            "\r\n",
+            EOL,
             "ID",
             "Task name",
             "State",
@@ -480,7 +484,7 @@ int cmd_tasks(struct cli *cli, int argc, const char *const *argv)
 #if configGENERATE_RUN_TIME_STATS
                 " %8lu"
 #endif
-                "\r\n",
+                EOL,
                 (unsigned int)tasks[i].xTaskNumber,
                 tasks[i].pcTaskName,
                 status,

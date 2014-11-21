@@ -148,7 +148,7 @@ void _crt0_default_handler(void)
 /** NMI handler. */
 void _crt0_nmi_handler(void)
 {
-    dbg("\r\nNMI!\r\n\r\n");
+    dbg(EOL "NMI!" EOL EOL);
     for (;; ) ;
 }
 
@@ -177,9 +177,9 @@ void __attribute__ ((noreturn)) _crt0_hardfault_print(uint32_t *faultStack)
     pc = faultStack[6];
     psr = faultStack[7];
 
-    dbg("\r\nHardfault!\r\n");
-    dbgf("r0=%08x r1=%08x r2=%08x r3=%08x r12=%08x\r\n", r0, r1, r2, r3, r12);
-    dbgf("lr=%08x pc=%08x psr=%08x\r\n\r\n", lr, pc, psr);
+    dbg(EOL "Hardfault!" EOL);
+    dbgf("r0=%08x r1=%08x r2=%08x r3=%08x r12=%08x" EOL, r0, r1, r2, r3, r12);
+    dbgf("lr=%08x pc=%08x psr=%08x" EOL EOL, lr, pc, psr);
 
     for (;; ) ;
 }
@@ -240,7 +240,7 @@ void _crt0_init(void)
 
     // Debugging output
     dbg_init();
-    dbgf("\r\n%s\r\n", _crt0_info);
+    dbgf(EOL "%s" EOL, _crt0_info);
 
     // Launch!
     main();

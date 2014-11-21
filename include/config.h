@@ -86,6 +86,7 @@
 #define SECTION_FSMC_BANK1_3    __attribute__ ((section(".fsmc_bank1_3")))
 #define SECTION_FSMC_BANK1_4    __attribute__ ((section(".fsmc_bank1_4")))
 
+#define EOL "\r\n"
 
 #include <stm32f10x.h>
 #include <system_stm32f10x.h>

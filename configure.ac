@@ -140,6 +140,7 @@ CPPFLAGS="$CPPFLAGS -I${bdir}/lib"  # slightly misnamed, but meh
 
 CPPFLAGS="$CPPFLAGS -I${bdir}/extlib/platform"
 CPPFLAGS="$CPPFLAGS -I${bdir}/extlib/stdperiph/inc"
+CPPFLAGS="$CPPFLAGS -I${bdir}/extlib/stm3210e_eval"
 CPPFLAGS="$CPPFLAGS -I${bdir}/extlib/FreeRTOS/Source/include"
 CPPFLAGS="$CPPFLAGS -I${bdir}/extlib/FreeRTOS/Source/portable/GCC/ARM_CM3"
 CPPFLAGS="$CPPFLAGS -I${bdir}/extlib/microrl/src"

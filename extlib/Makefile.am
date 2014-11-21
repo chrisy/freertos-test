@@ -8,7 +8,8 @@ lib_LIBRARIES = \
 	librtos.a \
 	libplatform.a \
 	libmicrorl.a \
-	libstdperiph.a
+	libstdperiph.a \
+	libstm3210e_eval.a
 
 rtos_sources = \
 	FreeRTOS/Source/portable/GCC/ARM_CM3/port.c \
@@ -52,8 +53,12 @@ stdperiph_sources = \
 	stdperiph/src/stm32f10x_usart.c \
 	stdperiph/src/stm32f10x_wwdg.c
 
+stm3210e_eval_sources = \
+	stm3210e_eval/stm3210e_eval_lcd.c
+
 #librtos_la_CFLAGS = -Wno-missing-braces -Wno-missing-field-initializers -Wno-sign-compare
 librtos_a_SOURCES = $(rtos_sources)
 libplatform_a_SOURCES = $(platform_sources)
 libmicrorl_a_SOURCES = $(microrl_sources)
 libstdperiph_a_SOURCES = $(stdperiph_sources)
+libstm3210e_eval_a_SOURCES = $(stm3210e_eval_sources)

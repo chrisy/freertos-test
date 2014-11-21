@@ -21,6 +21,7 @@
 #include <stm32/serial.h>
 #include <stm32/i2c.h>
 #include <stm32/spi.h>
+#include <stm3210e_eval_lcd.h>
 
 #include "main.h"
 #include "stdio_init.h"
@@ -70,6 +71,9 @@ void __attribute__ ((noreturn)) main_task(void *param)
     platform_init();
 
     // Other stuff
+    STM3210E_LCD_Init();
+    LCD_PowerOn();
+    LCD_Clear(0);
     font_init();
 
     // announce life!

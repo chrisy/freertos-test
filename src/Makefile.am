@@ -26,8 +26,9 @@ ourlibdir = $(top_srcdir)/lib
 ourextlibdir = $(top_srcdir)/extlib
 libdirs = -L$(ourlibdir) -L$(ourextlibdir)
 
-image_LDADD = $(libdirs) -lposixio -lmisc -lcli -lfonts -lstm32 \
-	     -lmicrorl -lstdperiph -lrtos -lplatform
+image_LDADD = $(libdirs) -lposixio -lmisc -lcli -lfonts \
+		-lstm3210e_eval -lstm32 \
+	    -lmicrorl -lstdperiph -lrtos -lplatform
 image_SOURCES = $(sources)
 
 EXTRA_image_DEPENDENCIES = $(linker_script) \
@@ -38,6 +39,7 @@ EXTRA_image_DEPENDENCIES = $(linker_script) \
 	$(ourlibdir)/libfonts.a \
 	$(ourextlibdir)/libmicrorl.a \
 	$(ourextlibdir)/libstdperiph.a \
+	$(ourextlibdir)/libstm3210e_eval.a \
 	$(ourextlibdir)/librtos.a \
 	$(ourextlibdir)/libplatform.a
 

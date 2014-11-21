@@ -17,6 +17,7 @@
 static uint64_t milliseconds;
 #endif
 
+#if configUSE_IDLE_HOOK
 /**
  * Used by the RTOS when no task can be scheduled.
  */
@@ -24,6 +25,7 @@ void vApplicationIdleHook(void)
 {
     __WFI();
 }
+#endif
 
 #if configUSE_TICK_HOOK
 /**

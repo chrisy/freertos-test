@@ -14,7 +14,14 @@
 
 #include <config.h>
 
+#ifdef DEBUG
+// Don't use the idle hook if we expect to use JTAG - it gates
+// the clock and thus breaks JTAG.
+#define configUSE_IDLE_HOOK             0
+#else
 #define configUSE_IDLE_HOOK             1
+#endif
+
 #define configUSE_QUEUE_SETS            0
 #define configUSE_TICK_HOOK             1
 #define configCHECK_FOR_STACK_OVERFLOW  2

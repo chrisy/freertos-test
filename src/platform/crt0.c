@@ -149,7 +149,8 @@ void _crt0_default_handler(void)
 void _crt0_nmi_handler(void)
 {
     dbg(EOL "NMI!" EOL EOL);
-    for (;; ) ;
+
+    NVIC_SystemReset();
 }
 
 /**
@@ -181,7 +182,7 @@ void __attribute__ ((noreturn)) _crt0_hardfault_print(uint32_t *faultStack)
     dbgf("r0=%08x r1=%08x r2=%08x r3=%08x r12=%08x" EOL, r0, r1, r2, r3, r12);
     dbgf("lr=%08x pc=%08x psr=%08x" EOL EOL, lr, pc, psr);
 
-    for (;; ) ;
+    NVIC_SystemReset();
 }
 
 /**
@@ -204,7 +205,7 @@ void _crt0_hardfault_handler(void)
         " handler2_address_const: .word _crt0_hardfault_print       \n"
     );
 
-    for (;; ) ;  // this is just for the compiler to feel we satisfied noreturn
+    __builtin_unreachable();
 }
 
 /**
@@ -216,20 +217,18 @@ void _crt0_hardfault_handler(void)
 void _crt0_init(void)
 {
     /* Initialize the BSS */
-    uint32_t *bss_start = &_mm_bss_start;
-    uint32_t *bss_end = &_mm_bss_end;
+    uint32_t *bss_start = (uint32_t *)&_mm_bss_start;
 
-    while (bss_start < bss_end) {
+    while (bss_start < (uint32_t *)&_mm_bss_end) {
         *bss_start = 0;
         bss_start++;
     }
 
     /* Copy the initialized data section to RAM */
-    uint32_t *data = &_mm_data_start;
-    uint32_t *data_end = &_mm_data_end;
-    uint32_t *datai = &_mm_datai_start;
+    uint32_t *data = (uint32_t *)&_mm_data_start;
+    uint32_t *datai = (uint32_t *)&_mm_datai_start;
 
-    while (data < data_end) {
+    while (data < (uint32_t *)&_mm_data_end) {
         *data = *datai;
         data++;
         datai++;
@@ -237,6 +236,13 @@ void _crt0_init(void)
 
     // Setup clocks and the like
     SystemInit();
+
+    // SystemInit should have enabled our FSMC SRAM, clear that
+    data = (uint32_t *)&_fsmc_bank1_3_start;
+    while (data < (uint32_t *)&_fsmc_bank1_3_end) {
+        *data = 0;
+        data++;
+    }
 
     // Debugging output
     dbg_init();
@@ -246,7 +252,7 @@ void _crt0_init(void)
     main();
 
     // Shouldn't get here!
-    HALT();
+    NVIC_SystemReset();
 }
 
 // vim: set softtabstop=4 shiftwidth=4 tabstop=4 expandtab:

@@ -56,6 +56,7 @@ static int cmd_tasks(struct cli *cli, int argc, const char *const *argv);
 #ifdef _USE_HISTORY
 static int cmd_history(struct cli *cli, int argc, const char *const *argv);
 #endif
+static int cmd_reset(struct cli *cli, int argc, const char *const *argv);
 
 
 /**
@@ -101,6 +102,13 @@ void cli_init(void)
     };
     cli_addcmd(&history);
 #endif
+
+    struct cli_command reset = {
+        .cmd    = "reset",
+        .brief  = "Restarts the RTOS platform",
+        .fn     = cmd_reset,
+    };
+    cli_addcmd(&reset);
 }
 
 
@@ -512,5 +520,17 @@ int cmd_history(struct cli *cli, int argc, const char *const *argv)
     return 0;
 }
 #endif
+
+
+/**
+ * Command that restarts the RTOS platform.
+ */
+static int cmd_reset(struct cli *cli, int argc, const char *const *argv)
+{
+    fprintf(cli->out, "Restarting platform..." EOL);
+    fflush(cli->out);
+    DELAY_MS(500);
+    NVIC_SystemReset();
+}
 
 // vim: set softtabstop=4 shiftwidth=4 tabstop=4 expandtab:

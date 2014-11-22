@@ -30,21 +30,38 @@
 #define MIN(a, b)  ((a) < (b) ? (a) : (b))
 
 #define HALT() { \
-        dbgf("HALT at %s line %d.\r\n\r\n", \
+        dbgf("HALT at %s line %d." EOL EOL, \
              __FILE__, __LINE__); \
-        for (;; ) ; \
+        __disable_irq(); \
+        NVIC_SystemReset(); \
 }
 
 #define HALT_WITH_MSG(msg) { \
-        dbgf("HALT for %s at %s line %d.\r\n\r\n", \
+        dbgf("HALT for %s at %s line %d." EOL EOL, \
              msg, __FILE__, __LINE__); \
+        __disable_irq(); \
         for (;; ) ; \
 }
 
+#define RESET() { \
+        dbgf("RESET at %s line %d." EOL EOL, \
+             __FILE__, __LINE__); \
+        __disable_irq(); \
+        NVIC_SystemReset(); \
+}
+
+#define RESET_WITH_MSG(msg) { \
+        dbgf("RESET for %s at %s line %d." EOL EOL, \
+             msg, __FILE__, __LINE__); \
+        __disable_irq(); \
+        NVIC_SystemReset(); \
+}
+
 #define ASSERT(x) { if (!(x)) { \
-                        dbgf("ASSERT failed at %s line %d, halting.\r\n\r\n", \
+                        dbgf("ASSERT failed at %s line %d, restarting." EOL EOL, \
                              __FILE__, __LINE__); \
-                        for (;; ) ; \
+                        __disable_irq(); \
+                        NVIC_SystemReset(); \
                     } }
 
 #define assert_param(x) ASSERT(x)

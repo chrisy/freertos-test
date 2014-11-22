@@ -733,18 +733,22 @@ typedef struct {
 #if defined (__CC_ARM)
 #define __ASM            __asm                                          /*!< asm keyword for ARM Compiler          */
 #define __INLINE         __inline                                       /*!< inline keyword for ARM Compiler       */
+#define __NORETURN                                                      /*!< noreturn keyword for ARM Compiler       */
 
 #elif defined (__ICCARM__)
 #define __ASM           __asm                                           /*!< asm keyword for IAR Compiler          */
 #define __INLINE        inline                                          /*!< inline keyword for IAR Compiler. Only avaiable in High optimization mode! */
+#define __NORETURN                                                      /*!< noreturn keyword for IAR Compiler       */
 
 #elif defined   (__GNUC__)
 #define __ASM            __asm                                          /*!< asm keyword for GNU Compiler          */
 #define __INLINE         inline                                         /*!< inline keyword for GNU Compiler       */
+#define __NORETURN       __attribute__ ((noreturn))                     /*!< noreturn keyword for GNU Compiler       */
 
 #elif defined   (__TASKING__)
 #define __ASM            __asm                                          /*!< asm keyword for TASKING Compiler      */
 #define __INLINE         inline                                         /*!< inline keyword for TASKING Compiler   */
+#define __NORETURN                                                      /*!< noreturn keyword for TASKING Compiler       */
 
 #endif
 
@@ -1769,7 +1773,7 @@ static __INLINE uint32_t SysTick_Config(uint32_t ticks)
  *
  * Initiate a system reset request to reset the MCU
  */
-static __INLINE void NVIC_SystemReset(void)
+static __INLINE __NORETURN void NVIC_SystemReset(void)
 {
 	SCB->AIRCR = ((0x5FA << SCB_AIRCR_VECTKEY_Pos) |
 		      (SCB->AIRCR & SCB_AIRCR_PRIGROUP_Msk) |

@@ -75,16 +75,20 @@ fonts_sources += fonts/font-dsdigi-10.c
 fonts_sources += fonts/font-dsdigi-11.c
 fonts_sources += fonts/font-dsdigi-12.c
 
-fonts_extra_sources = fonts/font_all.c fonts/fontrender.c fonts/fontfinder.c
+fonts_extra_sources = \
+	fonts/font_all.c \
+	fonts/fontrender.c \
+	fonts/fontrender_l.c \
+	fonts/fontrender_rgba32.c \
+	fonts/fontrender_rgb16.c \
+	fonts/fontfinder.c
+
 BUILT_SOURCES = $(fonts_sources) $(fonts_extra_sources)
 
 $(fontout)/fontem.h: $(fontemdir)/src/resource/fontem.h
 	cp -p $< $@
 
-$(fontout)/fontrender.c: $(fontemdir)/src/fontrender.c
-	cp -p $< $@
-
-$(fontout)/fontfinder.c: $(fontemdir)/src/fontfinder.c
+$(fontout)/%.c: $(fontemdir)/src/%.c
 	cp -p $< $@
 
 .SECONDEXPANSION:

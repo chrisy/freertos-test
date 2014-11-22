@@ -27,6 +27,7 @@
 #include "stdio_init.h"
 #include "led.h"
 #include "fonts.h"
+#include <fonts/font_all.h>
 
 static void main_task(void *param);
 static void platform_init(void);
@@ -51,8 +52,12 @@ int main(void)
     // start it up
     dbg("Launching RTOS scheduler." EOL);
     vTaskStartScheduler();
+
+    return 0;
 }
 
+
+uint8_t SECTION_FSMC_BANK1_3 ibuf[LCD_PIXEL_WIDTH * LCD_PIXEL_HEIGHT * 2];
 
 /**
  * The "main" task responsible for finishing hardware initialization
@@ -70,12 +75,22 @@ void __attribute__ ((noreturn)) main_task(void *param)
     // setup the peripherals
     platform_init();
 
+    // Show memory sizes
+    //printf("Main SRAM size: %d KB." EOL, (int)(&_mm_heap_end - &_mm_data_start)/1024);
+
     // Other stuff
     STM3210E_LCD_Init();
-    LCD_PowerOn();
-    LCD_DisplayOn();
-    LCD_Clear(0xa0a0);
+    LCD_Clear(LCD_COLOR_GREEN);
+
+    ASSERT(ibuf != NULL);
+
     font_init();
+    const struct font *font = font_find("Ubuntu Mono", "Regular", 20);
+    //font = &font_DejaVuSansMono_12;
+    font_draw_glyph_RGB16(font, 0, 0, LCD_PIXEL_WIDTH, LCD_PIXEL_HEIGHT,
+                          ibuf, 'B', 0, LCD_COLOR_GREEN);
+
+    LCD_Bitblt(ibuf);
 
     // announce life!
     printf("This platform is running!" EOL);

@@ -2,22 +2,29 @@
   ******************************************************************************
   * @file    stm3210e_eval_lcd.c
   * @author  MCD Application Team
-  * @version V4.5.0
-  * @date    07-March-2011
+  * @version V5.1.0
+  * @date    18-January-2013
   * @brief   This file includes the LCD driver for AM-240320L8TNQW00H
-  *          (LCD_ILI9320) and AM-240320LDTNQW00H (LCD_SPFD5408B) Liquid Crystal
+  *          (LCD_ILI9320), AM-240320LDTNQW00H (LCD_SPFD5408B)
+  *          and AM240320LGTNQW00H (HX8347-D) Liquid Crystal
   *          Display Module of STM3210E-EVAL board.
   ******************************************************************************
   * @attention
   *
-  * THE PRESENT FIRMWARE WHICH IS FOR GUIDANCE ONLY AIMS AT PROVIDING CUSTOMERS
-  * WITH CODING INFORMATION REGARDING THEIR PRODUCTS IN ORDER FOR THEM TO SAVE
-  * TIME. AS A RESULT, STMICROELECTRONICS SHALL NOT BE HELD LIABLE FOR ANY
-  * DIRECT, INDIRECT OR CONSEQUENTIAL DAMAGES WITH RESPECT TO ANY CLAIMS ARISING
-  * FROM THE CONTENT OF SUCH FIRMWARE AND/OR THE USE MADE BY CUSTOMERS OF THE
-  * CODING INFORMATION CONTAINED HEREIN IN CONNECTION WITH THEIR PRODUCTS.
+  * <h2><center>&copy; COPYRIGHT 2013 STMicroelectronics</center></h2>
   *
-  * <h2><center>&copy; COPYRIGHT 2011 STMicroelectronics</center></h2>
+  * Licensed under MCD-ST Liberty SW License Agreement V2, (the "License");
+  * You may not use this file except in compliance with the License.
+  * You may obtain a copy of the License at:
+  *
+  *        http://www.st.com/software_license_agreement_liberty_v2
+  *
+  * Unless required by applicable law or agreed to in writing, software
+  * distributed under the License is distributed on an "AS IS" BASIS,
+  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  * See the License for the specific language governing permissions and
+  * limitations under the License.
+  *
   ******************************************************************************
   */
 
@@ -74,6 +81,8 @@ typedef struct
 #define MAX_POLY_CORNERS   200
 #define POLY_Y(Z)          ((int32_t)((Points + Z)->X))
 #define POLY_X(Z)          ((int32_t)((Points + Z)->Y))
+#define LCD_HX8347D        0x0047
+
 /**
   * @}
   */
@@ -90,7 +99,8 @@ typedef struct
   * @{
   */
 /* Global variables to set the written text color */
-static  __IO uint16_t TextColor = 0x0000, BackColor = 0xFFFF;
+__IO uint16_t TextColor = 0x0000, BackColor = 0xFFFF;
+static __IO uint16_t LCD_ID = 0;
 
 /**
   * @}
@@ -103,6 +113,7 @@ static  __IO uint16_t TextColor = 0x0000, BackColor = 0xFFFF;
 #define _delay_(x) DELAY_MS(x*10)
 static void PutPixel(int16_t x, int16_t y);
 static void LCD_PolyLineRelativeClosed(pPoint Points, uint16_t PointCount, uint16_t Closed);
+
 /**
   * @}
   */
@@ -121,13 +132,13 @@ void LCD_DeInit(void)
 {
   GPIO_InitTypeDef GPIO_InitStructure;
 
-  /*!< LCD Display Off */
+  /* LCD Display Off */
   LCD_DisplayOff();
 
   /* BANK 4 (of NOR/SRAM Bank 1~4) is disabled */
   FSMC_NORSRAMCmd(FSMC_Bank1_NORSRAM4, ENABLE);
 
-  /*!< LCD_SPI DeInit */
+  /* LCD_SPI DeInit */
   FSMC_NORSRAMDeInit(FSMC_Bank1_NORSRAM4);
 
   /* Set PD.00(D2), PD.01(D3), PD.04(NOE), PD.05(NWE), PD.08(D13), PD.09(D14),
@@ -158,157 +169,260 @@ void LCD_DeInit(void)
   */
 void STM3210E_LCD_Init(void)
 {
-/* Configure the LCD Control pins --------------------------------------------*/
+  /* Configure the LCD Control pins */
   LCD_CtrlLinesConfig();
-/* Configure the FSMC Parallel interface -------------------------------------*/
+
+  /* Configure the FSMC Parallel interface */
   LCD_FSMCConfig();
 
-  _delay_(5); /* delay 50 ms */
-  /* Check if the LCD is SPFD5408B Controller */
-  if(LCD_ReadReg(0x00) == 0x5408)
+  /* delay 50 ms */
+  _delay_(5);
+
+  /* Read the LCD ID */
+  LCD_ID = LCD_ReadReg(0x00);
+
+  /* Check if the LCD is HX8347D Controller */
+  if(LCD_ID == LCD_HX8347D)
   {
-    /* Start Initial Sequence ------------------------------------------------*/
-    LCD_WriteReg(LCD_REG_1, 0x0100);  /* Set SS bit */
-    LCD_WriteReg(LCD_REG_2, 0x0700);  /* Set 1 line inversion */
-    LCD_WriteReg(LCD_REG_3, 0x1030);  /* Set GRAM write direction and BGR=1. */
-    LCD_WriteReg(LCD_REG_4, 0x0000);  /* Resize register */
-    LCD_WriteReg(LCD_REG_8, 0x0202);  /* Set the back porch and front porch */
-    LCD_WriteReg(LCD_REG_9, 0x0000);  /* Set non-display area refresh cycle ISC[3:0] */
+    /* Driving ability setting */
+    LCD_WriteReg(LCD_REG_234, 0x00);
+    LCD_WriteReg(LCD_REG_235, 0x20);
+    LCD_WriteReg(LCD_REG_236, 0x0C);
+    LCD_WriteReg(LCD_REG_237, 0xC4);
+    LCD_WriteReg(LCD_REG_232, 0x40);
+    LCD_WriteReg(LCD_REG_233, 0x38);
+    LCD_WriteReg(LCD_REG_241, 0x01); /* RGB 18-bit interface ;0x0110 */
+    LCD_WriteReg(LCD_REG_242, 0x10);
+    LCD_WriteReg(LCD_REG_39, 0xA3);
+
+    /* Adjust the Gamma Curve */
+    LCD_WriteReg(LCD_REG_64, 0x01);
+    LCD_WriteReg(LCD_REG_65, 0x00);
+    LCD_WriteReg(LCD_REG_66, 0x00);
+    LCD_WriteReg(LCD_REG_67, 0x10);
+    LCD_WriteReg(LCD_REG_68, 0x0E);
+    LCD_WriteReg(LCD_REG_69, 0x24);
+    LCD_WriteReg(LCD_REG_70, 0x04);
+    LCD_WriteReg(LCD_REG_71, 0x50);
+    LCD_WriteReg(LCD_REG_72, 0x02);
+    LCD_WriteReg(LCD_REG_73, 0x13);
+    LCD_WriteReg(LCD_REG_74, 0x19);
+    LCD_WriteReg(LCD_REG_75, 0x19);
+    LCD_WriteReg(LCD_REG_76, 0x16);
+
+    LCD_WriteReg(LCD_REG_80, 0x1B);
+    LCD_WriteReg(LCD_REG_81, 0x31);
+    LCD_WriteReg(LCD_REG_82, 0x2F);
+    LCD_WriteReg(LCD_REG_83, 0x3F);
+    LCD_WriteReg(LCD_REG_84, 0x3F);
+    LCD_WriteReg(LCD_REG_85, 0x3E);
+    LCD_WriteReg(LCD_REG_86, 0x2F);
+    LCD_WriteReg(LCD_REG_87, 0x7B);
+    LCD_WriteReg(LCD_REG_88, 0x09);
+    LCD_WriteReg(LCD_REG_89, 0x06);
+    LCD_WriteReg(LCD_REG_90, 0x06);
+    LCD_WriteReg(LCD_REG_91, 0x0C);
+    LCD_WriteReg(LCD_REG_92, 0x1D);
+    LCD_WriteReg(LCD_REG_93, 0xCC);
+
+    /* Power voltage setting */
+    LCD_WriteReg(LCD_REG_27, 0x1B);
+    LCD_WriteReg(LCD_REG_26, 0x01);
+    LCD_WriteReg(LCD_REG_36, 0x2F);
+    LCD_WriteReg(LCD_REG_37, 0x57);
+    /*****VCOM offset ****/
+    LCD_WriteReg(LCD_REG_35, 0x86);
+
+    /* Power on setting */
+    LCD_WriteReg(LCD_REG_24, 0x36); /* Display frame rate:75Hz(2.85MHz X 117%) */
+    LCD_WriteReg(LCD_REG_25, 0x01); /* Internal oscillator start to oscillate */
+    LCD_WriteReg(LCD_REG_1,0x00);
+    LCD_WriteReg(LCD_REG_31, 0x88); /* Step-up Circuit 1 on,open abnormal power-off monitor */
+    _delay_(6);
+    LCD_WriteReg(LCD_REG_31, 0x80); /* Step-up Circuit 1 off */
+    _delay_(6);
+    LCD_WriteReg(LCD_REG_31, 0x90); /* VCOML voltage can output to negative voltage,
+                                (1.0V ~ VCL+0.5V) */
+    _delay_(6);
+    LCD_WriteReg(LCD_REG_31, 0xD0); /* Step-up Circuit 2 on */
+    _delay_(6);
+
+    LCD_WriteReg(LCD_REG_23, 0x05);  /* COLMOD control */
+
+    /* Set GRAM Area - Partial Display Control */
+    LCD_WriteReg(LCD_REG_1, 0x00); /* Scroll off */
+
+    LCD_WriteReg(LCD_REG_2, 0x00);
+    LCD_WriteReg(LCD_REG_3, 0x00);
+    LCD_WriteReg(LCD_REG_4, 0x01); /* X,Y swap */
+    LCD_WriteReg(LCD_REG_5, 0x3F); /* X,Y swap */
+
+    LCD_WriteReg(LCD_REG_6, 0x00);
+    LCD_WriteReg(LCD_REG_7, 0x00);
+    LCD_WriteReg(LCD_REG_8, 0x00); /* X,Y swap */
+    LCD_WriteReg(LCD_REG_9, 0xEF); /* X,Y swap */
+
+    /* Memory access control */
+    /* bit7 controls left,right swap(X) */
+    /* bit6 controls up,down swap(Y) */
+    /* bit5 controls X,Y swap */
+    LCD_WriteReg(LCD_REG_22, 0x28);
+
+    /* SET PANEL */
+    LCD_WriteReg(LCD_REG_54, 0x00); /* Panel characteristic control */
+    LCD_WriteReg(LCD_REG_54, 0x04); /* Panel characteristic control: gate driver shift reverse[work] */
+    LCD_WriteReg(LCD_REG_40, 0x38); /* Display control3: source output->PT(0,0) */
+    _delay_(20);
+    LCD_WriteReg(LCD_REG_40, 0x3C); /* Display control3: source output->Display */
+  }
+  else
+  {
+    /* Check if the LCD is SPFD5408B Controller */
+    if(LCD_ReadReg(0x00) == 0x5408)
+    {
+      /* Start Initial Sequence ------------------------------------------------*/
+      LCD_WriteReg(LCD_REG_1, 0x0100);  /* Set SS bit */
+      LCD_WriteReg(LCD_REG_2, 0x0700);  /* Set 1 line inversion */
+      LCD_WriteReg(LCD_REG_3, 0x1030);  /* Set GRAM write direction and BGR=1. */
+      LCD_WriteReg(LCD_REG_4, 0x0000);  /* Resize register */
+      LCD_WriteReg(LCD_REG_8, 0x0202);  /* Set the back porch and front porch */
+      LCD_WriteReg(LCD_REG_9, 0x0000);  /* Set non-display area refresh cycle ISC[3:0] */
+      LCD_WriteReg(LCD_REG_10, 0x0000); /* FMARK function */
+      LCD_WriteReg(LCD_REG_12, 0x0000); /* RGB 18-bit System interface setting */
+      LCD_WriteReg(LCD_REG_13, 0x0000); /* Frame marker Position */
+      LCD_WriteReg(LCD_REG_15, 0x0000); /* RGB interface polarity, no impact */
+      /* Power On sequence -----------------------------------------------------*/
+      LCD_WriteReg(LCD_REG_16, 0x0000); /* SAP, BT[3:0], AP, DSTB, SLP, STB */
+      LCD_WriteReg(LCD_REG_17, 0x0000); /* DC1[2:0], DC0[2:0], VC[2:0] */
+      LCD_WriteReg(LCD_REG_18, 0x0000); /* VREG1OUT voltage */
+      LCD_WriteReg(LCD_REG_19, 0x0000); /* VDV[4:0] for VCOM amplitude */
+      _delay_(60);                 /* Dis-charge capacitor power voltage (200ms) */
+      LCD_WriteReg(LCD_REG_17, 0x0007);  /* DC1[2:0], DC0[2:0], VC[2:0] */
+      _delay_(20);                   /* Delay 50 ms */
+      LCD_WriteReg(LCD_REG_16, 0x12B0);  /* SAP, BT[3:0], AP, DSTB, SLP, STB */
+      _delay_(20);                  /* Delay 50 ms */
+      LCD_WriteReg(LCD_REG_18, 0x01BD);  /* External reference voltage= Vci */
+      _delay_(20);
+      LCD_WriteReg(LCD_REG_19, 0x1400);  /* VDV[4:0] for VCOM amplitude */
+      LCD_WriteReg(LCD_REG_41, 0x000E);  /* VCM[4:0] for VCOMH */
+      _delay_(20);                   /* Delay 50 ms */
+      LCD_WriteReg(LCD_REG_32, 0x0000); /* GRAM horizontal Address */
+      LCD_WriteReg(LCD_REG_33, 0x013F); /* GRAM Vertical Address */
+      /* Adjust the Gamma Curve (SPFD5408B)-------------------------------------*/
+      LCD_WriteReg(LCD_REG_48, 0x0b0d);
+      LCD_WriteReg(LCD_REG_49, 0x1923);
+      LCD_WriteReg(LCD_REG_50, 0x1c26);
+      LCD_WriteReg(LCD_REG_51, 0x261c);
+      LCD_WriteReg(LCD_REG_52, 0x2419);
+      LCD_WriteReg(LCD_REG_53, 0x0d0b);
+      LCD_WriteReg(LCD_REG_54, 0x1006);
+      LCD_WriteReg(LCD_REG_55, 0x0610);
+      LCD_WriteReg(LCD_REG_56, 0x0706);
+      LCD_WriteReg(LCD_REG_57, 0x0304);
+      LCD_WriteReg(LCD_REG_58, 0x0e05);
+      LCD_WriteReg(LCD_REG_59, 0x0e01);
+      LCD_WriteReg(LCD_REG_60, 0x010e);
+      LCD_WriteReg(LCD_REG_61, 0x050e);
+      LCD_WriteReg(LCD_REG_62, 0x0403);
+      LCD_WriteReg(LCD_REG_63, 0x0607);
+      /* Set GRAM area ---------------------------------------------------------*/
+      LCD_WriteReg(LCD_REG_80, 0x0000); /* Horizontal GRAM Start Address */
+      LCD_WriteReg(LCD_REG_81, 0x00EF); /* Horizontal GRAM End Address */
+      LCD_WriteReg(LCD_REG_82, 0x0000); /* Vertical GRAM Start Address */
+      LCD_WriteReg(LCD_REG_83, 0x013F); /* Vertical GRAM End Address */
+      LCD_WriteReg(LCD_REG_96,  0xA700); /* Gate Scan Line */
+      LCD_WriteReg(LCD_REG_97,  0x0001); /* NDL, VLE, REV */
+      LCD_WriteReg(LCD_REG_106, 0x0000); /* set scrolling line */
+      /* Partial Display Control -----------------------------------------------*/
+      LCD_WriteReg(LCD_REG_128, 0x0000);
+      LCD_WriteReg(LCD_REG_129, 0x0000);
+      LCD_WriteReg(LCD_REG_130, 0x0000);
+      LCD_WriteReg(LCD_REG_131, 0x0000);
+      LCD_WriteReg(LCD_REG_132, 0x0000);
+      LCD_WriteReg(LCD_REG_133, 0x0000);
+      /* Panel Control ---------------------------------------------------------*/
+      LCD_WriteReg(LCD_REG_144, 0x0010);
+      LCD_WriteReg(LCD_REG_146, 0x0000);
+      LCD_WriteReg(LCD_REG_147, 0x0003);
+      LCD_WriteReg(LCD_REG_149, 0x0110);
+      LCD_WriteReg(LCD_REG_151, 0x0000);
+      LCD_WriteReg(LCD_REG_152, 0x0000);
+      /* Set GRAM write direction and BGR=1
+      I/D=01 (Horizontal : increment, Vertical : decrement)
+      AM=1 (address is updated in vertical writing direction) */
+      LCD_WriteReg(LCD_REG_3, 0x1018);
+      LCD_WriteReg(LCD_REG_7, 0x0112); /* 262K color and display ON */
+      return;
+    }
+    /* Start Initial Sequence ----------------------------------------------------*/
+    LCD_WriteReg(LCD_REG_229,0x8000); /* Set the internal vcore voltage */
+    LCD_WriteReg(LCD_REG_0,  0x0001); /* Start internal OSC. */
+    LCD_WriteReg(LCD_REG_1,  0x0100); /* set SS and SM bit */
+    LCD_WriteReg(LCD_REG_2,  0x0700); /* set 1 line inversion */
+    LCD_WriteReg(LCD_REG_3,  0x1030); /* set GRAM write direction and BGR=1. */
+    LCD_WriteReg(LCD_REG_4,  0x0000); /* Resize register */
+    LCD_WriteReg(LCD_REG_8,  0x0202); /* set the back porch and front porch */
+    LCD_WriteReg(LCD_REG_9,  0x0000); /* set non-display area refresh cycle ISC[3:0] */
     LCD_WriteReg(LCD_REG_10, 0x0000); /* FMARK function */
-    LCD_WriteReg(LCD_REG_12, 0x0000); /* RGB 18-bit System interface setting */
+    LCD_WriteReg(LCD_REG_12, 0x0000); /* RGB interface setting */
     LCD_WriteReg(LCD_REG_13, 0x0000); /* Frame marker Position */
-    LCD_WriteReg(LCD_REG_15, 0x0000); /* RGB interface polarity, no impact */
-    /* Power On sequence -----------------------------------------------------*/
+    LCD_WriteReg(LCD_REG_15, 0x0000); /* RGB interface polarity */
+    /* Power On sequence ---------------------------------------------------------*/
     LCD_WriteReg(LCD_REG_16, 0x0000); /* SAP, BT[3:0], AP, DSTB, SLP, STB */
     LCD_WriteReg(LCD_REG_17, 0x0000); /* DC1[2:0], DC0[2:0], VC[2:0] */
     LCD_WriteReg(LCD_REG_18, 0x0000); /* VREG1OUT voltage */
     LCD_WriteReg(LCD_REG_19, 0x0000); /* VDV[4:0] for VCOM amplitude */
     _delay_(20);                 /* Dis-charge capacitor power voltage (200ms) */
-    LCD_WriteReg(LCD_REG_17, 0x0007);  /* DC1[2:0], DC0[2:0], VC[2:0] */
-    _delay_(5);                   /* Delay 50 ms */
-    LCD_WriteReg(LCD_REG_16, 0x12B0);  /* SAP, BT[3:0], AP, DSTB, SLP, STB */
-    _delay_(5);                  /* Delay 50 ms */
-    LCD_WriteReg(LCD_REG_18, 0x01BD);  /* External reference voltage= Vci */
-    _delay_(5);
-    LCD_WriteReg(LCD_REG_19, 0x1400);  /* VDV[4:0] for VCOM amplitude */
-    LCD_WriteReg(LCD_REG_41, 0x000E);  /* VCM[4:0] for VCOMH */
-    _delay_(5);                   /* Delay 50 ms */
+    LCD_WriteReg(LCD_REG_16, 0x17B0); /* SAP, BT[3:0], AP, DSTB, SLP, STB */
+    LCD_WriteReg(LCD_REG_17, 0x0137); /* DC1[2:0], DC0[2:0], VC[2:0] */
+    _delay_(20);                  /* Delay 50 ms */
+    LCD_WriteReg(LCD_REG_18, 0x0139); /* VREG1OUT voltage */
+    _delay_(20);                  /* Delay 50 ms */
+    LCD_WriteReg(LCD_REG_19, 0x1d00); /* VDV[4:0] for VCOM amplitude */
+    LCD_WriteReg(LCD_REG_41, 0x0013); /* VCM[4:0] for VCOMH */
+    _delay_(20);                  /* Delay 50 ms */
     LCD_WriteReg(LCD_REG_32, 0x0000); /* GRAM horizontal Address */
-    LCD_WriteReg(LCD_REG_33, 0x013F); /* GRAM Vertical Address */
-    /* Adjust the Gamma Curve (SPFD5408B)-------------------------------------*/
-    LCD_WriteReg(LCD_REG_48, 0x0b0d);
-    LCD_WriteReg(LCD_REG_49, 0x1923);
-    LCD_WriteReg(LCD_REG_50, 0x1c26);
-    LCD_WriteReg(LCD_REG_51, 0x261c);
-    LCD_WriteReg(LCD_REG_52, 0x2419);
-    LCD_WriteReg(LCD_REG_53, 0x0d0b);
-    LCD_WriteReg(LCD_REG_54, 0x1006);
-    LCD_WriteReg(LCD_REG_55, 0x0610);
-    LCD_WriteReg(LCD_REG_56, 0x0706);
-    LCD_WriteReg(LCD_REG_57, 0x0304);
-    LCD_WriteReg(LCD_REG_58, 0x0e05);
-    LCD_WriteReg(LCD_REG_59, 0x0e01);
-    LCD_WriteReg(LCD_REG_60, 0x010e);
-    LCD_WriteReg(LCD_REG_61, 0x050e);
-    LCD_WriteReg(LCD_REG_62, 0x0403);
-    LCD_WriteReg(LCD_REG_63, 0x0607);
-    /* Set GRAM area ---------------------------------------------------------*/
+    LCD_WriteReg(LCD_REG_33, 0x0000); /* GRAM Vertical Address */
+    /* Adjust the Gamma Curve ----------------------------------------------------*/
+    LCD_WriteReg(LCD_REG_48, 0x0006);
+    LCD_WriteReg(LCD_REG_49, 0x0101);
+    LCD_WriteReg(LCD_REG_50, 0x0003);
+    LCD_WriteReg(LCD_REG_53, 0x0106);
+    LCD_WriteReg(LCD_REG_54, 0x0b02);
+    LCD_WriteReg(LCD_REG_55, 0x0302);
+    LCD_WriteReg(LCD_REG_56, 0x0707);
+    LCD_WriteReg(LCD_REG_57, 0x0007);
+    LCD_WriteReg(LCD_REG_60, 0x0600);
+    LCD_WriteReg(LCD_REG_61, 0x020b);
+
+    /* Set GRAM area -------------------------------------------------------------*/
     LCD_WriteReg(LCD_REG_80, 0x0000); /* Horizontal GRAM Start Address */
     LCD_WriteReg(LCD_REG_81, 0x00EF); /* Horizontal GRAM End Address */
     LCD_WriteReg(LCD_REG_82, 0x0000); /* Vertical GRAM Start Address */
     LCD_WriteReg(LCD_REG_83, 0x013F); /* Vertical GRAM End Address */
-    LCD_WriteReg(LCD_REG_96,  0xA700); /* Gate Scan Line */
-    LCD_WriteReg(LCD_REG_97,  0x0001); /* NDL, VLE, REV */
+    LCD_WriteReg(LCD_REG_96,  0x2700); /* Gate Scan Line */
+    LCD_WriteReg(LCD_REG_97,  0x0001); /* NDL,VLE, REV */
     LCD_WriteReg(LCD_REG_106, 0x0000); /* set scrolling line */
-    /* Partial Display Control -----------------------------------------------*/
+    /* Partial Display Control ---------------------------------------------------*/
     LCD_WriteReg(LCD_REG_128, 0x0000);
     LCD_WriteReg(LCD_REG_129, 0x0000);
     LCD_WriteReg(LCD_REG_130, 0x0000);
     LCD_WriteReg(LCD_REG_131, 0x0000);
     LCD_WriteReg(LCD_REG_132, 0x0000);
     LCD_WriteReg(LCD_REG_133, 0x0000);
-    /* Panel Control ---------------------------------------------------------*/
+    /* Panel Control -------------------------------------------------------------*/
     LCD_WriteReg(LCD_REG_144, 0x0010);
     LCD_WriteReg(LCD_REG_146, 0x0000);
     LCD_WriteReg(LCD_REG_147, 0x0003);
     LCD_WriteReg(LCD_REG_149, 0x0110);
     LCD_WriteReg(LCD_REG_151, 0x0000);
     LCD_WriteReg(LCD_REG_152, 0x0000);
-    /* Set GRAM write direction and BGR=1
-       I/D=01 (Horizontal : increment, Vertical : decrement)
-       AM=1 (address is updated in vertical writing direction) */
+    /* Set GRAM write direction and BGR = 1 */
+    /* I/D=01 (Horizontal : increment, Vertical : decrement) */
+    /* AM=1 (address is updated in vertical writing direction) */
     LCD_WriteReg(LCD_REG_3, 0x1018);
-    LCD_WriteReg(LCD_REG_7, 0x0112); /* 262K color and display ON */
-    return;
+    LCD_WriteReg(LCD_REG_7, 0x0173); /* 262K color and display ON */
   }
-/* Start Initial Sequence ----------------------------------------------------*/
-  LCD_WriteReg(LCD_REG_229,0x8000); /* Set the internal vcore voltage */
-  LCD_WriteReg(LCD_REG_0,  0x0001); /* Start internal OSC. */
-  LCD_WriteReg(LCD_REG_1,  0x0100); /* set SS and SM bit */
-  LCD_WriteReg(LCD_REG_2,  0x0700); /* set 1 line inversion */
-  LCD_WriteReg(LCD_REG_3,  0x1030); /* set GRAM write direction and BGR=1. */
-  LCD_WriteReg(LCD_REG_4,  0x0000); /* Resize register */
-  LCD_WriteReg(LCD_REG_8,  0x0202); /* set the back porch and front porch */
-  LCD_WriteReg(LCD_REG_9,  0x0000); /* set non-display area refresh cycle ISC[3:0] */
-  LCD_WriteReg(LCD_REG_10, 0x0000); /* FMARK function */
-  LCD_WriteReg(LCD_REG_12, 0x0000); /* RGB interface setting */
-  LCD_WriteReg(LCD_REG_13, 0x0000); /* Frame marker Position */
-  LCD_WriteReg(LCD_REG_15, 0x0000); /* RGB interface polarity */
-/* Power On sequence ---------------------------------------------------------*/
-  LCD_WriteReg(LCD_REG_16, 0x0000); /* SAP, BT[3:0], AP, DSTB, SLP, STB */
-  LCD_WriteReg(LCD_REG_17, 0x0000); /* DC1[2:0], DC0[2:0], VC[2:0] */
-  LCD_WriteReg(LCD_REG_18, 0x0000); /* VREG1OUT voltage */
-  LCD_WriteReg(LCD_REG_19, 0x0000); /* VDV[4:0] for VCOM amplitude */
-  _delay_(20);                 /* Dis-charge capacitor power voltage (200ms) */
-  LCD_WriteReg(LCD_REG_16, 0x17B0); /* SAP, BT[3:0], AP, DSTB, SLP, STB */
-  LCD_WriteReg(LCD_REG_17, 0x0137); /* DC1[2:0], DC0[2:0], VC[2:0] */
-  _delay_(5);                  /* Delay 50 ms */
-  LCD_WriteReg(LCD_REG_18, 0x0139); /* VREG1OUT voltage */
-  _delay_(5);                  /* Delay 50 ms */
-  LCD_WriteReg(LCD_REG_19, 0x1d00); /* VDV[4:0] for VCOM amplitude */
-  LCD_WriteReg(LCD_REG_41, 0x0013); /* VCM[4:0] for VCOMH */
-  _delay_(5);                  /* Delay 50 ms */
-  LCD_WriteReg(LCD_REG_32, 0x0000); /* GRAM horizontal Address */
-  LCD_WriteReg(LCD_REG_33, 0x0000); /* GRAM Vertical Address */
-/* Adjust the Gamma Curve ----------------------------------------------------*/
-  LCD_WriteReg(LCD_REG_48, 0x0006);
-  LCD_WriteReg(LCD_REG_49, 0x0101);
-  LCD_WriteReg(LCD_REG_50, 0x0003);
-  LCD_WriteReg(LCD_REG_53, 0x0106);
-  LCD_WriteReg(LCD_REG_54, 0x0b02);
-  LCD_WriteReg(LCD_REG_55, 0x0302);
-  LCD_WriteReg(LCD_REG_56, 0x0707);
-  LCD_WriteReg(LCD_REG_57, 0x0007);
-  LCD_WriteReg(LCD_REG_60, 0x0600);
-  LCD_WriteReg(LCD_REG_61, 0x020b);
-
-/* Set GRAM area -------------------------------------------------------------*/
-  LCD_WriteReg(LCD_REG_80, 0x0000); /* Horizontal GRAM Start Address */
-  LCD_WriteReg(LCD_REG_81, 0x00EF); /* Horizontal GRAM End Address */
-  LCD_WriteReg(LCD_REG_82, 0x0000); /* Vertical GRAM Start Address */
-  LCD_WriteReg(LCD_REG_83, 0x013F); /* Vertical GRAM End Address */
-  LCD_WriteReg(LCD_REG_96,  0x2700); /* Gate Scan Line */
-  LCD_WriteReg(LCD_REG_97,  0x0001); /* NDL,VLE, REV */
-  LCD_WriteReg(LCD_REG_106, 0x0000); /* set scrolling line */
-/* Partial Display Control ---------------------------------------------------*/
-  LCD_WriteReg(LCD_REG_128, 0x0000);
-  LCD_WriteReg(LCD_REG_129, 0x0000);
-  LCD_WriteReg(LCD_REG_130, 0x0000);
-  LCD_WriteReg(LCD_REG_131, 0x0000);
-  LCD_WriteReg(LCD_REG_132, 0x0000);
-  LCD_WriteReg(LCD_REG_133, 0x0000);
-/* Panel Control -------------------------------------------------------------*/
-  LCD_WriteReg(LCD_REG_144, 0x0010);
-  LCD_WriteReg(LCD_REG_146, 0x0000);
-  LCD_WriteReg(LCD_REG_147, 0x0003);
-  LCD_WriteReg(LCD_REG_149, 0x0110);
-  LCD_WriteReg(LCD_REG_151, 0x0000);
-  LCD_WriteReg(LCD_REG_152, 0x0000);
-  /* Set GRAM write direction and BGR = 1 */
-  /* I/D=01 (Horizontal : increment, Vertical : decrement) */
-  /* AM=1 (address is updated in vertical writing direction) */
-  LCD_WriteReg(LCD_REG_3, 0x1018);
-  LCD_WriteReg(LCD_REG_7, 0x0173); /* 262K color and display ON */
 }
 
 /**
@@ -333,7 +447,8 @@ void LCD_SetColors(__IO uint16_t _TextColor, __IO uint16_t _BackColor)
   */
 void LCD_GetColors(__IO uint16_t *_TextColor, __IO uint16_t *_BackColor)
 {
-  *_TextColor = TextColor; *_BackColor = BackColor;
+  *_TextColor = TextColor;
+  *_BackColor = BackColor;
 }
 
 /**
@@ -346,7 +461,6 @@ void LCD_SetTextColor(__IO uint16_t Color)
   TextColor = Color;
 }
 
-
 /**
   * @brief  Sets the Background color.
   * @param  Color: specifies the Background color code RGB(5-6-5).
@@ -358,7 +472,7 @@ void LCD_SetBackColor(__IO uint16_t Color)
 }
 
 /**
-  * @brief  Clears the hole LCD.
+  * @brief  Clears the whole LCD.
   * @param  Color: the color of the background.
   * @retval None
   */
@@ -366,14 +480,50 @@ void LCD_Clear(uint16_t Color)
 {
   uint32_t index = 0;
 
-  LCD_SetCursor(0x00, 0x013F);
-  LCD_WriteRAM_Prepare(); /* Prepare to write GRAM */
+  if(LCD_ID == LCD_HX8347D)
+  {
+    LCD_SetCursor(0x00, 0x0000);
+  }
+  else
+  {
+    LCD_SetCursor(0x00, 0x013F);
+  }
+
+  /* Prepare to write GRAM */
+  LCD_WriteRAM_Prepare();
   for(index = 0; index < 76800; index++)
   {
     LCD->LCD_RAM = Color;
   }
 }
 
+/**
+  * @brief  Blt the entire screen
+  * @param  buf The buffer to blt
+  * @retval None
+  */
+void LCD_Bitblt(uint8_t *buf)
+{
+  uint32_t index = 0;
+  uint16_t *p = (uint16_t *)buf;
+
+  if(LCD_ID == LCD_HX8347D)
+  {
+    LCD_SetCursor(0x00, 0x0000);
+  }
+  else
+  {
+    LCD_SetCursor(0x00, 0x013F);
+  }
+
+  /* Prepare to write GRAM */
+  LCD_WriteRAM_Prepare();
+  for(index = 0; index < 76800; index++)
+  {
+    LCD->LCD_RAM = *p;
+    p++;
+  }
+}
 
 /**
   * @brief  Sets the cursor position.
@@ -381,10 +531,20 @@ void LCD_Clear(uint16_t Color)
   * @param  Ypos: specifies the Y position.
   * @retval None
   */
-void LCD_SetCursor(uint8_t Xpos, uint16_t Ypos)
+void LCD_SetCursor(uint16_t Xpos, uint16_t Ypos)
 {
-  LCD_WriteReg(LCD_REG_32, Xpos);
-  LCD_WriteReg(LCD_REG_33, Ypos);
+  if(LCD_ID == LCD_HX8347D)
+  {
+    LCD_WriteReg(LCD_REG_2, Ypos >> 8);
+    LCD_WriteReg(LCD_REG_3, Ypos & 0xFF);
+    LCD_WriteReg(LCD_REG_6, 0x00);
+    LCD_WriteReg(LCD_REG_7, Xpos);
+  }
+  else
+  {
+    LCD_WriteReg(LCD_REG_32, Xpos);
+    LCD_WriteReg(LCD_REG_33, Ypos);
+  }
 }
 
 /**
@@ -395,33 +555,49 @@ void LCD_SetCursor(uint8_t Xpos, uint16_t Ypos)
   * @param  Width: display window width.
   * @retval None
   */
-void LCD_SetDisplayWindow(uint8_t Xpos, uint16_t Ypos, uint8_t Height, uint16_t Width)
+void LCD_SetDisplayWindow(uint16_t Xpos, uint16_t Ypos, uint8_t Height, uint16_t Width)
 {
-  /* Horizontal GRAM Start Address */
-  if(Xpos >= Height)
+  if(LCD_ID == LCD_HX8347D)
   {
-    LCD_WriteReg(LCD_REG_80, (Xpos - Height + 1));
-  }
-  else
-  {
-    LCD_WriteReg(LCD_REG_80, 0);
-  }
-  /* Horizontal GRAM End Address */
-  LCD_WriteReg(LCD_REG_81, Xpos);
-  /* Vertical GRAM Start Address */
-  if(Ypos >= Width)
-  {
-    LCD_WriteReg(LCD_REG_82, (Ypos - Width + 1));
-  }
-  else
-  {
-    LCD_WriteReg(LCD_REG_82, 0);
-  }
-  /* Vertical GRAM End Address */
-  LCD_WriteReg(LCD_REG_83, Ypos);
-  LCD_SetCursor(Xpos, Ypos);
-}
+    LCD_WriteReg(LCD_REG_2, (319 - Ypos) >> 8); /* SC */
+    LCD_WriteReg(LCD_REG_3, (319 - Ypos) & 0xFF); /* SC */
 
+    LCD_WriteReg(LCD_REG_4, (319 - (Ypos - Width + 1)) >> 8); /* EC */
+    LCD_WriteReg(LCD_REG_5, (319 - (Ypos - Width + 1)) & 0xFF); /* EC */
+
+    LCD_WriteReg(LCD_REG_6, 0x0); /* SP */
+    LCD_WriteReg(LCD_REG_7, (239 - Xpos) & 0xFF); /* SP */
+
+    LCD_WriteReg(LCD_REG_8, 0x0); /* EP */
+    LCD_WriteReg(LCD_REG_9, (239 - (Xpos - Height + 1)) & 0xFF); /* EP */
+  }
+  else
+  {
+    /* Horizontal GRAM Start Address */
+    if(Xpos >= Height)
+    {
+      LCD_WriteReg(LCD_REG_80, (Xpos - Height + 1));
+    }
+    else
+    {
+      LCD_WriteReg(LCD_REG_80, 0);
+    }
+    /* Horizontal GRAM End Address */
+    LCD_WriteReg(LCD_REG_81, Xpos);
+    /* Vertical GRAM Start Address */
+    if(Ypos >= Width)
+    {
+      LCD_WriteReg(LCD_REG_82, (Ypos - Width + 1));
+    }
+    else
+    {
+      LCD_WriteReg(LCD_REG_82, 0);
+    }
+    /* Vertical GRAM End Address */
+    LCD_WriteReg(LCD_REG_83, Ypos);
+    LCD_SetCursor(Xpos, Ypos);
+  }
+}
 
 /**
   * @brief  Disables LCD Window mode.
@@ -431,9 +607,16 @@ void LCD_SetDisplayWindow(uint8_t Xpos, uint16_t Ypos, uint8_t Height, uint16_t 
 void LCD_WindowModeDisable(void)
 {
   LCD_SetDisplayWindow(239, 0x13F, 240, 320);
-  LCD_WriteReg(LCD_REG_3, 0x1018);
-}
 
+  if(LCD_ReadReg(0x00) == LCD_HX8347D)
+  {
+    LCD_WriteReg(LCD_REG_22, 0x28);
+  }
+  else
+  {
+    LCD_WriteReg(LCD_REG_3, 0x1018);
+  }
+}
 
 /**
   * @brief  Displays a line.
@@ -444,11 +627,18 @@ void LCD_WindowModeDisable(void)
   *   This parameter can be one of the following values: Vertical or Horizontal.
   * @retval None
   */
-void LCD_DrawLine(uint8_t Xpos, uint16_t Ypos, uint16_t Length, uint8_t Direction)
+void LCD_DrawLine(uint16_t Xpos, uint16_t Ypos, uint16_t Length, uint8_t Direction)
 {
   uint32_t i = 0;
 
-  LCD_SetCursor(Xpos, Ypos);
+  if(LCD_ID == LCD_HX8347D)
+  {
+    LCD_SetCursor(Xpos, (LCD_PIXEL_WIDTH - 1) - Ypos);
+  }
+  else
+  {
+    LCD_SetCursor(Xpos, Ypos);
+  }
   if(Direction == LCD_DIR_HORIZONTAL)
   {
     LCD_WriteRAM_Prepare(); /* Prepare to write GRAM */
@@ -464,11 +654,17 @@ void LCD_DrawLine(uint8_t Xpos, uint16_t Ypos, uint16_t Length, uint8_t Directio
       LCD_WriteRAM_Prepare(); /* Prepare to write GRAM */
       LCD_WriteRAM(TextColor);
       Xpos++;
-      LCD_SetCursor(Xpos, Ypos);
+      if(LCD_ID == LCD_HX8347D)
+      {
+        LCD_SetCursor(Xpos, (LCD_PIXEL_WIDTH - 1) - Ypos);
+      }
+      else
+      {
+        LCD_SetCursor(Xpos, Ypos);
+      }
     }
   }
 }
-
 
 /**
   * @brief  Displays a rectangle.
@@ -478,7 +674,7 @@ void LCD_DrawLine(uint8_t Xpos, uint16_t Ypos, uint16_t Length, uint8_t Directio
   * @param  Width: display rectangle width.
   * @retval None
   */
-void LCD_DrawRect(uint8_t Xpos, uint16_t Ypos, uint8_t Height, uint16_t Width)
+void LCD_DrawRect(uint16_t Xpos, uint16_t Ypos, uint8_t Height, uint16_t Width)
 {
   LCD_DrawLine(Xpos, Ypos, Width, LCD_DIR_HORIZONTAL);
   LCD_DrawLine((Xpos + Height), Ypos, Width, LCD_DIR_HORIZONTAL);
@@ -487,7 +683,6 @@ void LCD_DrawRect(uint8_t Xpos, uint16_t Ypos, uint8_t Height, uint16_t Width)
   LCD_DrawLine(Xpos, (Ypos - Width + 1), Height, LCD_DIR_VERTICAL);
 }
 
-
 /**
   * @brief  Displays a circle.
   * @param  Xpos: specifies the X position.
@@ -495,12 +690,16 @@ void LCD_DrawRect(uint8_t Xpos, uint16_t Ypos, uint8_t Height, uint16_t Width)
   * @param  Radius
   * @retval None
   */
-void LCD_DrawCircle(uint8_t Xpos, uint16_t Ypos, uint16_t Radius)
+void LCD_DrawCircle(uint16_t Xpos, uint16_t Ypos, uint16_t Radius)
 {
   int32_t  D;/* Decision Variable */
   uint32_t  CurX;/* Current X Value */
   uint32_t  CurY;/* Current Y Value */
 
+  if(LCD_ID == LCD_HX8347D)
+  {
+    Ypos = (LCD_PIXEL_WIDTH - 1) - Ypos;
+  }
   D = 3 - (Radius << 1);
   CurX = 0;
   CurY = Radius;
@@ -544,16 +743,23 @@ void LCD_DrawCircle(uint8_t Xpos, uint16_t Ypos, uint16_t Radius)
   }
 }
 
-
 /**
   * @brief  Displays a monocolor picture.
-  * @param  Pict: pointer to the picture array.
+  * @param  *Pict: pointer to the picture array.
   * @retval None
   */
 void LCD_DrawMonoPict(const uint32_t *Pict)
 {
   uint32_t index = 0, i = 0;
-  LCD_SetCursor(0, (LCD_PIXEL_WIDTH - 1));
+
+  if(LCD_ID == LCD_HX8347D)
+  {
+    LCD_SetCursor(0, 0);
+  }
+  else
+  {
+    LCD_SetCursor(0, (LCD_PIXEL_WIDTH - 1));
+  }
   LCD_WriteRAM_Prepare(); /* Prepare to write GRAM */
   for(index = 0; index < 2400; index++)
   {
@@ -570,7 +776,6 @@ void LCD_DrawMonoPict(const uint32_t *Pict)
     }
   }
 }
-
 
 /**
   * @brief  Displays a bitmap picture loaded in the internal Flash.
@@ -591,7 +796,14 @@ void LCD_WriteBMP(uint32_t BmpAddress)
   /* Set GRAM write direction and BGR = 1 */
   /* I/D=00 (Horizontal : decrement, Vertical : decrement) */
   /* AM=1 (address is updated in vertical writing direction) */
-  LCD_WriteReg(LCD_REG_3, 0x1008);
+  if(LCD_ReadReg(0x00) == LCD_HX8347D)
+  {
+    LCD_WriteReg(LCD_REG_22, 0x68);
+  }
+  else
+  {
+    LCD_WriteReg(LCD_REG_3, 0x1008);
+  }
 
   LCD_WriteRAM_Prepare();
 
@@ -604,7 +816,15 @@ void LCD_WriteBMP(uint32_t BmpAddress)
   /* Set GRAM write direction and BGR = 1 */
   /* I/D = 01 (Horizontal : increment, Vertical : decrement) */
   /* AM = 1 (address is updated in vertical writing direction) */
-  LCD_WriteReg(LCD_REG_3, 0x1018);
+  if(LCD_ReadReg(0x00) == LCD_HX8347D)
+  {
+    LCD_WriteReg(LCD_REG_22, 0x28);
+  }
+  else
+  {
+    LCD_WriteReg(LCD_REG_3, 0x1018);
+    LCD_SetCursor(0,0);
+  }
 }
 
 /**
@@ -764,7 +984,7 @@ void LCD_DrawUniLine(uint16_t x1, uint16_t y1, uint16_t x2, uint16_t y2)
 }
 
 /**
-  * @brief  Displays an polyline (between many points).
+  * @brief  Displays an poly-line (between many points).
   * @param  Points: pointer to the points array.
   * @param  PointCount: Number of points.
   * @retval None
@@ -788,7 +1008,7 @@ void LCD_PolyLine(pPoint Points, uint16_t PointCount)
 }
 
 /**
-  * @brief  Displays an relative polyline (between many points).
+  * @brief  Displays an relative poly-line (between many points).
   * @param  Points: pointer to the points array.
   * @param  PointCount: Number of points.
   * @param  Closed: specifies if the draw is closed or not.
@@ -820,7 +1040,7 @@ static void LCD_PolyLineRelativeClosed(pPoint Points, uint16_t PointCount, uint1
 }
 
 /**
-  * @brief  Displays a closed polyline (between many points).
+  * @brief  Displays a closed poly-line (between many points).
   * @param  Points: pointer to the points array.
   * @param  PointCount: Number of points.
   * @retval None
@@ -832,7 +1052,7 @@ void LCD_ClosedPolyLine(pPoint Points, uint16_t PointCount)
 }
 
 /**
-  * @brief  Displays a relative polyline (between many points).
+  * @brief  Displays a relative poly-line (between many points).
   * @param  Points: pointer to the points array.
   * @param  PointCount: Number of points.
   * @retval None
@@ -843,7 +1063,7 @@ void LCD_PolyLineRelative(pPoint Points, uint16_t PointCount)
 }
 
 /**
-  * @brief  Displays a closed relative polyline (between many points).
+  * @brief  Displays a closed relative poly-line (between many points).
   * @param  Points: pointer to the points array.
   * @param  PointCount: Number of points.
   * @retval None
@@ -853,9 +1073,8 @@ void LCD_ClosedPolyLineRelative(pPoint Points, uint16_t PointCount)
   LCD_PolyLineRelativeClosed(Points, PointCount, 1);
 }
 
-
 /**
-  * @brief  Displays a  full polyline (between many points).
+  * @brief  Displays a  full poly-line (between many points).
   * @param  Points: pointer to the points array.
   * @param  PointCount: Number of points.
   * @retval None
@@ -903,7 +1122,8 @@ void LCD_FillPolyLine(pPoint Points, uint16_t PointCount)
 
     for (i = 0; i < PointCount; i++)
     {
-      if ((POLY_Y(i)<(double) pixelY && POLY_Y(j)>=(double) pixelY) || (POLY_Y(j)<(double) pixelY && POLY_Y(i)>=(double) pixelY))
+     if (((POLY_Y(i)<(double) pixelY) && (POLY_Y(j)>=(double) pixelY)) || \
+          ((POLY_Y(j)<(double) pixelY) && (POLY_Y(i)>=(double) pixelY)))
       {
         nodeX[nodes++]=(int) (POLY_X(i)+((pixelY-POLY_Y(i))*(POLY_X(j)-POLY_X(i)))/(POLY_Y(j)-POLY_Y(i)));
       }
@@ -975,7 +1195,6 @@ void LCD_WriteReg(uint8_t LCD_Reg, uint16_t LCD_RegValue)
   LCD->LCD_RAM = LCD_RegValue;
 }
 
-
 /**
   * @brief  Reads the selected LCD Register.
   * @param  LCD_Reg: address of the selected register.
@@ -989,7 +1208,6 @@ uint16_t LCD_ReadReg(uint8_t LCD_Reg)
   return (LCD->LCD_RAM);
 }
 
-
 /**
   * @brief  Prepare to write to the LCD RAM.
   * @param  None
@@ -999,7 +1217,6 @@ void LCD_WriteRAM_Prepare(void)
 {
   LCD->LCD_REG = LCD_REG_34;
 }
-
 
 /**
   * @brief  Writes to the LCD RAM.
@@ -1011,7 +1228,6 @@ void LCD_WriteRAM(uint16_t RGB_Code)
   /* Write 16-bit GRAM Reg */
   LCD->LCD_RAM = RGB_Code;
 }
-
 
 /**
   * @brief  Reads the LCD RAM.
@@ -1026,7 +1242,6 @@ uint16_t LCD_ReadRAM(void)
   return LCD->LCD_RAM;
 }
 
-
 /**
   * @brief  Power on the LCD.
   * @param  None
@@ -1034,23 +1249,42 @@ uint16_t LCD_ReadRAM(void)
   */
 void LCD_PowerOn(void)
 {
-/* Power On sequence ---------------------------------------------------------*/
-  LCD_WriteReg(LCD_REG_16, 0x0000); /* SAP, BT[3:0], AP, DSTB, SLP, STB */
-  LCD_WriteReg(LCD_REG_17, 0x0000); /* DC1[2:0], DC0[2:0], VC[2:0] */
-  LCD_WriteReg(LCD_REG_18, 0x0000); /* VREG1OUT voltage */
-  LCD_WriteReg(LCD_REG_19, 0x0000); /* VDV[4:0] for VCOM amplitude*/
-  _delay_(20);                 /* Dis-charge capacitor power voltage (200ms) */
-  LCD_WriteReg(LCD_REG_16, 0x17B0); /* SAP, BT[3:0], AP, DSTB, SLP, STB */
-  LCD_WriteReg(LCD_REG_17, 0x0137); /* DC1[2:0], DC0[2:0], VC[2:0] */
-  _delay_(5);                  /* Delay 50 ms */
-  LCD_WriteReg(LCD_REG_18, 0x0139); /* VREG1OUT voltage */
-  _delay_(5);                  /* Delay 50 ms */
-  LCD_WriteReg(LCD_REG_19, 0x1d00); /* VDV[4:0] for VCOM amplitude */
-  LCD_WriteReg(LCD_REG_41, 0x0013); /* VCM[4:0] for VCOMH */
-  _delay_(5);                  /* Delay 50 ms */
-  LCD_WriteReg(LCD_REG_7, 0x0173);  /* 262K color and display ON */
-}
+  if(LCD_ID == LCD_HX8347D)
+  {
+    /* Power on setting */
+    LCD_WriteReg(LCD_REG_24, 0x36); /* Display frame rate:75Hz(2.85MHz X 117%) */
+    LCD_WriteReg(LCD_REG_25, 0x01); /* Internal oscillator start to oscillate */
+    LCD_WriteReg(LCD_REG_1,0x00);
+    LCD_WriteReg(LCD_REG_31, 0x88); /* Step-up Circuit 1 on,open abnormal power-off monitor */
+    _delay_(6);
+    LCD_WriteReg(LCD_REG_31, 0x80); /* Step-up Circuit 1 off */
+    _delay_(6);
+    LCD_WriteReg(LCD_REG_31, 0x90); /* VCOML voltage can output to negative voltage, (1.0V ~ VCL+0.5V) */
+    _delay_(6);
+    LCD_WriteReg(LCD_REG_31, 0xD0); /* Step-up Circuit 2 on */
+    _delay_(6);
 
+    LCD_WriteReg(LCD_REG_23, 0x05);  /* COLMOD control */
+  }
+  else
+  {
+    /* Power On sequence ---------------------------------------------------------*/
+    LCD_WriteReg(LCD_REG_16, 0x0000); /* SAP, BT[3:0], AP, DSTB, SLP, STB */
+    LCD_WriteReg(LCD_REG_17, 0x0000); /* DC1[2:0], DC0[2:0], VC[2:0] */
+    LCD_WriteReg(LCD_REG_18, 0x0000); /* VREG1OUT voltage */
+    LCD_WriteReg(LCD_REG_19, 0x0000); /* VDV[4:0] for VCOM amplitude*/
+    _delay_(20);                 /* Dis-charge capacitor power voltage (200ms) */
+    LCD_WriteReg(LCD_REG_16, 0x17B0); /* SAP, BT[3:0], AP, DSTB, SLP, STB */
+    LCD_WriteReg(LCD_REG_17, 0x0137); /* DC1[2:0], DC0[2:0], VC[2:0] */
+    _delay_(5);                  /* Delay 50 ms */
+    LCD_WriteReg(LCD_REG_18, 0x0139); /* VREG1OUT voltage */
+    _delay_(5);                  /* Delay 50 ms */
+    LCD_WriteReg(LCD_REG_19, 0x1d00); /* VDV[4:0] for VCOM amplitude */
+    LCD_WriteReg(LCD_REG_41, 0x0013); /* VCM[4:0] for VCOMH */
+    _delay_(5);                  /* Delay 50 ms */
+    LCD_WriteReg(LCD_REG_7, 0x0173);  /* 262K color and display ON */
+  }
+}
 
 /**
   * @brief  Enables the Display.
@@ -1059,10 +1293,18 @@ void LCD_PowerOn(void)
   */
 void LCD_DisplayOn(void)
 {
-  /* Display On */
-  LCD_WriteReg(LCD_REG_7, 0x0173); /* 262K color and display ON */
+  if(LCD_ID == LCD_HX8347D)
+  {
+    LCD_WriteReg(LCD_REG_40, 0x38);
+    _delay_(6);
+    LCD_WriteReg(LCD_REG_40, 0x3C);
+  }
+  else
+  {
+    /* Display On */
+    LCD_WriteReg(LCD_REG_7, 0x0173); /* 262K color and display ON */
+  }
 }
-
 
 /**
   * @brief  Disables the Display.
@@ -1071,10 +1313,18 @@ void LCD_DisplayOn(void)
   */
 void LCD_DisplayOff(void)
 {
-  /* Display Off */
-  LCD_WriteReg(LCD_REG_7, 0x0);
+  if(LCD_ID == LCD_HX8347D)
+  {
+    LCD_WriteReg(LCD_REG_40, 0x38);
+    _delay_(6);
+    LCD_WriteReg(LCD_REG_40, 0x04);
+  }
+  else
+  {
+    /* Display Off */
+    LCD_WriteReg(LCD_REG_7, 0x0);
+  }
 }
-
 
 /**
   * @brief  Configures LCD Control lines (FSMC Pins) in alternate function mode.
@@ -1111,7 +1361,6 @@ void LCD_CtrlLinesConfig(void)
   GPIO_Init(GPIOG, &GPIO_InitStructure);
 }
 
-
 /**
   * @brief  Configures the Parallel interface (FSMC) for LCD(Parallel mode)
   * @param  None
@@ -1121,8 +1370,8 @@ void LCD_FSMCConfig(void)
 {
   FSMC_NORSRAMInitTypeDef  FSMC_NORSRAMInitStructure;
   FSMC_NORSRAMTimingInitTypeDef  p;
-/*-- FSMC Configuration ------------------------------------------------------*/
-/*----------------------- SRAM Bank 4 ----------------------------------------*/
+  /*-- FSMC Configuration -----------------------------------------------------*/
+  /*----------------------- SRAM Bank 4 ---------------------------------------*/
   /* FSMC_Bank1_NORSRAM4 configuration */
   p.FSMC_AddressSetupTime = 1;
   p.FSMC_AddressHoldTime = 0;
@@ -1131,7 +1380,7 @@ void LCD_FSMCConfig(void)
   p.FSMC_CLKDivision = 0;
   p.FSMC_DataLatency = 0;
   p.FSMC_AccessMode = FSMC_AccessMode_A;
-  /* Color LCD configuration ------------------------------------
+  /* Color LCD configuration
      LCD configured as follow:
         - Data/Address MUX = Disable
         - Memory Type = SRAM
@@ -1194,4 +1443,4 @@ static void PutPixel(int16_t x, int16_t y)
   * @}
   */
 
-/******************* (C) COPYRIGHT 2011 STMicroelectronics *****END OF FILE****/
+/************************ (C) COPYRIGHT STMicroelectronics *****END OF FILE****/

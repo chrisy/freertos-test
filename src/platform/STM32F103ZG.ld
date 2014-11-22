@@ -18,7 +18,7 @@ MEMORY
     fsmc_bank1 (rw)   : ORIGIN = 0x60000000, LENGTH = 256M /* 256MB max */
     fsmc_bank1_1 (rw) : ORIGIN = 0x60000000, LENGTH = 64M  /* 64MB max */
     fsmc_bank1_2 (rw) : ORIGIN = 0x64000000, LENGTH = 64M  /* 64MB max */
-    fsmc_bank1_3 (rw) : ORIGIN = 0x68000000, LENGTH = 64M  /* 64MB max */
+    fsmc_bank1_3 (rw) : ORIGIN = 0x68000000, LENGTH = 1M   /* 64MB max */
     fsmc_bank1_4 (rw) : ORIGIN = 0x6c000000, LENGTH = 64M  /* 64MB max */
     fsmc_bank2 (rw)   : ORIGIN = 0x70000000, LENGTH = 256M /* 256MB max */
     fsmc_bank3 (rw)   : ORIGIN = 0x80000000, LENGTH = 256M /* 256MB max */

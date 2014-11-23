@@ -33,7 +33,7 @@
         dbgf("HALT at %s line %d." EOL EOL, \
              __FILE__, __LINE__); \
         __disable_irq(); \
-        NVIC_SystemReset(); \
+        for (;; ) ; \
 }
 
 #define HALT_WITH_MSG(msg) { \
@@ -58,10 +58,10 @@
 }
 
 #define ASSERT(x) { if (!(x)) { \
-                        dbgf("ASSERT failed at %s line %d, restarting." EOL EOL, \
+                        dbgf("ASSERT failed at %s line %d, halting." EOL EOL, \
                              __FILE__, __LINE__); \
                         __disable_irq(); \
-                        NVIC_SystemReset(); \
+                        for(;; ) ; \
                     } }
 
 #define assert_param(x) ASSERT(x)

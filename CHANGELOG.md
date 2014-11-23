@@ -9,6 +9,9 @@ Version 0.2
 * Add a simple timer task to run the LEDs.
 * Start documenting things.
 * Add helpers for using fonts.
+* Add eval board LCD driver.
+* Use eval board FSMC SRAM for LCD frame buffer.
+* Add CLI commands to print text on the LCD.
 
 Version 0.1 (2014-10-25)
 ------------------------

@@ -46,34 +46,31 @@ fontout := fonts
 # # The source .ttf is determined from the name.
 fonts_sources :=
 fonts_sources += fonts/font-UbuntuMonoR-10.c
-fonts_sources += fonts/font-UbuntuMonoR-12.c
 fonts_sources += fonts/font-UbuntuMonoR-14.c
-fonts_sources += fonts/font-UbuntuMonoR-16.c
 fonts_sources += fonts/font-UbuntuMonoR-18.c
-fonts_sources += fonts/font-UbuntuMonoR-20.c
+fonts_sources += fonts/font-UbuntuMonoR-22.c
 
 fonts_sources += fonts/font-UbuntuMonoB-10.c
-fonts_sources += fonts/font-UbuntuMonoB-12.c
 fonts_sources += fonts/font-UbuntuMonoB-14.c
-fonts_sources += fonts/font-UbuntuMonoB-16.c
 fonts_sources += fonts/font-UbuntuMonoB-18.c
-fonts_sources += fonts/font-UbuntuMonoB-20.c
+fonts_sources += fonts/font-UbuntuMonoB-22.c
 
 fonts_sources += fonts/font-DejaVuSansMono-10.c
-fonts_sources += fonts/font-DejaVuSansMono-11.c
-fonts_sources += fonts/font-DejaVuSansMono-12.c
+fonts_sources += fonts/font-DejaVuSansMono-14.c
+fonts_sources += fonts/font-DejaVuSansMono-18.c
 
 fonts_sources += fonts/font-VeraMono-10.c
-fonts_sources += fonts/font-VeraMono-11.c
-fonts_sources += fonts/font-VeraMono-12.c
+fonts_sources += fonts/font-VeraMono-14.c
+fonts_sources += fonts/font-VeraMono-18.c
 
 fonts_sources += fonts/font-LiberationMono-10.c
-fonts_sources += fonts/font-LiberationMono-11.c
-fonts_sources += fonts/font-LiberationMono-12.c
+fonts_sources += fonts/font-LiberationMono-14.c
+fonts_sources += fonts/font-LiberationMono-18.c
 
 fonts_sources += fonts/font-dsdigi-10.c
-fonts_sources += fonts/font-dsdigi-11.c
-fonts_sources += fonts/font-dsdigi-12.c
+fonts_sources += fonts/font-dsdigi-14.c
+fonts_sources += fonts/font-dsdigi-18.c
+fonts_sources += fonts/font-dsdigi-22.c
 
 fonts_extra_sources = \
 	fonts/font_all.c \

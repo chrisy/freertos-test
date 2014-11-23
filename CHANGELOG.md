@@ -1,8 +1,13 @@
 Change Log
 ==========
 
-Version 0.2
+Version 0.3
 -----------
+
+
+Version 0.2 (2014-11-23)
+------------------------
+
 * Add CPU timer for tasks.
 * Add CLI command to display tasks.
 * Add a font-to-C mechanism.

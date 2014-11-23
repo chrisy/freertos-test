@@ -13,7 +13,7 @@
 #define _VERSION_H
 
 #define PROJECT_NAME "FreeRTOS-test"
-#define PROJECT_VERSION "0.2"
+#define PROJECT_VERSION "0.3"
 #define PROJECT_COPYRIGHT "(c) 2014 Chris Luke"
 
 #endif /* _VERSION_H */

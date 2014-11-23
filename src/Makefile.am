@@ -20,7 +20,8 @@ sources = \
 	main.c \
 	stdio_init.c \
 	led.c \
-	fonts.c
+	fonts.c \
+	lcd.c
 
 ourlibdir = $(top_srcdir)/lib
 ourextlibdir = $(top_srcdir)/extlib

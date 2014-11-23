@@ -21,13 +21,14 @@
 #include <stm32/serial.h>
 #include <stm32/i2c.h>
 #include <stm32/spi.h>
-#include <stm3210e_eval_lcd.h>
+
 
 #include "main.h"
 #include "stdio_init.h"
 #include "led.h"
 #include "fonts.h"
-#include <fonts/font_all.h>
+#include "lcd.h"
+
 
 static void main_task(void *param);
 static void platform_init(void);
@@ -57,7 +58,6 @@ int main(void)
 }
 
 
-uint8_t SECTION_FSMC_BANK1_3 ibuf[LCD_PIXEL_WIDTH * LCD_PIXEL_HEIGHT * 2];
 
 /**
  * The "main" task responsible for finishing hardware initialization
@@ -75,22 +75,9 @@ void __attribute__ ((noreturn)) main_task(void *param)
     // setup the peripherals
     platform_init();
 
-    // Show memory sizes
-    //printf("Main SRAM size: %d KB." EOL, (int)(&_mm_heap_end - &_mm_data_start)/1024);
-
-    // Other stuff
-    STM3210E_LCD_Init();
-    LCD_Clear(LCD_COLOR_GREEN);
-
-    ASSERT(ibuf != NULL);
-
+    // Onboard display setup
     font_init();
-    const struct font *font = font_find("Ubuntu Mono", "Regular", 20);
-    //font = &font_DejaVuSansMono_12;
-    font_draw_glyph_RGB16(font, 0, 0, LCD_PIXEL_WIDTH, LCD_PIXEL_HEIGHT,
-                          ibuf, 'B', 0, LCD_COLOR_GREEN);
-
-    LCD_Bitblt(ibuf);
+    lcd_init();
 
     // announce life!
     printf("This platform is running!" EOL);

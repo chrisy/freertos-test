@@ -55,7 +55,7 @@ void dbg(const char *msg)
 {
     const char *p = msg;
 
-#if USE_SERIAL_USART1
+#if USE_SERIAL_USART1 && 0
     if (stdio_started) {
         serial_write(&Serial1, msg, strlen(msg));
         return;

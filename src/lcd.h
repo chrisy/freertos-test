@@ -1,5 +1,5 @@
-/** Font setup
- * \file src/fonts.h
+/** LCD setup
+ * \file src/lcd.h
  *
  * \author Chris Luke <chrisy@flirble.org>
  * \copyright Copyright (c) Chris Luke <chrisy@flirble.org>
@@ -9,11 +9,16 @@
  * be found at http://opensource.org/licenses/MIT
  */
 
-#ifndef _FONTS_H
-#define _FONTS_H
+#ifndef _LCD_H
+#define _LCD_H
 
-#include <fonts/fontem.h>
+#include <stdint.h>
+#include <stm3210e_eval_lcd.h>
 
-void font_init(void);
+extern uint8_t lcd_framebuffer[];
 
-#endif /* _FONTS_H */
+void lcd_init(void);
+void lcd_refresh(void);
+int32_t lcd_parsecolor(char *str);
+
+#endif /* _LCD_H */

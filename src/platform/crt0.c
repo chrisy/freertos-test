@@ -182,7 +182,11 @@ void __attribute__ ((noreturn)) _crt0_hardfault_print(uint32_t *faultStack)
     dbgf("r0=%08x r1=%08x r2=%08x r3=%08x r12=%08x" EOL, r0, r1, r2, r3, r12);
     dbgf("lr=%08x pc=%08x psr=%08x" EOL EOL, lr, pc, psr);
 
+#ifdef DEBUG
+    HALT();
+#else
     NVIC_SystemReset();
+#endif
 }
 
 /**

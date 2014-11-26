@@ -61,7 +61,7 @@
                         dbgf("ASSERT failed at %s line %d, halting." EOL EOL, \
                              __FILE__, __LINE__); \
                         __disable_irq(); \
-                        for(;; ) ; \
+                        for (;; ) ; \
                     } }
 
 #define assert_param(x) ASSERT(x)

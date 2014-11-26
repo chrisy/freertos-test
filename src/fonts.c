@@ -22,8 +22,10 @@
 #include "fonts.h"
 #include "lcd.h"
 
+/** The font currently selected from the command line. */
 const struct font *current_font = &font_UbuntuMonoR_18;
 
+/** Command to list currently available fonts. */
 static int cmd_fontlist(struct cli *cli, int argc, const char *const *argv)
 {
     font_print_all(cli->out);
@@ -31,6 +33,7 @@ static int cmd_fontlist(struct cli *cli, int argc, const char *const *argv)
     return 0;
 }
 
+/** Command to select a font. */
 static int cmd_fontsel(struct cli *cli, int argc, const char *const *argv)
 {
     int c;
@@ -81,6 +84,7 @@ static int cmd_fontsel(struct cli *cli, int argc, const char *const *argv)
     return 0;
 }
 
+/** Command to print a string to the LCD using the current font. */
 static int cmd_fontprint(struct cli *cli, int argc, const char *const *argv)
 {
     int c;
@@ -148,6 +152,7 @@ static int cmd_fontprint(struct cli *cli, int argc, const char *const *argv)
     return 0;
 }
 
+/** Command to clear the LCD. */
 static int cmd_fontclear(struct cli *cli, int argc, const char *const *argv)
 {
     int c;
@@ -186,9 +191,10 @@ static int cmd_fontclear(struct cli *cli, int argc, const char *const *argv)
     return 0;
 }
 
+/** Initialize the font system */
 void font_init(void)
 {
-    printf("Initializing font subsystem.\r\n");
+    printf("Initializing font subsystem." EOL);
 
     struct cli_command fontlist = {
         .cmd    = "fontlist",

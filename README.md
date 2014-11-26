@@ -9,7 +9,7 @@ It is based on the STM32F103 high-density MCU, an ARM Cortex-M3 series
 of processors.
 
 The code provides bootstrap routines and re-entrant peripheral support. In
-particular it provides a lughtweight POSIX I/O interface including default
+particular it provides a lightweight POSIX I/O interface including default
 stdin/out/err file descriptors that are wired to USART1.
 
 It uses GNU Autotools to setup the build environment. It expects to find

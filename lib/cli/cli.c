@@ -145,7 +145,7 @@ static void cli_sigint(void *opaque)
  * @param param An opaque reference to the instance of the CLI this task
  * is servicing.
  */
-static void __attribute__ ((noreturn)) cli_task(void *param)
+static void NORETURN cli_task(void *param)
 {
     struct cli *cli = (struct cli *)param;
 

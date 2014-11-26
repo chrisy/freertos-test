@@ -14,16 +14,28 @@
 
 /* Set the CC_INLINE macro */
 #ifdef __cplusplus
-# define CC_INLINE inline
+# define INLINE inline
 #else
-# define CC_INLINE @cc_inline@
+# define INLINE @cc_inline@
 #endif
 
 /* Setup our NOINLINE macro */
 #ifdef __GNUC__
-# define CC_NOINLINE __attribute__ ((noinline))
+# define NOINLINE __attribute__ ((noinline))
 #else
-# define CC_NOINLINE
+# define NOINLINE
+#endif
+
+#ifdef __GNUC__
+# define NORETURN __attribute__ ((noreturn))
+#else
+# define NORETURN
+#endif
+
+#ifdef __GNUC__
+# define ALIGN(x) __attribute__ ((aligned(x)))
+#else
+# define ALIGN(x)
 #endif
 
 #define MAX(a, b)  ((a) > (b) ? (a) : (b))

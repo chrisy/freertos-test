@@ -157,7 +157,7 @@ void _crt0_nmi_handler(void)
  * Used by the hardfault handler, this function prints register
  * details at the time of a fault to the debugging console.
  */
-void __attribute__ ((noreturn)) _crt0_hardfault_print(uint32_t *faultStack)
+void NORETURN _crt0_hardfault_print(uint32_t *faultStack)
 {
     volatile uint32_t r0;
     volatile uint32_t r1;

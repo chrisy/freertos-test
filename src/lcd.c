@@ -18,21 +18,30 @@
 
 #include <stm32/dma.h>
 
+/** DMA channel number to use for LCD framebuffer transfers. */
 #define LCD_DMA_CHANNEL 0
+/** Reference to the DMA structure used for the LCD DMA channel. */
 const dma_ch_t *lcd_dma = &dma_streams[LCD_DMA_CHANNEL];
 
+/** The size of the framebuffer, in RGB words (16 bits) */
 #define FRAMEBUFFER_SIZE (LCD_PIXEL_WIDTH * LCD_PIXEL_HEIGHT)
-uint8_t SECTION_FSMC_BANK1_3("lcd_framebuffer") __attribute__((aligned(4)))
-    lcd_framebuffer[FRAMEBUFFER_SIZE * sizeof(uint16_t)];
-
+/** The amount of framebuffer to refresh in each DMA transfer */
 #define LCD_DMA_SIZE (FRAMEBUFFER_SIZE / 2)
 
+/** The framebuffer for the LCD */
+uint8_t lcd_framebuffer[FRAMEBUFFER_SIZE * sizeof(uint16_t)] \
+    SECTION_FSMC_BANK1_3("lcd_framebuffer") ALIGN(4);
+
+/** The section of the screen most recently refreshed; 0 or 1. */
 static volatile uint16_t lcd_bank;
 
+static void lcd_start_dma(uint32_t start, uint16_t length);
 static void lcd_refresh_interrupt(void *param, uint32_t flags);
 
+/** Initialize the LCD system */
 void lcd_init(void)
 {
+    printf("Initializing LCD subsystem." EOL);
     ASSERT(lcd_framebuffer != NULL);
 
     STM3210E_LCD_Init();
@@ -41,18 +50,33 @@ void lcd_init(void)
     dma_allocate(lcd_dma, 10, lcd_refresh_interrupt, NULL);
 }
 
+/** Manually refresh the framebuffer onto the LCD */
 void lcd_refresh(void)
 {
     LCD_Bitblt(lcd_framebuffer);
 }
 
-static void lcd_start_dma(uint32_t start, uint16_t length)
+/**
+ * Trigger a DMA action to copy data from the framebuffer
+ * to the LCD.
+ * @param start The address in memory to start the transfer from
+ * @param length The number of words to transfer. For this routine words
+ *      are 16-bits long.
+ */
+void lcd_start_dma(uint32_t start, uint16_t length)
 {
     lcd_dma->ch->CMAR = start;
     lcd_dma->ch->CNDTR = length;
     dma_enable(lcd_dma);
 }
 
+/**
+ * Manually trigger a refresh of the framebuffer to the LCD using
+ * DMA transfers. Because of transfer size limitations, the LCD
+ * is refreshed in two DMA transfers of half the screen each. This
+ * function triggers the first half; the second half is triggered when
+ * the first half completes.
+ */
 void lcd_refresh_dma(void)
 {
     lcd_bank = 0;
@@ -74,6 +98,10 @@ void lcd_refresh_dma(void)
     lcd_start_dma((uint32_t)lcd_framebuffer, LCD_DMA_SIZE);
 }
 
+/**
+ * DMA transfer complete event. If only the first half of the
+ * framebuffer was copied, trigger a transfer of the second half.
+ */
 static void lcd_refresh_interrupt(void *param, uint32_t flags)
 {
     dma_disable(lcd_dma);
@@ -83,6 +111,7 @@ static void lcd_refresh_interrupt(void *param, uint32_t flags)
     }
 }
 
+/** Utility function to parse color 'names' into an RGB16 value. */
 int32_t lcd_parsecolor(char *str)
 {
     if (!strcasecmp(str, "red")) return LCD_COLOR_RED;

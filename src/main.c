@@ -65,7 +65,7 @@ int main(void)
  *
  * @param param 'param' is unused.
  */
-void __attribute__ ((noreturn)) main_task(void *param)
+void NORETURN main_task(void *param)
 {
     dbg("Scheduler launched." EOL);
 

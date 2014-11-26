@@ -4,6 +4,8 @@ Change Log
 Version 0.3
 -----------
 
+* Add DMA LCD framebuffer refresh.
+* Move font data to its own section; we may later put it in dedicated flash.
 
 Version 0.2 (2014-11-23)
 ------------------------

@@ -253,6 +253,7 @@ void LCD_GetColors(__IO uint16_t *_TextColor, __IO uint16_t *_BackColor);
 void LCD_SetTextColor(__IO uint16_t Color);
 void LCD_SetBackColor(__IO uint16_t Color);
 void LCD_Bitblt(uint8_t *buf);
+void *LCD_DMA_Prepare(void);
 void LCD_Clear(uint16_t Color);
 void LCD_SetCursor(uint16_t Xpos, uint16_t Ypos);
 void LCD_SetDisplayWindow(uint16_t Xpos, uint16_t Ypos, uint8_t Height, uint16_t Width);

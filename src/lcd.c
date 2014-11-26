@@ -16,23 +16,71 @@
 
 #include "lcd.h"
 
-uint8_t SECTION_FSMC_BANK1_3 lcd_framebuffer[LCD_PIXEL_WIDTH * LCD_PIXEL_HEIGHT * 2];
+#include <stm32/dma.h>
+
+#define LCD_DMA_CHANNEL 0
+const dma_ch_t *lcd_dma = &dma_streams[LCD_DMA_CHANNEL];
+
+#define FRAMEBUFFER_SIZE (LCD_PIXEL_WIDTH * LCD_PIXEL_HEIGHT)
+uint8_t SECTION_FSMC_BANK1_3("lcd_framebuffer") __attribute__((aligned(4)))
+    lcd_framebuffer[FRAMEBUFFER_SIZE * sizeof(uint16_t)];
+
+#define LCD_DMA_SIZE (FRAMEBUFFER_SIZE / 2)
+
+static volatile uint16_t lcd_bank;
+
+static void lcd_refresh_interrupt(void *param, uint32_t flags);
 
 void lcd_init(void)
 {
     ASSERT(lcd_framebuffer != NULL);
 
     STM3210E_LCD_Init();
-
-    LCD_Clear(LCD_COLOR_RED);
-    LCD_Clear(LCD_COLOR_GREEN);
-    LCD_Clear(LCD_COLOR_BLUE);
     LCD_Clear(LCD_COLOR_BLACK);
+
+    dma_allocate(lcd_dma, 10, lcd_refresh_interrupt, NULL);
 }
 
 void lcd_refresh(void)
 {
     LCD_Bitblt(lcd_framebuffer);
+}
+
+static void lcd_start_dma(uint32_t start, uint16_t length)
+{
+    lcd_dma->ch->CMAR = start;
+    lcd_dma->ch->CNDTR = length;
+    dma_enable(lcd_dma);
+}
+
+void lcd_refresh_dma(void)
+{
+    lcd_bank = 0;
+
+    dma_disable(lcd_dma);   // just in case
+
+    lcd_dma->ch->CCR =
+        DMA_CCR1_MEM2MEM |
+        DMA_CCR1_MINC |
+        DMA_CCR1_PL_1 |
+        DMA_CCR1_MSIZE_0 |
+        DMA_CCR1_PSIZE_0 |
+        DMA_CCR1_TEIE |
+        DMA_CCR1_TCIE |
+        DMA_CCR1_DIR;
+
+    lcd_dma->ch->CPAR = (uint32_t)LCD_DMA_Prepare();
+
+    lcd_start_dma((uint32_t)lcd_framebuffer, LCD_DMA_SIZE);
+}
+
+static void lcd_refresh_interrupt(void *param, uint32_t flags)
+{
+    dma_disable(lcd_dma);
+    if (lcd_bank == 0) {
+        lcd_bank = 1;
+        lcd_start_dma((uint32_t)lcd_framebuffer + LCD_DMA_SIZE, LCD_DMA_SIZE);
+    }
 }
 
 int32_t lcd_parsecolor(char *str)
@@ -46,5 +94,5 @@ int32_t lcd_parsecolor(char *str)
     else if (!strcasecmp(str, "white")) return LCD_COLOR_WHITE;
     else if (!strcasecmp(str, "black")) return LCD_COLOR_BLACK;
 
-	return -1;
+    return -1;
 }

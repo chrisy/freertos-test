@@ -19,6 +19,7 @@ extern uint8_t lcd_framebuffer[];
 
 void lcd_init(void);
 void lcd_refresh(void);
+void lcd_refresh_dma(void);
 int32_t lcd_parsecolor(char *str);
 
 #endif /* _LCD_H */

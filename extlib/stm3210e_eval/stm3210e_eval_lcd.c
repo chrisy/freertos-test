@@ -525,6 +525,22 @@ void LCD_Bitblt(uint8_t *buf)
   }
 }
 
+void *LCD_DMA_Prepare(void)
+{
+  if(LCD_ID == LCD_HX8347D)
+  {
+    LCD_SetCursor(0x00, 0x0000);
+  }
+  else
+  {
+    LCD_SetCursor(0x00, 0x013F);
+  }
+
+  LCD_WriteRAM_Prepare();
+
+  return (void *)&(LCD->LCD_RAM);
+}
+
 /**
   * @brief  Sets the cursor position.
   * @param  Xpos: specifies the X position.

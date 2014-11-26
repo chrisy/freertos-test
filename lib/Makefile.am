@@ -90,8 +90,11 @@ $(fontout)/%.c: $(fontemdir)/src/%.c
 
 .SECONDEXPANSION:
 $(fonts_sources): %.c: $$(fontdir)/$$(word 2,$$(subst -, ,%)).ttf $$(fontout)/fontem.h $$(fontemdir)/src/fontem
-	$(fontemdir)/src/fontem --font=$(fontdir)/$(word 2,$(subst -, ,$(notdir $@))).ttf \
-		--dir=$(fontout) --name=$(word 2,$(subst -, ,$(notdir $@))) --size=$(word 3,$(subst -, ,$(subst .c,,$(notdir $@))))
+	$(fontemdir)/src/fontem \
+		--font=$(fontdir)/$(word 2,$(subst -, ,$(notdir $@))).ttf \
+		--dir=$(fontout) --name=$(word 2,$(subst -, ,$(notdir $@))) \
+		--size=$(word 3,$(subst -, ,$(subst .c,,$(notdir $@)))) \
+		--section=.fonts
 
 $(fontout)/font_all.h: $(fonts_sources) Makefile
 	@echo "/* A list of all font headers. */" > $@

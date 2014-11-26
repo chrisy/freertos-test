@@ -47,25 +47,28 @@ EXTRA_image_DEPENDENCIES = $(linker_script) \
 image.map: image$(EXEEXT)
 
 image.bin: image$(EXEEXT)
-	$(OBJCOPY) -j .nvic_vector -j .info -j .text -j .data -j .data_init $< -O binary $@
+	$(OBJCOPY) -j .nvic_vector -j .info -j .text -j .data -j .data_init -j .fonts  $< -O binary $@
 
 image.hex: image$(EXEEXT)
-	$(OBJCOPY) -j .nvic_vector -j .info -j .text -j .data -j .data_init $< -O ihex $@
+	$(OBJCOPY) -j .nvic_vector -j .info -j .text -j .data -j .data_init -j .fonts $< -O ihex $@
 
 image.lst: image$(EXEEXT)
 	$(OBJDUMP) -wxdS $< > $@
-	@printf "%-14s %12s %6s %6s\n" "Section" "Length (hex)" "(dec)" "KB"
-	@$(OBJDUMP) -h image.elf | \
-		gawk '/[.](nvic|text|data|bss|info)/{printf("%-14s %12x %6d %6.1f\n", $$2, \
-			strtonum("0x"$$3), strtonum("0x"$$3), strtonum("0x"$$3) / 1024)}'
+	@printf "%-8s %-14s %12s %6s %6s\n" "Address" "Section" "Length (hex)" "(dec)" "KB"
+	@$(OBJDUMP) -h $< | \
+		gawk '/[.](nvic|text|data|bss|info|fonts)[^.]/ \
+			{printf("%-8s %-14s %12x %6d %6.1f\n", \
+			$$4, $$2, \
+			strtonum("0x"$$3), strtonum("0x"$$3), \
+			strtonum("0x"$$3) / 1024)}' | sort
 
 image.use: image.map
 	@printf "%5s %8s %s\n" "Size" "Section" "Module" > $@.tmp
-	@awk '/^ \.(text|data)  *0x/{print $$3 " " $$1 " " $$4}' $< | \
+	@gawk '/^ [.](text|data|rodata|fonts)  *0x/{print $$3 " " $$1 " " $$4}' $< | \
 		sed -e "s/ \/.*[(]/ (/" | xargs printf "%5d %8s %s\n" | \
 		sort -rn >> $@.tmp
 	@mv $@.tmp $@
-	@head -5 $@
+	@head -7 $@
 
 all-local: $(extra_outputs)
 

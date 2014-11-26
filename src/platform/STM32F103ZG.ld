@@ -38,7 +38,8 @@ SECTIONS
 
     .info :
     {
-        *(info)     /* Text info */
+        *(.info)     /* Text info */
+        *(.info.*)
     } >flash
 
     .text :
@@ -47,6 +48,12 @@ SECTIONS
         *(.text.*)
         *(.rodata)  /* Read only data */
         *(.rodata.*)
+    } >flash
+
+    .fonts :
+    {
+        *(.fonts)   /* Font data */
+        *(.fonts.*)
     } >flash
 
     .data :

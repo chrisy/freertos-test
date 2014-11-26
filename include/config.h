@@ -76,15 +76,15 @@
 #define STACK_SIZE_CLI          2048
 
 /* Section attributes we use */
-#define SECTION_INFO            __attribute__ ((section(".info")))
-#define SECTION_FSMC_BANK1      __attribute__ ((section(".fsmc_bank1")))
-#define SECTION_FSMC_BANK2      __attribute__ ((section(".fsmc_bank2")))
-#define SECTION_FSMC_BANK3      __attribute__ ((section(".fsmc_bank3")))
-#define SECTION_FSMC_BANK4      __attribute__ ((section(".fsmc_bank4")))
-#define SECTION_FSMC_BANK1_1    __attribute__ ((section(".fsmc_bank1_1")))
-#define SECTION_FSMC_BANK1_2    __attribute__ ((section(".fsmc_bank1_2")))
-#define SECTION_FSMC_BANK1_3    __attribute__ ((section(".fsmc_bank1_3")))
-#define SECTION_FSMC_BANK1_4    __attribute__ ((section(".fsmc_bank1_4")))
+#define SECTION_INFO(x)            __attribute__ ((section(".info."x)))
+#define SECTION_FSMC_BANK1(x)      __attribute__ ((section(".fsmc_bank1."x)))
+#define SECTION_FSMC_BANK2(x)      __attribute__ ((section(".fsmc_bank2."x)))
+#define SECTION_FSMC_BANK3(x)      __attribute__ ((section(".fsmc_bank3."x)))
+#define SECTION_FSMC_BANK4(x)      __attribute__ ((section(".fsmc_bank4."x)))
+#define SECTION_FSMC_BANK1_1(x)    __attribute__ ((section(".fsmc_bank1_1."x)))
+#define SECTION_FSMC_BANK1_2(x)    __attribute__ ((section(".fsmc_bank1_2."x)))
+#define SECTION_FSMC_BANK1_3(x)    __attribute__ ((section(".fsmc_bank1_3."x)))
+#define SECTION_FSMC_BANK1_4(x)    __attribute__ ((section(".fsmc_bank1_4."x)))
 
 #define EOL "\r\n"
 

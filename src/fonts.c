@@ -41,22 +41,22 @@ static int cmd_fontsel(struct cli *cli, int argc, const char *const *argv)
     opterr = 0;
     while ((c = getopt(argc, (char *const *)argv, "s:t:")) != EOF) {
         switch (c) {
-            case 's': // set font size
-                size = atoi(optarg);
-                break;
+        case 's':     // set font size
+            size = atoi(optarg);
+            break;
 
-            case 't': // set font weight/style/type
-                type = optarg;
-                break;
+        case 't':     // set font weight/style/type
+            type = optarg;
+            break;
 
-            case ':':
-                fprintf(cli->out, "Option \"%s\" requires a parameter." EOL,
-                    argv[optind-1]);
-                return 1;
+        case ':':
+            fprintf(cli->out, "Option \"%s\" requires a parameter." EOL,
+                    argv[optind - 1]);
+            return 1;
 
-            default:
-                fprintf(cli->out, "Unknown option \"%s\"." EOL, argv[optind-1]);
-                return 1;
+        default:
+            fprintf(cli->out, "Unknown option \"%s\"." EOL, argv[optind - 1]);
+            return 1;
         }
     }
 
@@ -64,9 +64,9 @@ static int cmd_fontsel(struct cli *cli, int argc, const char *const *argv)
         const struct font *f = font_find(argv[optind], type, size);
 
         if (f == NULL) {
-            fprintf(cli->out, "Unable to find a font named \"%s\" of type "\
-                "\"%s\" and size %d." EOL,
-                argv[optind], type ? type : "<any>", size);
+            fprintf(cli->out, "Unable to find a font named \"%s\" of type " \
+                              "\"%s\" and size %d." EOL,
+                    argv[optind], type ? type : "<any>", size);
             return 1;
         }
 
@@ -74,9 +74,9 @@ static int cmd_fontsel(struct cli *cli, int argc, const char *const *argv)
     }
 
     fprintf(cli->out, "%s, %s, %d." EOL,
-        current_font->name,
-        current_font->style,
-        current_font->size);
+            current_font->name,
+            current_font->style,
+            current_font->size);
 
     return 0;
 }
@@ -92,57 +92,56 @@ static int cmd_fontprint(struct cli *cli, int argc, const char *const *argv)
     opterr = 0;
     while ((c = getopt(argc, (char *const *)argv, "c:x:y:")) != EOF) {
         switch (c) {
-            case 'c': // color
-                tcolor = lcd_parsecolor(optarg);
-                if (tcolor == -1) {
-                    fprintf(cli->out, "Unknown color: \"%s\"." EOL, optarg);
-                    return 1;
-                }
-                color = tcolor;
-                break;
-
-            case 'x': // x coord
-                x = atoi(optarg);
-                break;
-
-            case 'y': // y coord
-                y = atoi(optarg);
-                break;
-
-            case ':':
-                    fprintf(cli->out, "Option \"%s\" requires a parameter." EOL,
-                        argv[optind-1]);
-                    return 1;
-
-            default:
-                fprintf(cli->out, "Unknown option \"%s\"." EOL, argv[optind-1]);
+        case 'c':     // color
+            tcolor = lcd_parsecolor(optarg);
+            if (tcolor == -1) {
+                fprintf(cli->out, "Unknown color: \"%s\"." EOL, optarg);
                 return 1;
+            }
+            color = tcolor;
+            break;
+
+        case 'x':     // x coord
+            x = atoi(optarg);
+            break;
+
+        case 'y':     // y coord
+            y = atoi(optarg);
+            break;
+
+        case ':':
+            fprintf(cli->out, "Option \"%s\" requires a parameter." EOL,
+                    argv[optind - 1]);
+            return 1;
+
+        default:
+            fprintf(cli->out, "Unknown option \"%s\"." EOL, argv[optind - 1]);
+            return 1;
         }
     }
 
     int len = 0;
-    for (int i = optind; i < argc; i++) {
+    for (int i = optind; i < argc; i++)
         len += strlen(argv[i]) + 1;
-    }
 
-    if (!len) return 0; // optimization
+    if (!len) return 0;  // optimization
 
     char *str = malloc(len);
-    if(str == NULL) {
+    if (str == NULL) {
         fprintf(cli->out, "Unable to allocate %d bytes." EOL, len);
         return 1;
     }
     *str = '\0';
 
     for (int i = optind; i < argc; i++) {
-        if(i != optind) strcat(str, " ");
+        if (i != optind) strcat(str, " ");
         strcat(str, argv[i]);
     }
 
     font_draw_string_RGB16(current_font,
-        x, y, LCD_PIXEL_WIDTH, LCD_PIXEL_HEIGHT,
-        lcd_framebuffer, str, 0, color);
-    lcd_refresh();
+                           x, y, LCD_PIXEL_WIDTH, LCD_PIXEL_HEIGHT,
+                           lcd_framebuffer, str, 0, color);
+    lcd_refresh_dma();
 
     free(str);
 
@@ -159,31 +158,30 @@ static int cmd_fontclear(struct cli *cli, int argc, const char *const *argv)
     opterr = 0;
     while ((c = getopt(argc, (char *const *)argv, "c:")) != EOF) {
         switch (c) {
-            case 'c': // color
-                tcolor = lcd_parsecolor(optarg);
-                if (tcolor == -1) {
-                    fprintf(cli->out, "Unknown color: %s." EOL, optarg);
-                    return 1;
-                }
-                color = tcolor;
-                break;
-
-            case ':':
-                    fprintf(cli->out, "Option \"%s\" requires a parameter." EOL,
-                        argv[optind-1]);
-                    return 1;
-
-            default:
-                fprintf(cli->out, "Unknown option \"%s\"." EOL, argv[optind-1]);
+        case 'c':     // color
+            tcolor = lcd_parsecolor(optarg);
+            if (tcolor == -1) {
+                fprintf(cli->out, "Unknown color: %s." EOL, optarg);
                 return 1;
+            }
+            color = tcolor;
+            break;
+
+        case ':':
+            fprintf(cli->out, "Option \"%s\" requires a parameter." EOL,
+                    argv[optind - 1]);
+            return 1;
+
+        default:
+            fprintf(cli->out, "Unknown option \"%s\"." EOL, argv[optind - 1]);
+            return 1;
         }
     }
 
     uint16_t *p = (uint16_t *)lcd_framebuffer;
-    for (int i = 0; i< LCD_PIXEL_HEIGHT * LCD_PIXEL_WIDTH; i++) {
+    for (int i = 0; i < LCD_PIXEL_HEIGHT * LCD_PIXEL_WIDTH; i++)
         *p++ = color;
-    }
-    lcd_refresh();
+    lcd_refresh_dma();
 
     return 0;
 }
@@ -204,9 +202,9 @@ void font_init(void)
         .cmd    = "fontsel",
         .brief  = "Select current font",
         .help   = "Selects a font for future 'fontprint' actions." EOL EOL \
-                    "Options:" EOL \
-                    "  -s <size>     Specifies the desired font size." EOL \
-                    "  -t <type>     Specifies the desired font type, or style.",
+                  "Options:" EOL \
+                  "  -s <size>     Specifies the desired font size." EOL \
+                  "  -t <type>     Specifies the desired font type, or style.",
         .fn     = cmd_fontsel,
     };
     cli_addcmd(&fontsel);
@@ -215,10 +213,10 @@ void font_init(void)
         .cmd    = "fontprint",
         .brief  = "Print a string on the LCD",
         .help   = "Prints a string on the LCD in the current font." EOL EOL \
-                    "Options: " EOL \
-                    "  -c <color>    Specifies the desired text color." EOL \
-                    "  -x <coord>    Specifies the x coordinate." EOL \
-                    "  -y <coord>    Specifies the y coordinate.",
+                  "Options: " EOL \
+                  "  -c <color>    Specifies the desired text color." EOL \
+                  "  -x <coord>    Specifies the x coordinate." EOL \
+                  "  -y <coord>    Specifies the y coordinate.",
         .fn     = cmd_fontprint,
     };
     cli_addcmd(&fontprint);
@@ -227,8 +225,8 @@ void font_init(void)
         .cmd    = "fontclear",
         .brief  = "Clear the LCD",
         .help   = "Clears the LCD to a selectable color." EOL EOL \
-                    "Options: " EOL \
-                    "  -c <color>    Specifies the desired background color." EOL,
+                  "Options: " EOL \
+                  "  -c <color>    Specifies the desired background color." EOL,
         .fn     = cmd_fontclear,
     };
     cli_addcmd(&fontclear);

@@ -179,8 +179,13 @@ void __attribute__ ((noreturn)) _crt0_hardfault_print(uint32_t *faultStack)
     psr = faultStack[7];
 
     dbg(EOL "Hardfault!" EOL);
-    dbgf("r0=%08x r1=%08x r2=%08x r3=%08x r12=%08x" EOL, r0, r1, r2, r3, r12);
-    dbgf("lr=%08x pc=%08x psr=%08x" EOL EOL, lr, pc, psr);
+    dbgf("r0=%08x r1=%08x r2=%08x r3=%08x r12=%08x" EOL,
+        (unsigned int)r0, (unsigned int)r1,
+        (unsigned int)r2, (unsigned int)r3,
+        (unsigned int)r12);
+    dbgf("lr=%08x pc=%08x psr=%08x" EOL EOL,
+        (unsigned int)lr, (unsigned int)pc,
+        (unsigned int)psr);
 
 #ifdef DEBUG
     HALT();

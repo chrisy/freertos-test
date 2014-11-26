@@ -14,7 +14,7 @@
 
 void dbg_init(void);
 void dbg(const char *msg);
-void dbgf(const char *fmt, ...);
+void dbgf(const char *fmt, ...) __attribute__ ((format (printf, 1, 2)));
 
 #endif  // _DEBUG_H
 

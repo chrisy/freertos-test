@@ -1,5 +1,5 @@
-RTOS reference implementation
-=============================
+Building the platform
+=====================
 
 Dependencies
 ------------

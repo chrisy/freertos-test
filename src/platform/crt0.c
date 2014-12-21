@@ -243,6 +243,9 @@ void _crt0_init(void)
         datai++;
     }
 
+    // Memory barrier is not strictly necessary here, but safe
+    __DMB();
+
     // Setup clocks and the like
     SystemInit();
 
@@ -252,6 +255,9 @@ void _crt0_init(void)
         *data = 0;
         data++;
     }
+
+    // Not strictly necessary
+    __DMB();
 
     // Debugging output
     dbg_init();

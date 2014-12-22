@@ -105,7 +105,7 @@ static void platform_init(void)
     ASSERT(qs_serial != NULL);
 #endif
 #if USE_SERIAL_USART1
-    serial_start(&Serial1, 9600
+    serial_start(&Serial1, DEFAULT_USART_BAUD
 #if configUSE_QUEUE_SETS
                  , qs_serial
 #endif
@@ -118,7 +118,7 @@ static void platform_init(void)
 
 #if USE_SERIAL_USART2
     printf("Starting USART 2." EOL);
-    serial_start(&Serial2, 9600
+    serial_start(&Serial2, DEFAULT_USART_BAUD
 #if configUSE_QUEUE_SETS
                  , qs_serial
 #endif
@@ -127,7 +127,7 @@ static void platform_init(void)
 
 #if USE_SERIAL_USART3
     printf("Starting USART 3." EOL);
-    serial_start(&Serial3, 9600
+    serial_start(&Serial3, DEFAULT_USART_BAUD
 #if configUSE_QUEUE_SETS
                  , qs_serial
 #endif
@@ -136,7 +136,16 @@ static void platform_init(void)
 
 #if USE_SERIAL_UART4
     printf("Starting USART 4." EOL);
-    serial_start(&Serial4, 9600
+    serial_start(&Serial4, DEFAULT_USART_BAUD
+#if configUSE_QUEUE_SETS
+                 , qs_serial
+#endif
+                 );
+#endif
+
+#if USE_SERIAL_UART5
+    printf("Starting USART 5." EOL);
+    serial_start(&Serial5, DEFAULT_USART_BAUD
 #if configUSE_QUEUE_SETS
                  , qs_serial
 #endif

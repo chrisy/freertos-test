@@ -30,6 +30,7 @@ static int ser_close(void *fh)
 {
     if (fh != NULL)
         return 0;
+
     errno = ENOENT;
     return -1;
 }
@@ -141,6 +142,30 @@ static int ser_fstat(void *fh, struct stat *st)
     return 0;
 }
 
+static int ser_ioctl(void *fh, unsigned long request, ...)
+{
+    va_list ap;
+    int ret = 0;
+
+    va_start(ap, request);
+
+    switch (request) {
+    case IOCTL_SETBAUD:
+        ((serial_t *)fh)->speed = va_arg(ap, unsigned int);
+        serial_set_speed((serial_t *)fh);
+        break;
+
+    default:
+        errno = ENOENT;
+        ret = -1;
+        break;
+    }
+
+    va_end(ap);
+
+    return ret;
+}
+
 static int ser_stat(const char *file, struct stat *st)
 {
     if (file == NULL || st == NULL) {
@@ -185,6 +210,7 @@ static int ser_stat(const char *file, struct stat *st)
     return 0;
 }
 
+
 /// Serial port device structure
 static struct iodev iodev_serial = {
     .name   = "serial",
@@ -194,6 +220,7 @@ static struct iodev iodev_serial = {
     .read   = ser_read,
     .write  = ser_write,
     .fstat  = ser_fstat,
+    .ioctl  = ser_ioctl,
     .stat   = ser_stat,
 
     .flags  = POSIXDEV_CHARACTER_STREAM | POSIXDEV_ISATTY

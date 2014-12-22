@@ -60,6 +60,8 @@
 #define USE_SPI2                0
 #define USE_SPI3                0
 
+#define DEFAULT_USART_BAUD      9600
+
 /* Highest priority (highest number) */
 #define THREAD_PRIO_MAIN        3
 #define THREAD_PRIO_CLI         3

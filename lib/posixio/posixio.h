@@ -14,6 +14,7 @@
 
 #include <sys/types.h>
 #include <stdarg.h>
+#include <fcntl.h>
 
 #ifndef POSIXIO_MAX_OPEN_FILES
 /// Maximum number of concurrently open files.
@@ -39,6 +40,8 @@ struct iodev {
     ssize_t (*read)(void *fh, void *ptr, size_t len);           ///< Handler for \c read() from a file on this device.
     ssize_t (*write)(void *fh, const void *ptr, size_t len);    ///< Handler for \c write() to a file on this device.
     int     (*fstat)(void *fh, struct stat *st);                ///< Handler for \c fstat() of a file on this device.
+    int     (*fcntl)(void *fh, int cmd, int arg);               ///< Handler for \c fcntl() of a file on this device.
+    int     (*ioctl)(void *fh, unsigned long request, ...);     ///< Handler for \c ioctl() of a file on this device.
 
     // fileio handlers
     int     (*link)(const char *old, const char *new);      ///< Handler for \c link() targeting filenames on this device.
@@ -85,6 +88,14 @@ enum POSIXIO_DEVICES {
     DEV_MMC1,       ///< MMC/SDIO port 1
 };
 
+/**
+ * Our IOCTL's. We lack real ones, but these will do for us, for now.
+ */
+enum POSIXIO_IOCTLS {
+    IOCTL_SETBAUD = 1,
+};
+
+
 int posixio_start(void);
 
 int posixio_split_path(const char *path, char *device, size_t device_len, char *file, size_t file_len);
@@ -101,6 +112,8 @@ off_t _lseek(int fd, off_t ptr, int dir);
 ssize_t _read(int fd, void *ptr, size_t len);
 ssize_t _write(int fd, const void *ptr, size_t len);
 int _fstat(int fd, struct stat *st);
+int _fcntl(int fd, int cmd, int arg);
+int ioctl(int fd, unsigned long request, ...);
 int dup(int fd);
 int dup2(int fd, int fd2);
 

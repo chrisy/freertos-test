@@ -20,12 +20,15 @@
 #include <sys/stat.h>
 #include <string.h>
 #include <real_errno.h>
+#include <limits.h>
 
 
 /* The POSIX-ish I/O primitives!
  * Here we just indirect through the dev structure associated
  * with open files.
  */
+
+static int _dup(struct iofile *file);
 
 /**
  * Implements \c close() on an open file by calling the \c close handler
@@ -234,6 +237,131 @@ int _fstat(int fd, struct stat *st)
 
 
 /**
+ * Implements \c fcntl() on an open file by passing the call through to the
+ * \c fcntl handler of the underlying device.
+ *
+ * @param fd An open file to operate on.
+ * @param cmd A file control command.
+ * @param arg Argument for the command.
+ * @returns \c \c -1 on error with \c errno set to an
+ *      error value; otherwise it may be the result of the file control
+ *      command.
+ */
+int _fcntl(int fd, int cmd, int arg)
+{
+    posixio_fdlock();
+
+    struct iofile *file = posixio_file_fromfd(fd);
+
+    if (file == NULL) {
+        posixio_fdunlock();
+        errno = EBADF;
+        return -1;
+    }
+
+    int ret = INT_MAX;
+
+    // Some commands we handle locally.
+    switch (cmd) {
+    case F_DUPFD:
+        ret = _dup(file);
+        break;
+
+    default:
+        break;
+    }
+
+    if (ret == INT_MAX) {
+        if (file->dev->fcntl != NULL) {
+            ret = file->dev->fcntl(file->fh, cmd, arg);
+        } else {
+            errno = ENOENT;
+            ret = -1;
+        }
+    }
+
+    posixio_fdunlock();
+    return ret;
+}
+
+
+/**
+ * Implements \c ioctl() on an open file by passing the call through to the
+ * \c ioctl handler of the underlying device.
+ *
+ * @param fd An open file to operate on.
+ * @param request A supported IOCTL request.
+ * @returns \c 0 on success, \c -1 otherwise with \c errno set to an
+ *      error value.
+ */
+int ioctl(int fd, unsigned long request, ...)
+{
+    posixio_fdlock();
+
+    struct iofile *file = posixio_file_fromfd(fd);
+
+    if (file == NULL) {
+        posixio_fdunlock();
+        errno = EBADF;
+        return -1;
+    }
+
+    if (file->dev->ioctl != NULL) {
+        va_list ap;
+        va_start(ap, request);
+        int ret = file->dev->ioctl(file->fh, request, ap);
+        va_end(ap);
+        posixio_fdunlock();
+        return ret;
+    }
+
+    posixio_fdunlock();
+    errno = ENOENT;
+    return -1;
+}
+
+
+/**
+ * Implementation for \c dup(). Assumes fdlock is held.
+ */
+int _dup(struct iofile *file)
+{
+    // Get a new descriptor
+    int fd2 = posixio_newfd();
+
+    if (fd2 == -1)
+        return -1;
+
+    // allocate a file structure - store it with fd.
+    struct iofile *file2 = malloc(sizeof(struct iofile));
+    if (file2 == NULL) {
+        errno = ENOMEM;
+        return -1;
+    }
+
+    // copy it
+    memcpy(file2, file, sizeof(struct iofile));
+
+    // if the device has an open handler, use it
+    if (file2->dev->open != NULL) {
+        file2->fh = file2->dev->open(file2->name, file2->flags);
+        if (file2->fh == NULL) {
+            free(file2);
+            return -1;
+        }
+    }
+
+    // store the file data
+    if (posixio_setfd(fd2, file2) == -1) {
+        free(file2);
+        return -1;
+    }
+
+    return fd2;
+}
+
+
+/**
  * Duplicates the file descriptor for an open file \c fd. This allocates a new
  * file descriptor and clones the references of the open file \c fd into it.
  *
@@ -253,44 +381,10 @@ int dup(int fd)
         return -1;
     }
 
-    // Get a new descriptor
-    int fd2 = posixio_newfd();
-    if (fd2 == -1) {
-        posixio_fdunlock();
-        return -1;
-    }
-
-    // allocate a file structure - store it with fd.
-    struct iofile *file2 = malloc(sizeof(struct iofile));
-    if (file2 == NULL) {
-        posixio_fdunlock();
-        errno = ENOMEM;
-        return -1;
-    }
-
-    // copy it
-    memcpy(file2, file, sizeof(struct iofile));
-
-    // if the device has an open handler, use it
-    if (file2->dev->open != NULL) {
-        file2->fh = file2->dev->open(file2->name, file2->flags);
-        if (file2->fh == NULL) {
-            posixio_fdunlock();
-            free(file2);
-            return -1;
-        }
-    }
-
-    // store the file data
-    if (posixio_setfd(fd2, file2) == -1) {
-        posixio_fdunlock();
-        free(file2);
-        return -1;
-    }
+    int ret = _dup(file);
 
     posixio_fdunlock();
-
-    return fd2;
+    return ret;
 }
 
 
